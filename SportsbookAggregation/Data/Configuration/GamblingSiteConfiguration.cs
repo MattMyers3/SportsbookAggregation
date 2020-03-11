@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SportsbookAggregation.Data.Models;
 
-namespace SportsbookAggregation.Data
+namespace SportsbookAggregation.Data.Configuration
 {
     public class GamblingSiteConfiguration : IEntityTypeConfiguration<GamblingSite>
     {

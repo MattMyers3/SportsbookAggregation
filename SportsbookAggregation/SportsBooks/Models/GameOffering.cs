@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SportsbookAggregation.Data.Models
+namespace SportsbookAggregation.SportsBooks.Models
 {
     public class GameOffering
     {

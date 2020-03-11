@@ -1,7 +1,8 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
+using SportsbookAggregation.Data;
+using SportsbookAggregation.SportsBooks;
 
-namespace SportsbookAggregation.SportsBooks
+namespace SportsbookAggregation
 {
     internal static class Program
     {
@@ -9,9 +10,13 @@ namespace SportsbookAggregation.SportsBooks
 
         private static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            var dbContext = new Context();
+            DatabaseInitializer.Initialize(dbContext);
 
-            var gameOfferings = FanDuelSportsBook.AggregateFutureOfferings();
+            var gameOfferings = new FanDuelSportsBook().AggregateFutureOfferings();
+
+            var databaseUpdater = new SportsbookOfferingsUpdater(dbContext);
+            databaseUpdater.WriteGameOfferings(gameOfferings);
         }
     }
 }
