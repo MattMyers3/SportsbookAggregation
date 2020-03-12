@@ -38,6 +38,12 @@
           </e>
         </e>
         <e p="Program.cs" t="Include" />
+        <e p="Properties" t="Include">
+          <e p="PublishProfiles" t="Include">
+            <e p="GamblingAggregator - Web Deploy.pubxml" t="Include" />
+          </e>
+        </e>
+        <e p="Settings.job" t="Include" />
         <e p="SportsbookAggregation.csproj" t="IncludeRecursive" />
         <e p="SportsbookOfferingsUpdater.cs" t="Include" />
         <e p="SportsBooks" t="Include">

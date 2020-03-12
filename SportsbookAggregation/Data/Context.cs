@@ -53,6 +53,7 @@ namespace SportsbookAggregation.Data
                 var configuration = builder.Build();
                 connectionString = configuration.GetConnectionString("SportsbookDatabase");
             }
+            Console.WriteLine($"Connection String: {connectionString}");
             return new SqlConnection(connectionString);
         }
     }
