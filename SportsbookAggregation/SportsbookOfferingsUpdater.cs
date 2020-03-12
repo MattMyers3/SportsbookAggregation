@@ -21,7 +21,7 @@ namespace SportsbookAggregation
             foreach (var gameOffering in gameOfferings)
             {
                 if (gameOffering.DateTime < DateTime.Now)
-                    return;
+                    continue;
                 var homeTeamId = GetTeamId(gameOffering.HomeTeam);
                 var awayTeamId = GetTeamId(gameOffering.AwayTeam);
                 var siteId = GetSiteId(gameOffering.Site);

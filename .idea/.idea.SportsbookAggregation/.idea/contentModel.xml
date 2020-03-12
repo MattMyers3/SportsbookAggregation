@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\myers\.Rider2019.3\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\myers\.Rider2019.3\system\resharper-host\local\Transient\ReSharperHost\v193\SolutionCaches\_SportsbookAggregation.-175065809.00" t="ExcludeRecursive" />
+    <e p="C:\Users\myers\RiderProjects\SportsbookAggregation" t="IncludeFlat">
+      <e p="packages" t="ExcludeRecursive" />
+      <e p="SportsbookAggregation" t="IncludeRecursive">
+        <e p="appsettings.json" t="Include" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Data" t="Include">
+          <e p="Configuration" t="Include">
+            <e p="GamblingSiteConfiguration.cs" t="Include" />
+            <e p="GameConfiguration.cs" t="Include" />
+            <e p="GameLineConfiguration.cs" t="Include" />
+            <e p="GameResultConfiguration.cs" t="Include" />
+            <e p="SportConfiguration.cs" t="Include" />
+            <e p="TeamConfiguration.cs" t="Include" />
+          </e>
+          <e p="Context.cs" t="Include" />
+          <e p="DatabaseInitializer.cs" t="Include" />
+          <e p="IRepository.cs" t="Include" />
+          <e p="Models" t="Include">
+            <e p="GamblingSite.cs" t="Include" />
+            <e p="Game.cs" t="Include" />
+            <e p="GameLine.cs" t="Include" />
+            <e p="GameResult.cs" t="Include" />
+            <e p="Sport.cs" t="Include" />
+            <e p="Team.cs" t="Include" />
+          </e>
+          <e p="SqlServerRepository.cs" t="Include" />
+        </e>
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp3.1" t="Include">
+              <e p="SportsbookAggregation.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Program.cs" t="Include" />
+        <e p="SportsbookAggregation.csproj" t="IncludeRecursive" />
+        <e p="SportsbookOfferingsUpdater.cs" t="Include" />
+        <e p="SportsBooks" t="Include">
+          <e p="FanDuelSportsBook.cs" t="Include" />
+          <e p="FoxBetSportsBook.cs" t="Include" />
+          <e p="ISportsBook.cs" t="Include" />
+          <e p="Models" t="Include">
+            <e p="GameOffering.cs" t="Include" />
+          </e>
+        </e>
+      </e>
+      <e p="SportsbookAggregation.sln" t="IncludeFlat" />
+    </e>
+  </component>
+</project>

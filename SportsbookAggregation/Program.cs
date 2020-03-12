@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Linq;
+using System.Net.Http;
 using SportsbookAggregation.Data;
 using SportsbookAggregation.SportsBooks;
 
@@ -13,7 +14,8 @@ namespace SportsbookAggregation
             var dbContext = new Context();
             DatabaseInitializer.Initialize(dbContext);
 
-            var gameOfferings = new FanDuelSportsBook().AggregateFutureOfferings();
+            var gameOfferings = new FanDuelSportsBook().AggregateFutureOfferings().ToList();
+            gameOfferings.AddRange(new FoxBetSportsBook().AggregateFutureOfferings());
 
             var databaseUpdater = new SportsbookOfferingsUpdater(dbContext);
             databaseUpdater.WriteGameOfferings(gameOfferings);

@@ -49,13 +49,13 @@ namespace SportsbookAggregation.SportsBooks
                 var nbaGameUrl = $"https://sportsbook.fanduel.com/cache/psevent/UK/1/false/{gameNumber}.json";
                 var gameJson =
                     JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(nbaGameUrl).Result);
-                gameOfferings.Add(ParseNbaGameOfferings(gameJson));
+                gameOfferings.Add(ParseNbaGameOffering(gameJson));
             }
 
             return gameOfferings;
         }
 
-        private static GameOffering ParseNbaGameOfferings(dynamic gameJson)
+        private static GameOffering ParseNbaGameOffering(dynamic gameJson)
         {
             var gameOffering = new GameOffering
             {
