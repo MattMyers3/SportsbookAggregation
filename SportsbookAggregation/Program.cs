@@ -16,6 +16,7 @@ namespace SportsbookAggregation
 
             var gameOfferings = new FanDuelSportsBook().AggregateFutureOfferings().ToList();
             gameOfferings.AddRange(new FoxBetSportsBook().AggregateFutureOfferings());
+            gameOfferings.AddRange(new DraftKingsSportsBook().AggregateFutureOfferings());
 
             var databaseUpdater = new SportsbookOfferingsUpdater(dbContext);
             databaseUpdater.WriteGameOfferings(gameOfferings);

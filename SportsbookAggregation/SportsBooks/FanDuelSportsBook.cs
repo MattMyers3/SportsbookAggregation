@@ -21,6 +21,8 @@ namespace SportsbookAggregation.SportsBooks
 
         private static IEnumerable<GameOffering> GetBasketballOfferings(dynamic initialJson)
         {
+            var test = ((IEnumerable)initialJson.bonavigationnodes).Cast<dynamic>();
+
             var basketballJson = ((IEnumerable) initialJson.bonavigationnodes).Cast<dynamic>()
                 .First(g => g.name == "Basketball");
             return GetNbaGameOfferings(basketballJson);
