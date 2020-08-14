@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace SportsbookAggregation.SportsBooks
 {
-    class DraftKingsSportsBook : ISportsBook
+    public class DraftKingsSportsBook : ISportsBook
     {
         private const string NbaRequestUrl =
             "https://sportsbook.draftkings.com//sites/US-SB/api/v1/eventgroup/103/full?includePromotions=true&format=json";
