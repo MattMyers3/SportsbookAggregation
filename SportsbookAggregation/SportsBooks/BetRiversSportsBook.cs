@@ -69,7 +69,7 @@ namespace SportsbookAggregation.SportsBooks
 
             if (pointSpreadJson != null)
             {
-                gameOffering.CurrentSpread = pointSpreadJson.outcomes[1].line.Value;
+                gameOffering.CurrentSpread = pointSpreadJson.outcomes[0].line.Value;
                 gameOffering.HomeSpreadPayout = Convert.ToInt32(pointSpreadJson.outcomes[0].oddsAmerican.Value);
                 gameOffering.AwaySpreadPayout = Convert.ToInt32(pointSpreadJson.outcomes[1].oddsAmerican.Value);
             }
