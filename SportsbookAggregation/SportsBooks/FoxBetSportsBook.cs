@@ -86,7 +86,7 @@ namespace SportsbookAggregation.SportsBooks
 
             var totalPointsInfo = ((IEnumerable) gameJson.markets).Cast<dynamic>()
                 .FirstOrDefault(m => m.name.Value.Contains("Total Points"));
-            if (totalPointsInfo != null)
+            if (totalPointsInfo != null && totalPointsInfo.selection[0].odds.frac != '-')
             {
                 var totalPointsInfoSelection = ((IEnumerable) totalPointsInfo.selection).Cast<dynamic>().ToList();
                 gameOffering.CurrentOverUnder = Convert.ToDouble(totalPointsInfo.line);
