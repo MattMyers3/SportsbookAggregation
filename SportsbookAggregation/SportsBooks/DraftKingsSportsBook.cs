@@ -12,6 +12,11 @@ namespace SportsbookAggregation.SportsBooks
         private const string NbaRequestUrl =
             "https://sportsbook.draftkings.com//sites/US-SB/api/v1/eventgroup/103/full?includePromotions=true&format=json";
 
+        public string GetSportsBookName()
+        {
+            return "DraftKings";
+        }
+
         public IEnumerable<GameOffering> AggregateFutureOfferings()
         {
             return GetBasketballOfferings();
@@ -22,7 +27,7 @@ namespace SportsbookAggregation.SportsBooks
             return GetNbaGameOfferings();
         }
 
-        private static IEnumerable<GameOffering> GetNbaGameOfferings()
+        private IEnumerable<GameOffering> GetNbaGameOfferings()
         {
             var nbaRequestJson =
                 JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(NbaRequestUrl).Result);
@@ -43,12 +48,12 @@ namespace SportsbookAggregation.SportsBooks
             return gameOfferings;
         }
 
-        private static GameOffering ParseNbaGameOffering(dynamic gameJson, dynamic detailJson)
+        private GameOffering ParseNbaGameOffering(dynamic gameJson, dynamic detailJson)
         {
             var teams = detailJson.name.Value.Split('@');
             var gameOffering = new GameOffering
             {
-                Site = "DraftKings",
+                Site = GetSportsBookName(),
                 Sport = detailJson.eventGroupName,
                 AwayTeam = teams[0].Trim(),
                 HomeTeam = teams[1].Trim(),
