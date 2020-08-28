@@ -62,7 +62,7 @@ namespace SportsbookAggregation.SportsBooks
 
             var moneyLineInfo = ((IEnumerable) gameJson.markets).Cast<dynamic>()
                 .FirstOrDefault(m => m.name.Value.Contains("Money Line"));
-            if (moneyLineInfo != null)
+            if (moneyLineInfo != null && moneyLineInfo.selection[0].odds.frac != '-')
             {
                 var moneyLineInfoSelections = ((IEnumerable) moneyLineInfo.selection).Cast<dynamic>().ToList();
                 gameOffering.HomeMoneyLinePayout = CalculateOdds(moneyLineInfoSelections
@@ -73,7 +73,7 @@ namespace SportsbookAggregation.SportsBooks
 
             var spreadJson = ((IEnumerable) gameJson.markets).Cast<dynamic>()
                 .FirstOrDefault(m => m.name.Value.Contains("Spread"));
-            if (spreadJson != null)
+            if (spreadJson != null && spreadJson.selection[0].odds.frac.Value != "-")
             {
                 var spreadInfo = spreadJson.selection;
                 var spreadInfoSelections = ((IEnumerable) spreadInfo).Cast<dynamic>().ToList();
