@@ -19,8 +19,8 @@ namespace SportsbookAggregation
             gameOfferings.AddRange(new DraftKingsSportsBook().AggregateFutureOfferings());
             gameOfferings.AddRange(new BetRiversSportsBook().AggregateFutureOfferings());
 
-           var databaseUpdater = new SportsbookOfferingsUpdater(dbContext);
-           databaseUpdater.WriteGameOfferings(gameOfferings);
+            var databaseUpdater = new SportsbookOfferingsUpdater(dbContext);
+            databaseUpdater.WriteGameOfferings(gameOfferings);
         }
     }
 }
