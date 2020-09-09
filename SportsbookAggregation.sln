@@ -1,6 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SportsbookAggregation", "SportsbookAggregation\SportsbookAggregation.csproj", "{313B5415-4459-415C-8886-B5F9BABDA30C}"
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30204.135
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SportsbookAggregationNBA", "SportsbookAggregation\SportsbookAggregationNBA.csproj", "{313B5415-4459-415C-8886-B5F9BABDA30C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SportsbookAggregationNFL", "SportsbookAggregationNFL\SportsbookAggregationNFL.csproj", "{04055387-3FAD-4453-9880-64CF57A5332B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +17,15 @@ Global
 		{313B5415-4459-415C-8886-B5F9BABDA30C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{313B5415-4459-415C-8886-B5F9BABDA30C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{313B5415-4459-415C-8886-B5F9BABDA30C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04055387-3FAD-4453-9880-64CF57A5332B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04055387-3FAD-4453-9880-64CF57A5332B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04055387-3FAD-4453-9880-64CF57A5332B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04055387-3FAD-4453-9880-64CF57A5332B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CFB3F652-B240-4403-B7FE-56AEB9F476AE}
 	EndGlobalSection
 EndGlobal
