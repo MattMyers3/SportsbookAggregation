@@ -12,7 +12,6 @@ namespace SportsbookAggregation
         private static void Main(string[] args)
         {
             var dbContext = new Context();
-            DatabaseInitializer.Initialize(dbContext);
 
             var gameOfferings = new FanDuelSportsBook().AggregateFutureOfferings().ToList();
             gameOfferings.AddRange(new FoxBetSportsBook().AggregateFutureOfferings());
