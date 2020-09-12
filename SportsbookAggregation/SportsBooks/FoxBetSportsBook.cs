@@ -12,6 +12,12 @@ namespace SportsbookAggregation.SportsBooks
         private const string InitialRequest =
             "https://sports.mtairycasino.foxbet.com/sportsbook/v1/api/getSportTree?sport=BASKETBALL&includeOutrights=false&includeEvents=false&channelId=15";
 
+
+        public string GetSportsBookName()
+        {
+            return "FoxBet";
+        }
+
         public IEnumerable<GameOffering> AggregateFutureOfferings()
         {
             var initialJson =
@@ -20,7 +26,7 @@ namespace SportsbookAggregation.SportsBooks
             return GetBasketballOfferings(initialJson);
         }
 
-        private static IEnumerable<GameOffering> GetBasketballOfferings(dynamic initialJson)
+        private IEnumerable<GameOffering> GetBasketballOfferings(dynamic initialJson)
         {
             var usaCategoryJson = ((IEnumerable) initialJson.categories).Cast<dynamic>()
                 .First(g => g.name == "USA");
@@ -28,7 +34,7 @@ namespace SportsbookAggregation.SportsBooks
             return GetNbaGameOfferings(usaCategoryJson);
         }
 
-        private static IEnumerable<GameOffering> GetNbaGameOfferings(dynamic usaCategoryJson)
+        private IEnumerable<GameOffering> GetNbaGameOfferings(dynamic usaCategoryJson)
         {
             var nbaCompetitionJson =
                 ((IEnumerable) usaCategoryJson.competition).Cast<dynamic>().FirstOrDefault(g => g.name == "NBA");
@@ -52,11 +58,11 @@ namespace SportsbookAggregation.SportsBooks
             return gameOfferings;
         }
 
-        private static GameOffering ParseNbaGameOffering(dynamic gameJson)
+        private GameOffering ParseNbaGameOffering(dynamic gameJson)
         {
             var gameOffering = new GameOffering
             {
-                Site = "FoxBet",
+                Site = GetSportsBookName(),
                 DateTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     .AddMilliseconds(Convert.ToDouble(gameJson.eventsTime.Value)).AddHours(-5),
             };
@@ -66,7 +72,7 @@ namespace SportsbookAggregation.SportsBooks
 
             var moneyLineInfo = ((IEnumerable) gameJson.markets).Cast<dynamic>()
                 .FirstOrDefault(m => m.name.Value.Contains("Money Line"));
-            if (moneyLineInfo != null)
+            if (moneyLineInfo != null && moneyLineInfo.selection[0].odds.frac != '-')
             {
                 var moneyLineInfoSelections = ((IEnumerable) moneyLineInfo.selection).Cast<dynamic>().ToList();
                 gameOffering.HomeMoneyLinePayout = CalculateOdds(moneyLineInfoSelections
@@ -77,7 +83,7 @@ namespace SportsbookAggregation.SportsBooks
 
             var spreadJson = ((IEnumerable) gameJson.markets).Cast<dynamic>()
                 .FirstOrDefault(m => m.name.Value.Contains("Spread"));
-            if (spreadJson != null)
+            if (spreadJson != null && spreadJson.selection[0].odds.frac.Value != "-")
             {
                 var spreadInfo = spreadJson.selection;
                 var spreadInfoSelections = ((IEnumerable) spreadInfo).Cast<dynamic>().ToList();

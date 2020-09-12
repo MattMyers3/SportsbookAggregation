@@ -1,7 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using SportsbookAggregation.Data;
 using SportsbookAggregation.SportsBooks;
+using SportsbookAggregation.SportsBooks.Models;
 
 namespace SportsbookAggregation
 {
@@ -13,10 +16,19 @@ namespace SportsbookAggregation
         {
             var dbContext = new Context();
 
-            var gameOfferings = new FanDuelSportsBook().AggregateFutureOfferings().ToList();
-            gameOfferings.AddRange(new FoxBetSportsBook().AggregateFutureOfferings());
-            gameOfferings.AddRange(new DraftKingsSportsBook().AggregateFutureOfferings());
-            gameOfferings.AddRange(new BetRiversSportsBook().AggregateFutureOfferings());
+            List<ISportsBook> sportsbooks = new List<ISportsBook> { new FanDuelSportsBook(), new FoxBetSportsBook(), new DraftKingsSportsBook(), new BetRiversSportsBook() };
+            var gameOfferings = new List<GameOffering>();
+            foreach(var sportsbook in sportsbooks)
+            {
+                try
+                {
+                    gameOfferings.AddRange(sportsbook.AggregateFutureOfferings().ToList());
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine("Failed to Parse: " + sportsbook.GetSportsBookName());
+                }
+            }
 
             var databaseUpdater = new SportsbookOfferingsUpdater(dbContext);
             databaseUpdater.WriteGameOfferings(gameOfferings);

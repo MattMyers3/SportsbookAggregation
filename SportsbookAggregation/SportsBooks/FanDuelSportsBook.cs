@@ -11,6 +11,12 @@ namespace SportsbookAggregation.SportsBooks
     {
         private const string InitialRequest = "https://sportsbook.fanduel.com/cache/psbonav/1/UK/top.json";
 
+
+        public string GetSportsBookName()
+        {
+            return "FanDuel";
+        }
+
         public IEnumerable<GameOffering> AggregateFutureOfferings()
         {
             var initialJson =
@@ -19,14 +25,14 @@ namespace SportsbookAggregation.SportsBooks
             return GetBasketballOfferings(initialJson);
         }
 
-        private static IEnumerable<GameOffering> GetBasketballOfferings(dynamic initialJson)
+        private IEnumerable<GameOffering> GetBasketballOfferings(dynamic initialJson)
         {
             var basketballJson = ((IEnumerable) initialJson.bonavigationnodes).Cast<dynamic>()
                 .First(g => g.name == "Basketball");
             return GetNbaGameOfferings(basketballJson);
         }
 
-        private static IEnumerable<GameOffering> GetNbaGameOfferings(dynamic basketballJson)
+        private IEnumerable<GameOffering> GetNbaGameOfferings(dynamic basketballJson)
         {
             var nbaJson = ((IEnumerable) basketballJson.bonavigationnodes).Cast<dynamic>().First(g => g.name == "NBA");
             var nbaTabCouponJson = ((IEnumerable) nbaJson.bonavigationnodes).Cast<dynamic>()
@@ -55,11 +61,11 @@ namespace SportsbookAggregation.SportsBooks
             return gameOfferings;
         }
 
-        private static GameOffering ParseNbaGameOffering(dynamic gameJson)
+        private GameOffering ParseNbaGameOffering(dynamic gameJson)
         {
             var gameOffering = new GameOffering
             {
-                Site = "FanDuel",
+                Site = GetSportsBookName(),
                 AwayTeam = gameJson.participantname_away,
                 HomeTeam = gameJson.participantname_home,
                 Sport = gameJson.sportname,
