@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SportsbookAggregation.Data;
@@ -10,25 +9,24 @@ using SportsbookAggregation.Data;
 namespace SportsbookAggregation.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20200910010305_InitialSeed")]
-    partial class InitialSeed
+    [Migration("20200912184550_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.8")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("SportsbookAggregation.Data.Models.GamblingSite", b =>
                 {
-                    b.Property<Guid>("GamblingSiteId")
+                    b.Property<byte[]>("GamblingSiteId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("varbinary(16)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("GamblingSiteId");
 
@@ -37,40 +35,40 @@ namespace SportsbookAggregation.Migrations
                     b.HasData(
                         new
                         {
-                            GamblingSiteId = new Guid("dab029a6-34b5-4a37-ac8a-0158052df773"),
+                            GamblingSiteId = new byte[] { 35, 18, 195, 125, 245, 247, 154, 77, 134, 188, 30, 168, 107, 56, 71, 192 },
                             Name = "Fanduel"
                         },
                         new
                         {
-                            GamblingSiteId = new Guid("e3b718cd-7090-4f01-a1af-6f22fd61fd22"),
+                            GamblingSiteId = new byte[] { 163, 170, 13, 209, 13, 158, 177, 67, 186, 85, 175, 149, 75, 20, 203, 173 },
                             Name = "FoxBet"
                         },
                         new
                         {
-                            GamblingSiteId = new Guid("209ad3ca-bf6f-4520-b573-51a63e62fb28"),
+                            GamblingSiteId = new byte[] { 125, 90, 93, 145, 115, 203, 218, 72, 173, 40, 22, 134, 209, 202, 67, 155 },
                             Name = "DraftKings"
                         },
                         new
                         {
-                            GamblingSiteId = new Guid("5fab4388-e39a-43dc-9036-6f19da79827f"),
+                            GamblingSiteId = new byte[] { 226, 154, 81, 224, 110, 117, 163, 70, 143, 11, 222, 34, 240, 234, 198, 79 },
                             Name = "BetRivers"
                         });
                 });
 
             modelBuilder.Entity("SportsbookAggregation.Data.Models.Game", b =>
                 {
-                    b.Property<Guid>("GameId")
+                    b.Property<byte[]>("GameId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("varbinary(16)");
 
-                    b.Property<Guid?>("AwayTeamId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<byte[]>("AwayTeamId")
+                        .HasColumnType("varbinary(16)");
 
-                    b.Property<Guid?>("HomeTeamId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<byte[]>("HomeTeamId")
+                        .HasColumnType("varbinary(16)");
 
                     b.Property<DateTime>("TimeStamp")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime");
 
                     b.HasKey("GameId");
 
@@ -79,9 +77,9 @@ namespace SportsbookAggregation.Migrations
 
             modelBuilder.Entity("SportsbookAggregation.Data.Models.GameLine", b =>
                 {
-                    b.Property<Guid>("GameLineId")
+                    b.Property<byte[]>("GameLineId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("varbinary(16)");
 
                     b.Property<int?>("AwayMoneyLinePayout")
                         .HasColumnType("int");
@@ -90,16 +88,18 @@ namespace SportsbookAggregation.Migrations
                         .HasColumnType("int");
 
                     b.Property<double?>("CurrentOverUnder")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
                     b.Property<double?>("CurrentSpread")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
-                    b.Property<Guid>("GamblingSiteId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<byte[]>("GamblingSiteId")
+                        .IsRequired()
+                        .HasColumnType("varbinary(16)");
 
-                    b.Property<Guid>("GameId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<byte[]>("GameId")
+                        .IsRequired()
+                        .HasColumnType("varbinary(16)");
 
                     b.Property<int?>("HomeMoneyLinePayout")
                         .HasColumnType("int");
@@ -108,10 +108,10 @@ namespace SportsbookAggregation.Migrations
                         .HasColumnType("int");
 
                     b.Property<double?>("OpeningOverUnder")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
                     b.Property<double?>("OpeningSpread")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
                     b.Property<int?>("OverPayOut")
                         .HasColumnType("int");
@@ -130,15 +130,16 @@ namespace SportsbookAggregation.Migrations
 
             modelBuilder.Entity("SportsbookAggregation.Data.Models.GameResult", b =>
                 {
-                    b.Property<Guid>("GameResultId")
+                    b.Property<byte[]>("GameResultId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("varbinary(16)");
 
                     b.Property<int>("AwayTeamScore")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("GameId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<byte[]>("GameId")
+                        .IsRequired()
+                        .HasColumnType("varbinary(16)");
 
                     b.Property<int>("HomeTeamScore")
                         .HasColumnType("int");
@@ -152,12 +153,12 @@ namespace SportsbookAggregation.Migrations
 
             modelBuilder.Entity("SportsbookAggregation.Data.Models.Sport", b =>
                 {
-                    b.Property<Guid>("SportId")
+                    b.Property<byte[]>("SportId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("varbinary(16)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("SportId");
 
@@ -166,30 +167,31 @@ namespace SportsbookAggregation.Migrations
                     b.HasData(
                         new
                         {
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12"),
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 },
                             Name = "NBA"
                         },
                         new
                         {
-                            SportId = new Guid("eae3790f-5a86-4b26-aa98-d4001cdb602e"),
+                            SportId = new byte[] { 125, 36, 119, 168, 185, 143, 71, 71, 135, 244, 242, 109, 102, 11, 250, 66 },
                             Name = "NFL"
                         });
                 });
 
             modelBuilder.Entity("SportsbookAggregation.Data.Models.Team", b =>
                 {
-                    b.Property<Guid>("TeamId")
+                    b.Property<byte[]>("TeamId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("varbinary(16)");
 
                     b.Property<string>("Location")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Mascot")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
-                    b.Property<Guid>("SportId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<byte[]>("SportId")
+                        .IsRequired()
+                        .HasColumnType("varbinary(16)");
 
                     b.HasKey("TeamId");
 
@@ -200,213 +202,213 @@ namespace SportsbookAggregation.Migrations
                     b.HasData(
                         new
                         {
-                            TeamId = new Guid("ad270e2d-233a-4018-b6a2-a9fc01a9c6a1"),
+                            TeamId = new byte[] { 95, 29, 237, 149, 86, 42, 81, 73, 160, 114, 144, 52, 82, 130, 197, 207 },
                             Location = "Atlanta",
                             Mascot = "Hawks",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("5ee7eefc-4838-453c-b904-d49daf994c89"),
+                            TeamId = new byte[] { 101, 120, 23, 10, 233, 203, 98, 67, 172, 75, 227, 36, 79, 210, 57, 193 },
                             Location = "Boston",
                             Mascot = "Celtics",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("d782b0a1-9c26-4b84-8408-1482611b7dfc"),
+                            TeamId = new byte[] { 233, 171, 211, 80, 180, 143, 3, 71, 173, 199, 31, 149, 5, 200, 143, 1 },
                             Location = "Brooklyn",
                             Mascot = "Nets",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("5abdb10d-7059-4111-806d-1d4d272c96d4"),
+                            TeamId = new byte[] { 54, 9, 215, 49, 48, 27, 131, 69, 179, 48, 119, 52, 34, 173, 45, 53 },
                             Location = "Charlotte",
                             Mascot = "Hornets",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("0185bde9-91b4-4935-a2ed-3911a77bb619"),
+                            TeamId = new byte[] { 145, 224, 109, 115, 72, 169, 122, 70, 134, 70, 179, 253, 207, 237, 226, 66 },
                             Location = "Chicago",
                             Mascot = "Bulls",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("a44aa3b4-8943-4eed-8380-59654e428bb0"),
+                            TeamId = new byte[] { 177, 188, 171, 124, 168, 162, 162, 76, 180, 28, 140, 104, 190, 2, 178, 69 },
                             Location = "Cleveland",
                             Mascot = "Cavaliers",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("79302ddf-c9a6-4254-9978-2ddd7bb5eb55"),
+                            TeamId = new byte[] { 17, 179, 14, 219, 183, 117, 214, 72, 175, 124, 254, 243, 35, 153, 211, 58 },
                             Location = "Dallas",
                             Mascot = "Mavericks",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("682d44e4-ee55-4aa9-8359-8f0f3f3f4e4f"),
+                            TeamId = new byte[] { 246, 184, 129, 18, 117, 43, 244, 74, 151, 192, 54, 168, 177, 246, 198, 26 },
                             Location = "Denver",
                             Mascot = "Nuggets",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("90de592a-2ac5-4c7d-8477-56d3e665b0f4"),
+                            TeamId = new byte[] { 116, 148, 204, 12, 188, 131, 82, 65, 177, 172, 79, 51, 244, 89, 197, 85 },
                             Location = "Detroit",
                             Mascot = "Pistons",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("eac6d008-2adb-40e4-938c-4efc0011430e"),
+                            TeamId = new byte[] { 97, 64, 173, 24, 225, 228, 188, 66, 131, 62, 105, 152, 89, 194, 172, 100 },
                             Location = "Golden State",
                             Mascot = "Warriors",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("9f97db29-1a71-41f8-bd9e-563f56644bb6"),
+                            TeamId = new byte[] { 40, 145, 156, 66, 91, 231, 135, 79, 189, 15, 80, 212, 56, 99, 139, 72 },
                             Location = "Houston",
                             Mascot = "Rockets",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("89a6695c-4289-43da-9ab3-5ce14481f0bb"),
+                            TeamId = new byte[] { 133, 65, 223, 100, 150, 242, 33, 76, 145, 215, 77, 35, 26, 105, 208, 249 },
                             Location = "Indiana",
                             Mascot = "Pacers",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("336c5256-9cf7-45d9-aeed-86eb947417e5"),
+                            TeamId = new byte[] { 220, 46, 125, 97, 144, 234, 175, 65, 159, 99, 205, 88, 68, 29, 247, 73 },
                             Location = "Los Angeles",
                             Mascot = "Clippers",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("5eeecbe7-8943-4715-9bdd-70b26c1a00ee"),
+                            TeamId = new byte[] { 145, 108, 116, 153, 125, 144, 14, 71, 150, 226, 139, 202, 109, 209, 185, 51 },
                             Location = "Los Angeles",
                             Mascot = "Lakers",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("1b6edbe9-bdfc-4664-80f1-b69ee77fb4d1"),
+                            TeamId = new byte[] { 119, 25, 7, 253, 3, 138, 179, 71, 165, 145, 234, 120, 158, 209, 14, 82 },
                             Location = "Memphis",
                             Mascot = "Grizzlies",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("1a758a70-2365-4df3-ac70-9247bef4cfb7"),
+                            TeamId = new byte[] { 51, 33, 149, 146, 93, 80, 86, 68, 162, 63, 211, 81, 138, 93, 193, 181 },
                             Location = "Miami",
                             Mascot = "Heat",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("abc1ac4d-7b67-4a3d-b27c-6c79640c67a5"),
+                            TeamId = new byte[] { 230, 120, 84, 93, 215, 85, 0, 79, 165, 68, 168, 157, 56, 78, 114, 216 },
                             Location = "Milwaukee",
                             Mascot = "Bucks",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("2cc24391-0aa7-4527-8af7-dc0b0e34d95e"),
+                            TeamId = new byte[] { 136, 39, 148, 225, 115, 244, 7, 79, 172, 141, 78, 76, 211, 184, 233, 187 },
                             Location = "Minnesota",
                             Mascot = "Timberwolves",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("a9490907-31d7-47be-89ee-203144086c4f"),
+                            TeamId = new byte[] { 29, 21, 251, 114, 239, 231, 145, 66, 172, 220, 23, 51, 23, 142, 184, 12 },
                             Location = "New Orleans",
                             Mascot = "Pelicans",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("4931cbf4-665d-42f1-8eea-314f01b0b0c8"),
+                            TeamId = new byte[] { 111, 46, 74, 149, 194, 91, 8, 72, 131, 197, 158, 186, 102, 156, 141, 123 },
                             Location = "New York",
                             Mascot = "Knicks",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("109c83be-ac66-44fd-ac5b-81f4319f8e06"),
+                            TeamId = new byte[] { 47, 59, 50, 19, 98, 186, 25, 74, 138, 84, 95, 133, 95, 79, 59, 211 },
                             Location = "Oklahoma City",
                             Mascot = "Thunder",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("98b78113-c91c-44f8-ae18-f5c728427901"),
+                            TeamId = new byte[] { 232, 155, 246, 218, 24, 46, 71, 76, 165, 202, 71, 27, 44, 155, 150, 82 },
                             Location = "Orlando",
                             Mascot = "Magic",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("67398008-c9d6-4d40-8891-c53de788c6c2"),
+                            TeamId = new byte[] { 216, 54, 126, 254, 206, 101, 214, 75, 162, 45, 134, 157, 133, 131, 91, 136 },
                             Location = "Philadelphia",
                             Mascot = "76ers",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("d486c72d-f408-4be4-85cf-1cb814214dd5"),
+                            TeamId = new byte[] { 254, 235, 50, 102, 179, 216, 191, 69, 135, 139, 38, 86, 224, 75, 212, 231 },
                             Location = "Phoenix",
                             Mascot = "Suns",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("8ba5f13e-b46a-49ce-8aec-809b5d59bad7"),
+                            TeamId = new byte[] { 23, 16, 181, 220, 184, 129, 195, 64, 166, 170, 149, 172, 166, 116, 215, 172 },
                             Location = "Portland",
                             Mascot = "Trail Blazers",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("6617f87f-3d2d-4c55-96e2-ea0a28bbbaa8"),
+                            TeamId = new byte[] { 218, 89, 240, 100, 227, 10, 222, 65, 140, 0, 107, 92, 199, 216, 250, 243 },
                             Location = "Sacramento",
                             Mascot = "Kings",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("583c443c-bb95-44c7-a222-22e419897600"),
+                            TeamId = new byte[] { 32, 64, 120, 104, 187, 95, 220, 75, 166, 243, 170, 197, 79, 14, 23, 240 },
                             Location = "San Antonio",
                             Mascot = "Spurs",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("1d2d9b56-c858-4738-b22d-4f6d882f185b"),
+                            TeamId = new byte[] { 77, 38, 162, 83, 113, 116, 160, 65, 171, 40, 59, 169, 146, 105, 219, 196 },
                             Location = "Toronto",
                             Mascot = "Raptors",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("fe06e876-dc97-4306-899e-925b6ab936ec"),
+                            TeamId = new byte[] { 178, 97, 255, 146, 32, 249, 132, 72, 147, 194, 66, 246, 83, 231, 89, 22 },
                             Location = "Utah",
                             Mascot = "Jazz",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         },
                         new
                         {
-                            TeamId = new Guid("76e268e4-64c6-4fef-84d3-ef1a33f12641"),
+                            TeamId = new byte[] { 150, 239, 133, 221, 255, 208, 125, 67, 188, 185, 124, 55, 215, 130, 202, 16 },
                             Location = "Washington",
                             Mascot = "Wizards",
-                            SportId = new Guid("0584d380-a494-45ab-9c28-6fd0e921da12")
+                            SportId = new byte[] { 103, 151, 70, 37, 84, 213, 213, 73, 142, 83, 188, 121, 141, 20, 123, 76 }
                         });
                 });
 

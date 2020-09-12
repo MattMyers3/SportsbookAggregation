@@ -2,7 +2,6 @@
 using System;
 using System.Data.Common;
 using System.IO;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
@@ -81,7 +80,7 @@ namespace SportsbookAggregation.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseMySQL(connection);
+            optionsBuilder.UseMySql(connection);
         }
 
         private static DbConnection GetDbConnection()
