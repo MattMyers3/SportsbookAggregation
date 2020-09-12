@@ -7,5 +7,6 @@ namespace SportsbookAggregation.SportsBooks
     public interface ISportsBook
     {
         IEnumerable<GameOffering> AggregateFutureOfferings();
+        string GetSportsBookName();
     }
 }

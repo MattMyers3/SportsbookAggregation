@@ -12,6 +12,10 @@ namespace SportsbookAggregation.SportsBooks
     {
         private const string InitialRequest = "https://pa.betrivers.com/?l=RiversPittsburgh&page=sportsbook&feed=featured";
 
+        public string GetSportsBookName()
+        {
+            return "BetRivers";
+        }
 
         public IEnumerable<GameOffering> AggregateFutureOfferings()
         {
@@ -37,7 +41,7 @@ namespace SportsbookAggregation.SportsBooks
             return GetNbaGameOfferings(nbaOfferingsJson);
         }
 
-        private static IEnumerable<GameOffering> GetNbaGameOfferings(dynamic nbaOfferingsJson)
+        private IEnumerable<GameOffering> GetNbaGameOfferings(dynamic nbaOfferingsJson)
         {
             var gameOfferings = new List<GameOffering>();
             foreach (var nbaOffering in nbaOfferingsJson)
@@ -49,11 +53,11 @@ namespace SportsbookAggregation.SportsBooks
             return gameOfferings;
         }
 
-        private static GameOffering ParseNbaGameOffering(dynamic gameJson)
+        private GameOffering ParseNbaGameOffering(dynamic gameJson)
         {
             var gameOffering = new GameOffering
             {
-                Site = "BetRivers",
+                Site = GetSportsBookName(),
                 AwayTeam = GetFullTeamName(gameJson.participants[1].name.Value),
                 HomeTeam = GetFullTeamName(gameJson.participants[0].name.Value),
                 Sport = gameJson.eventInfo[1].name,

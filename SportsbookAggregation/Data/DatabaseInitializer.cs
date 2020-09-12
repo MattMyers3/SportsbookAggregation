@@ -63,10 +63,10 @@ namespace SportsbookAggregation.Data
             {
                 dbContext.TeamRepository.Create(team);
             }
-            dbContext.GamblingSiteRepository.Create(new GamblingSite {GamblingSiteId = Guid.NewGuid(), Name = "Fanduel"});
-            dbContext.GamblingSiteRepository.Create(new GamblingSite {GamblingSiteId = Guid.NewGuid(), Name = "FoxBet"});
-            dbContext.GamblingSiteRepository.Create(new GamblingSite {GamblingSiteId = Guid.NewGuid(), Name = "DraftKings"});
-            dbContext.GamblingSiteRepository.Create(new GamblingSite {GamblingSiteId = Guid.NewGuid(), Name = "BetRivers"});
+            dbContext.GamblingSiteRepository.Create(new GamblingSite { GamblingSiteId = Guid.NewGuid(), Name = "Fanduel" });
+            dbContext.GamblingSiteRepository.Create(new GamblingSite { GamblingSiteId = Guid.NewGuid(), Name = "FoxBet" });
+            dbContext.GamblingSiteRepository.Create(new GamblingSite { GamblingSiteId = Guid.NewGuid(), Name = "DraftKings" });
+            dbContext.GamblingSiteRepository.Create(new GamblingSite { GamblingSiteId = Guid.NewGuid(), Name = "BetRivers" });
             dbContext.SaveChanges();
         }
     }
