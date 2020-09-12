@@ -37,7 +37,11 @@ namespace SportsbookAggregation.SportsBooks
         private IEnumerable<GameOffering> GetNbaGameOfferings(dynamic usaCategoryJson)
         {
             var nbaCompetitionJson =
-                ((IEnumerable) usaCategoryJson.competition).Cast<dynamic>().First(g => g.name == "NBA");
+                ((IEnumerable) usaCategoryJson.competition).Cast<dynamic>().FirstOrDefault(g => g.name == "NBA");
+            if (nbaCompetitionJson == null)
+            {
+                return Enumerable.Empty<GameOffering>();
+            }
             var nbaGamesUrl =
                 $"https://sports.mtairycasino.foxbet.com/sportsbook/v1/api/getCompetitionEvents?competitionId={nbaCompetitionJson.id}&includeOutrights=false&channelId=15&locale=en-us&siteId=134217728";
             var nbaGamesJson =
