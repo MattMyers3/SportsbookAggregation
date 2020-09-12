@@ -15,7 +15,6 @@ namespace SportsbookAggregation
         private static void Main(string[] args)
         {
             var dbContext = new Context();
-            DatabaseInitializer.Initialize(dbContext);
 
             List<ISportsBook> sportsbooks = new List<ISportsBook> { new FanDuelSportsBook(), new FoxBetSportsBook(), new DraftKingsSportsBook(), new BetRiversSportsBook() };
             var gameOfferings = new List<GameOffering>();
