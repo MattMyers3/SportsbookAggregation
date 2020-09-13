@@ -11,6 +11,8 @@ namespace SportsbookAggregation.SportsBooks
     {
         private const string NbaRequestUrl =
             "https://sportsbook.draftkings.com//sites/US-SB/api/v1/eventgroup/103/full?includePromotions=true&format=json";
+        private const string NflRequestUrl =
+            "https://sportsbook.draftkings.com//sites/US-SB/api/v1/eventgroup/3/full?includePromotions=true&format=json";
 
         public string GetSportsBookName()
         {
@@ -19,41 +21,49 @@ namespace SportsbookAggregation.SportsBooks
 
         public IEnumerable<GameOffering> AggregateFutureOfferings()
         {
-            return GetBasketballOfferings();
+            var basketballOfferings = GetBasketballOfferings();
+            var footballOfferings = GetFootballOfferings();
+
+            return basketballOfferings.Concat(footballOfferings);
         }
 
         private IEnumerable<GameOffering> GetBasketballOfferings()
         {
-            return GetNbaGameOfferings();
+            return GetGameOfferings(NbaRequestUrl);
         }
 
-        private IEnumerable<GameOffering> GetNbaGameOfferings()
+        private IEnumerable<GameOffering> GetFootballOfferings()
         {
-            var nbaRequestJson =
-                JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(NbaRequestUrl).Result);
+            return GetGameOfferings(NflRequestUrl);
+        }
 
-            var nbaGameEvents = ((IEnumerable)nbaRequestJson.eventGroup.events).Cast<dynamic>();
-            var nbaGameLinesJson = ((IEnumerable)nbaRequestJson.eventGroup.offerCategories).Cast<dynamic>().First(g => g.name == "Game Lines");
-            var nbaGamesJson = ((IEnumerable)nbaGameLinesJson.offerSubcategoryDescriptors).Cast<dynamic>().First(g => g.name == "Game");
-            var nbaGameOfferingsJson = ((IEnumerable)nbaGamesJson.offerSubcategory.offers).Cast<dynamic>();
+        private static IEnumerable<GameOffering> GetGameOfferings(string sportRequestUrl)
+        {
+            var requestJson =
+                JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(sportRequestUrl).Result);
+
+            var gameEvents = ((IEnumerable)requestJson.eventGroup.events).Cast<dynamic>();
+            var gameLinesJson = ((IEnumerable)requestJson.eventGroup.offerCategories).Cast<dynamic>().First(g => g.name == "Game Lines");
+            var gamesJson = ((IEnumerable)gameLinesJson.offerSubcategoryDescriptors).Cast<dynamic>().First(g => g.name == "Game");
+            var gameOfferingsJson = ((IEnumerable)gamesJson.offerSubcategory.offers).Cast<dynamic>();
             var gameOfferings = new List<GameOffering>();
-            foreach (var nbaGameOfferingJson in nbaGameOfferingsJson)
+            foreach (var gameOfferingJson in gameOfferingsJson)
             {
-                var eventId = ((IEnumerable)nbaGameOfferingJson).Cast<dynamic>().First().providerEventId.Value;
-                var nbaGameEventJson = ((IEnumerable)nbaGameEvents).Cast<dynamic>().First(g => g.providerEventId == eventId);
+                var eventId = ((IEnumerable)gameOfferingJson).Cast<dynamic>().First().providerEventId.Value;
+                var gameEventJson = ((IEnumerable)gameEvents).Cast<dynamic>().First(g => g.providerEventId == eventId);
 
-                gameOfferings.Add(ParseNbaGameOffering(nbaGameOfferingJson, nbaGameEventJson));
+                gameOfferings.Add(ParseGameOffering(gameOfferingJson, gameEventJson));
             }
 
             return gameOfferings;
         }
 
-        private GameOffering ParseNbaGameOffering(dynamic gameJson, dynamic detailJson)
+        private static GameOffering ParseGameOffering(dynamic gameJson, dynamic detailJson)
         {
             var teams = detailJson.name.Value.Split('@');
             var gameOffering = new GameOffering
             {
-                Site = GetSportsBookName(),
+                Site = "DraftKings",
                 Sport = detailJson.eventGroupName,
                 AwayTeam = teams[0].Trim(),
                 HomeTeam = teams[1].Trim(),
@@ -64,20 +74,20 @@ namespace SportsbookAggregation.SportsBooks
             var totalPointsJson = ((IEnumerable)gameJson).Cast<dynamic>().FirstOrDefault(g => g.label == "Total Points");
             var moneylineJson = ((IEnumerable)gameJson).Cast<dynamic>().FirstOrDefault(g => g.label == "Moneyline");
 
-            if(pointSpreadJson != null)
+            if (pointSpreadJson != null)
             {
                 gameOffering.CurrentSpread = pointSpreadJson.outcomes[1].line.Value;
                 gameOffering.HomeSpreadPayout = Convert.ToInt32(pointSpreadJson.outcomes[1].oddsAmerican.Value);
                 gameOffering.AwaySpreadPayout = Convert.ToInt32(pointSpreadJson.outcomes[0].oddsAmerican.Value);
             }
 
-            if(moneylineJson != null)
+            if (moneylineJson != null)
             {
                 gameOffering.HomeMoneyLinePayout = Convert.ToInt32(moneylineJson.outcomes[1].oddsAmerican.Value);
                 gameOffering.AwayMoneyLinePayout = Convert.ToInt32(moneylineJson.outcomes[0].oddsAmerican.Value);
             }
 
-            if(totalPointsJson != null)
+            if (totalPointsJson != null)
             {
                 gameOffering.CurrentOverUnder = totalPointsJson.outcomes[0].line.Value;
                 gameOffering.OverPayOut = Convert.ToInt32(totalPointsJson.outcomes[0].oddsAmerican.Value);
