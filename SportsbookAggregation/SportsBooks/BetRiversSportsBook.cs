@@ -27,7 +27,10 @@ namespace SportsbookAggregation.SportsBooks
             var offeringsJsonText = TrimStart(Program.HttpClient.GetStringAsync(offeringsUrl).Result, trimString).TrimEnd(';');
             var offeringsJson = JsonConvert.DeserializeObject<dynamic>(offeringsJsonText);
 
-            return GetBasketballOfferings(offeringsJson);
+            IEnumerable<GameOffering> basketballOfferings = GetBasketballOfferings(offeringsJson);
+            IEnumerable<GameOffering> footballOfferings = GetFootballOfferings(offeringsJson);
+
+            return basketballOfferings.Concat(footballOfferings);
         }
 
         private IEnumerable<GameOffering> GetBasketballOfferings(dynamic offeringsJson)
@@ -38,22 +41,33 @@ namespace SportsbookAggregation.SportsBooks
             var nbaOfferingsUrl = $"https://pa.betrivers.com/api/service/sportsbook/offering/feed?key={nbaApiKey}";
             var nbaOfferingsJson = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(nbaOfferingsUrl).Result).events;
 
-            return GetNbaGameOfferings(nbaOfferingsJson);
+            return GetGameOfferings(nbaOfferingsJson);
         }
 
-        private IEnumerable<GameOffering> GetNbaGameOfferings(dynamic nbaOfferingsJson)
+        private IEnumerable<GameOffering> GetFootballOfferings(dynamic offeringsJson)
+        {
+            var nflApiKey = ((IEnumerable)offeringsJson.eventViews.views).Cast<dynamic>()
+               .First(g => g.slug == "football_nfl").sections[0].apiKey.Value;
+
+            var nflOfferingsUrl = $"https://pa.betrivers.com/api/service/sportsbook/offering/feed?key={nflApiKey}";
+            var nflOfferingsJson = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(nflOfferingsUrl).Result).events;
+
+            return GetGameOfferings(nflOfferingsJson);
+        }
+
+        private IEnumerable<GameOffering> GetGameOfferings(dynamic offeringsJson)
         {
             var gameOfferings = new List<GameOffering>();
-            foreach (var nbaOffering in nbaOfferingsJson)
+            foreach (var sportOffering in offeringsJson)
             {
-                var offering = ParseNbaGameOffering(nbaOffering);
+                var offering = ParseGameOffering(sportOffering);
                 if (offering != null)
                     gameOfferings.Add(offering);
             }
             return gameOfferings;
         }
 
-        private GameOffering ParseNbaGameOffering(dynamic gameJson)
+        private GameOffering ParseGameOffering(dynamic gameJson)
         {
             var gameOffering = new GameOffering
             {
@@ -105,16 +119,26 @@ namespace SportsbookAggregation.SportsBooks
         {
             switch(abbreviation.ToUpper())
             {
+                case "ARI":
+                    return "Arizona";
                 case "ATL":
                     return "Atlanta";
+                case "BAL":
+                    return "Baltimore";
                 case "BOS":
                     return "Boston";
                 case "BKN":
                     return "Brooklyn";
+                case "BUF":
+                    return "Buffalo";
+                case "CAR":
+                    return "Carolina";
                 case "CHA":
                     return "Charlotte";
                 case "CHI":
                     return "Chicago";
+                case "CIN":
+                    return "Cincinnati";
                 case "CLE":
                     return "Cleveland";
                 case "DAL":
@@ -123,14 +147,22 @@ namespace SportsbookAggregation.SportsBooks
                     return "Denver";
                 case "DET":
                     return "Detroit";
+                case "GB":
+                    return "Green Bay";
                 case "GS":
                     return "Golden State";
                 case "HOU":
                     return "Houston";
                 case "IND":
                     return "Indiana";
+                case "JAX":
+                    return "Jacksonville";
+                case "KC":
+                    return "Kansas City";
                 case "LA":
                     return "Los Angeles";
+                case "LV":
+                    return "Las Vegas";
                 case "MEM":
                     return "Memphis";
                 case "MIA":
@@ -139,6 +171,8 @@ namespace SportsbookAggregation.SportsBooks
                     return "Milwaukee";
                 case "MIN":
                     return "Minnesota";
+                case "NE":
+                    return "New England";
                 case "NO":
                     return "New Orleans";
                 case "NY":
@@ -149,6 +183,8 @@ namespace SportsbookAggregation.SportsBooks
                     return "Orlando";
                 case "PHI":
                     return "Philadelphia";
+                case "PIT":
+                    return "Pittsburgh";
                 case "PHX":
                     return "Phoenix";
                 case "POR":
@@ -157,6 +193,14 @@ namespace SportsbookAggregation.SportsBooks
                     return "Sacramento";
                 case "SA":
                     return "San Antonio";
+                case "SEA":
+                    return "Seattle";
+                case "SF":
+                    return "San Francisco";
+                case "TB":
+                    return "Tampa Bay";
+                case "TEN":
+                    return "Tennessee";
                 case "TOR":
                     return "Toronto";
                 case "UTA":

@@ -9,8 +9,10 @@ namespace SportsbookAggregation.SportsBooks
 {
     public class FoxBetSportsBook : ISportsBook
     {
-        private const string InitialRequest =
+        private const string InitialBasketballRequest =
             "https://sports.mtairycasino.foxbet.com/sportsbook/v1/api/getSportTree?sport=BASKETBALL&includeOutrights=false&includeEvents=false&channelId=15";
+        private const string InitialFootballRequest =
+            "https://sports.mtairycasino.foxbet.com/sportsbook/v1/api/getSportTree?sport=AMERICAN_FOOTBALL&includeOutrights=false&includeEvents=false&channelId=15";
 
 
         public string GetSportsBookName()
@@ -20,45 +22,61 @@ namespace SportsbookAggregation.SportsBooks
 
         public IEnumerable<GameOffering> AggregateFutureOfferings()
         {
-            var initialJson =
-                JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(InitialRequest).Result);
+            var basketballOfferings = GetBasketballOfferings().ToList();
+            var footballOfferings = GetFootballOfferings().ToList();
 
-            return GetBasketballOfferings(initialJson);
+            return basketballOfferings.Concat(footballOfferings);
         }
 
-        private IEnumerable<GameOffering> GetBasketballOfferings(dynamic initialJson)
+        private IEnumerable<GameOffering> GetBasketballOfferings()
         {
+            var initialJson =
+                JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(InitialBasketballRequest).Result);
+
             var usaCategoryJson = ((IEnumerable) initialJson.categories).Cast<dynamic>()
                 .First(g => g.name == "USA");
 
-            return GetNbaGameOfferings(usaCategoryJson);
+            return GetGameOfferings(usaCategoryJson, "NBA");
         }
 
-        private IEnumerable<GameOffering> GetNbaGameOfferings(dynamic usaCategoryJson)
+        private IEnumerable<GameOffering> GetFootballOfferings()
         {
-            var nbaCompetitionJson =
-                ((IEnumerable) usaCategoryJson.competition).Cast<dynamic>().FirstOrDefault(g => g.name == "NBA");
-            if (nbaCompetitionJson == null)
+            var initialJson =
+                JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(InitialFootballRequest).Result);
+
+            var usaCategoryJson = ((IEnumerable)initialJson.categories).Cast<dynamic>()
+                .First(g => g.name == "USA");
+
+            return GetGameOfferings(usaCategoryJson, "NFL");
+        }
+
+        private IEnumerable<GameOffering> GetGameOfferings(dynamic usaCategoryJson, string sportName)
+        {
+            var nflCompetitionJson =
+                ((IEnumerable)usaCategoryJson.competition).Cast<dynamic>().FirstOrDefault(g => g.name == sportName);
+            if (nflCompetitionJson == null)
             {
                 return Enumerable.Empty<GameOffering>();
             }
-            var nbaGamesUrl =
-                $"https://sports.mtairycasino.foxbet.com/sportsbook/v1/api/getCompetitionEvents?competitionId={nbaCompetitionJson.id}&includeOutrights=false&channelId=15&locale=en-us&siteId=134217728";
-            var nbaGamesJson =
-                JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(nbaGamesUrl).Result).ToString()
+            var nflGamesUrl =
+                $"https://sports.mtairycasino.foxbet.com/sportsbook/v1/api/getCompetitionEvents?competitionId={nflCompetitionJson.id}&includeOutrights=false&channelId=15&locale=en-us&siteId=134217728";
+            var nflGamesJson =
+                JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(nflGamesUrl).Result).ToString()
                     .Replace("event", "events");
 
-            var games = JsonConvert.DeserializeObject<dynamic>(nbaGamesJson).events;
+            var games = JsonConvert.DeserializeObject<dynamic>(nflGamesJson).events;
             var gameOfferings = new List<GameOffering>();
             foreach (var game in games)
             {
-                gameOfferings.Add(ParseNbaGameOffering(game));
+                var gameOffering = ParseGameOffering(game);
+                gameOffering.Sport = sportName;
+                gameOfferings.Add(gameOffering);
             }
 
             return gameOfferings;
         }
 
-        private GameOffering ParseNbaGameOffering(dynamic gameJson)
+        private GameOffering ParseGameOffering(dynamic gameJson)
         {
             var gameOffering = new GameOffering
             {
@@ -105,6 +123,11 @@ namespace SportsbookAggregation.SportsBooks
                 gameOffering.UnderPayout = CalculateOdds(totalPointsInfoSelection
                     .First(s => s.names.longName.Value.Contains("Under")).odds.frac.Value);
             }
+
+            if (gameOffering.HomeTeam == "Washington")
+                gameOffering.HomeTeam = "Washington Football Team";
+            else if (gameOffering.AwayTeam == "Washington")
+                gameOffering.AwayTeam = "Washington Football Team";
 
             return gameOffering;
         }
