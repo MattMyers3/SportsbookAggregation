@@ -155,11 +155,11 @@ namespace SportsbookAggregation.SportsBooks
 
         
         
-        private static GameOffering ParseNflGameOffering(dynamic gameJson)
+        private GameOffering ParseNflGameOffering(dynamic gameJson)
         {
             var gameOffering = new GameOffering
             {
-                Site = "FanDuel",
+                Site = GetSportsBookName(),
                 AwayTeam = gameJson.participantname_away,
                 HomeTeam = gameJson.participantname_home,
                 Sport = gameJson.sportname,

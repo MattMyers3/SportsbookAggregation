@@ -37,7 +37,7 @@ namespace SportsbookAggregation.SportsBooks
             return GetGameOfferings(NflRequestUrl);
         }
 
-        private static IEnumerable<GameOffering> GetGameOfferings(string sportRequestUrl)
+        private IEnumerable<GameOffering> GetGameOfferings(string sportRequestUrl)
         {
             var requestJson =
                 JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(sportRequestUrl).Result);
@@ -58,12 +58,12 @@ namespace SportsbookAggregation.SportsBooks
             return gameOfferings;
         }
 
-        private static GameOffering ParseGameOffering(dynamic gameJson, dynamic detailJson)
+        private GameOffering ParseGameOffering(dynamic gameJson, dynamic detailJson)
         {
             var teams = detailJson.name.Value.Split('@');
             var gameOffering = new GameOffering
             {
-                Site = "DraftKings",
+                Site = GetSportsBookName(),
                 Sport = detailJson.eventGroupName,
                 AwayTeam = teams[0].Trim(),
                 HomeTeam = teams[1].Trim(),
