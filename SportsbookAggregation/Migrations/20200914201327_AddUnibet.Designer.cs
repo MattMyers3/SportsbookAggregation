@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SportsbookAggregation.Data;
 
 namespace SportsbookAggregation.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20200914201327_AddUnibet")]
+    partial class AddUnibet
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,11 +57,6 @@ namespace SportsbookAggregation.Migrations
                         {
                             GamblingSiteId = new Guid("3208224c-cbee-408f-b7d8-3ad76f70eaa9"),
                             Name = "Unibet"
-                        },
-                        new
-                        {
-                            GamblingSiteId = new Guid("ae98bc03-bf79-491a-8d5a-23acc23908a9"),
-                            Name = "Parx"
                         });
                 });
 
