@@ -124,6 +124,11 @@ namespace SportsbookAggregation.SportsBooks
                     .First(s => s.names.longName.Value.Contains("Under")).odds.frac.Value);
             }
 
+            if (gameOffering.HomeTeam == "Washington")
+                gameOffering.HomeTeam = "Washington Football Team";
+            else if (gameOffering.AwayTeam == "Washington")
+                gameOffering.AwayTeam = "Washington Football Team";
+
             return gameOffering;
         }
 
