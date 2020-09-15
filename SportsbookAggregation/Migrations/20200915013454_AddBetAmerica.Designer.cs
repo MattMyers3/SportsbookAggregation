@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SportsbookAggregation.Data;
 
 namespace SportsbookAggregation.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20200915013454_AddBetAmerica")]
+    partial class AddBetAmerica
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -117,9 +119,6 @@ namespace SportsbookAggregation.Migrations
 
                     b.Property<int?>("HomeSpreadPayout")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("LastRefresh")
-                        .HasColumnType("datetime(6)");
 
                     b.Property<double?>("OpeningOverUnder")
                         .HasColumnType("double");
