@@ -73,7 +73,7 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
 
             if (pointSpreadJson != null)
             {
-                gameOffering.CurrentSpread = pointSpreadJson.outcomes[0].line.Value / 1000;
+                gameOffering.CurrentSpread = pointSpreadJson.outcomes[0].line.Value / 1000.0;
                 gameOffering.HomeSpreadPayout = Convert.ToInt32(pointSpreadJson.outcomes[0].oddsAmerican.Value);
                 gameOffering.AwaySpreadPayout = Convert.ToInt32(pointSpreadJson.outcomes[1].oddsAmerican.Value);
             }
@@ -86,7 +86,7 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
 
             if (totalPointsJson != null)
             {
-                gameOffering.CurrentOverUnder = totalPointsJson.outcomes[0].line.Value / 1000;
+                gameOffering.CurrentOverUnder = totalPointsJson.outcomes[0].line.Value / 1000.0;
                 gameOffering.OverPayOut = Convert.ToInt32(totalPointsJson.outcomes[1].oddsAmerican.Value);
                 gameOffering.UnderPayout = Convert.ToInt32(totalPointsJson.outcomes[0].oddsAmerican.Value);
             }

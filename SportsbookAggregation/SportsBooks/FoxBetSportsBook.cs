@@ -105,7 +105,7 @@ namespace SportsbookAggregation.SportsBooks
             {
                 var spreadInfo = spreadJson.selection;
                 var spreadInfoSelections = ((IEnumerable) spreadInfo).Cast<dynamic>().ToList();
-                gameOffering.CurrentSpread = Convert.ToInt32(spreadJson.line);
+                gameOffering.CurrentSpread = Convert.ToDouble(spreadJson.line);
                 gameOffering.HomeSpreadPayout = CalculateOdds(spreadInfoSelections
                     .First(s => s.names.longName.Value.Contains(gameOffering.HomeTeam)).odds.frac.Value);
                 gameOffering.AwaySpreadPayout = CalculateOdds(spreadInfoSelections
