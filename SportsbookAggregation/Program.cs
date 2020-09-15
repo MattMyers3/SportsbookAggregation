@@ -22,7 +22,7 @@ namespace SportsbookAggregation
             {
                 try
                 {
-                    gameOfferings.AddRange(sportsbook.AggregateFutureOfferings().ToList());
+                    gameOfferings.AddRange(sportsbook.AggregateFutureOfferings().ToList());               
                 }
                 catch(Exception e)
                 {
@@ -30,8 +30,8 @@ namespace SportsbookAggregation
                 }
             }
 
-            var databaseUpdater = new SportsbookOfferingsUpdater(dbContext);
-            databaseUpdater.WriteGameOfferings(gameOfferings);
+            //var databaseUpdater = new SportsbookOfferingsUpdater(dbContext);
+            //databaseUpdater.WriteGameOfferings(gameOfferings);
         }
     }
 }
