@@ -17,7 +17,7 @@ namespace SportsbookAggregation
         {
             var dbContext = new Context();
 
-            List<ISportsBook> sportsbooks = new List<ISportsBook> { new CaesarsSportBook(), new FanDuelSportsBook(), new BetAmericaSportsBook(), new ParxSportsBook(), new UnibetSportsBook(), new FoxBetSportsBook(), new DraftKingsSportsBook(), new BetRiversSportsBook() };
+            List<ISportsBook> sportsbooks = new List<ISportsBook> { new DraftKingsSportsBook(), new FanDuelSportsBook(), new FoxBetSportsBook(), new BetAmericaSportsBook(), new CaesarsSportBook(), new ParxSportsBook(), new UnibetSportsBook(), new BetRiversSportsBook() };
             var gameOfferings = new List<GameOffering>();
             foreach(var sportsbook in sportsbooks)
             {
