@@ -51,6 +51,7 @@ namespace SportsbookAggregation
             gameLine.UnderPayout = gameOffering.UnderPayout;
             gameLine.HomeSpreadPayout = gameOffering.HomeSpreadPayout;
             gameLine.AwaySpreadPayout = gameOffering.AwaySpreadPayout;
+            gameLine.LastRefresh = DateTime.Now;
             dbContext.GameLineRepository.Update(gameLine);
         }
 
@@ -69,7 +70,8 @@ namespace SportsbookAggregation
                 OpeningOverUnder = gameOffering.CurrentOverUnder,
                 OpeningSpread = gameOffering.CurrentSpread,
                 OverPayOut = gameOffering.OverPayOut,
-                UnderPayout = gameOffering.UnderPayout
+                UnderPayout = gameOffering.UnderPayout,
+                LastRefresh = DateTime.Now
             });
         }
 
