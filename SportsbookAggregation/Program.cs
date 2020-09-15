@@ -10,13 +10,13 @@ namespace SportsbookAggregation
 {
     internal static class Program
     {
-        public static readonly HttpClient HttpClient = new HttpClient();
+        public static HttpClient HttpClient = new HttpClient();
 
         private static void Main(string[] args)
         {
             var dbContext = new Context();
 
-            List<ISportsBook> sportsbooks = new List<ISportsBook> { new ParxSportsBook(), new UnibetSportsBook(), new FanDuelSportsBook(), new FoxBetSportsBook(), new DraftKingsSportsBook(), new BetRiversSportsBook() };
+            List<ISportsBook> sportsbooks = new List<ISportsBook> { new FanDuelSportsBook(), new BetAmericaSportsBook(), new ParxSportsBook(), new UnibetSportsBook(),  new FoxBetSportsBook(), new DraftKingsSportsBook(), new BetRiversSportsBook() };
             var gameOfferings = new List<GameOffering>();
             foreach(var sportsbook in sportsbooks)
             {
@@ -24,14 +24,14 @@ namespace SportsbookAggregation
                 {
                     gameOfferings.AddRange(sportsbook.AggregateFutureOfferings().ToList());               
                 }
-                catch(Exception e)
+                catch(Exception)
                 {
                     Console.WriteLine("Failed to Parse: " + sportsbook.GetSportsBookName());
                 }
             }
 
-            //var databaseUpdater = new SportsbookOfferingsUpdater(dbContext);
-            //databaseUpdater.WriteGameOfferings(gameOfferings);
+            var databaseUpdater = new SportsbookOfferingsUpdater(dbContext);
+            databaseUpdater.WriteGameOfferings(gameOfferings);
         }
     }
 }

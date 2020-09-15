@@ -26,7 +26,7 @@ namespace SportsbookAggregation.SportsBooks
             var token = GetBearerToken();
             var basketballOfferings = GetBasketballOfferings(token);
             var footballOfferings = GetFootballOfferings(token);
-           // Program.HttpClient = new HttpClient(); //Clear out everything from parsing
+            Program.HttpClient = new HttpClient(); //Clear out state from parsing
             return basketballOfferings.Concat(footballOfferings);
         }
 
@@ -52,7 +52,7 @@ namespace SportsbookAggregation.SportsBooks
             Program.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             Program.HttpClient.DefaultRequestHeaders.Host = "api-pap.sbtech.com";
             var responseJson = Program.HttpClient.PostAsync(RequestUrl, requestJson).Result.Content.ReadAsStringAsync();
-            var response = responseJson.Result.ToString().Replace("−", "-");
+            var response = responseJson.Result.ToString().Replace("−", "-");//Not sure what this is. But it's not a minus sign. 
             return JsonConvert.DeserializeObject<dynamic>(response);
         }
 

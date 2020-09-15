@@ -109,7 +109,8 @@ namespace SportsbookAggregation.Data
                 new GamblingSite { GamblingSiteId = new Guid("ef4a3b1e-dd09-4e32-a648-097ebae237d1"), Name = "DraftKings" },
                 new GamblingSite { GamblingSiteId = new Guid("a13abd89-8246-4ce9-a3e1-34eee3084748"), Name = "BetRivers" },
                 new GamblingSite { GamblingSiteId = new Guid("3208224c-cbee-408f-b7d8-3ad76f70eaa9"), Name = "Unibet" },
-                new GamblingSite { GamblingSiteId = new Guid("ae98bc03-bf79-491a-8d5a-23acc23908a9"), Name = "Parx" }
+                new GamblingSite { GamblingSiteId = new Guid("ae98bc03-bf79-491a-8d5a-23acc23908a9"), Name = "Parx" },
+                new GamblingSite { GamblingSiteId = new Guid("89f19651-c30c-4846-8197-8f10e43b4ae6"), Name = "BetAmerica" }
             );
         }
 
