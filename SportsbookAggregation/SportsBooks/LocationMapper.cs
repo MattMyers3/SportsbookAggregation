@@ -107,7 +107,7 @@ namespace SportsbookAggregation.SportsBooks
                 case "WAS":
                     return "Washington";
                 default:
-                    throw new Exception("Unable to find location.");
+                    return abbreviation;
 
             }
         }

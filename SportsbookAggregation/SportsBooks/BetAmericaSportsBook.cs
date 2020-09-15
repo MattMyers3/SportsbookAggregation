@@ -76,14 +76,21 @@ namespace SportsbookAggregation.SportsBooks
 
         private GameOffering ParseGameOffering(dynamic gameInfoJson, dynamic linesJson)
         {
+            string awayTeam = ((IEnumerable)gameInfoJson.participants).Cast<dynamic>().FirstOrDefault(g => g.venueRole == "Away").name;
+            string homeTeam = ((IEnumerable)gameInfoJson.participants).Cast<dynamic>().FirstOrDefault(g => g.venueRole == "Home").name;
             var gameOffering = new GameOffering
             {
                 Site = GetSportsBookName(),
                 Sport = gameInfoJson.leagueName,
-                AwayTeam = ((IEnumerable)gameInfoJson.participants).Cast<dynamic>().FirstOrDefault(g => g.venueRole == "Away").name,
-                HomeTeam = ((IEnumerable)gameInfoJson.participants).Cast<dynamic>().FirstOrDefault(g => g.venueRole == "Home").name,
+                AwayTeam = LocationMapper.GetFullTeamName(awayTeam),
+                HomeTeam = LocationMapper.GetFullTeamName(homeTeam),
                 DateTime = gameInfoJson.startEventDate.Value.AddHours(-4)
             };
+
+            if (gameOffering.HomeTeam.Contains("Washington [NFL]"))
+                gameOffering.HomeTeam = "Washington Football Team";
+            if (gameOffering.AwayTeam.Contains("Washington [NFL]"))
+                gameOffering.AwayTeam = "Washington Football Team";
 
             var pointSpreadJson = ((IEnumerable)linesJson).Cast<dynamic>().FirstOrDefault(g => g.name == "FT Spread");
             var totalPointsJson = ((IEnumerable)linesJson).Cast<dynamic>().FirstOrDefault(g => g.name == "FT O/U");
