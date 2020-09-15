@@ -20,7 +20,7 @@ namespace SportsbookAggregation
         {
             foreach (var gameOffering in gameOfferings)
             {
-                if (gameOffering.DateTime.ToUniversalTime() < DateTime.Now.ToUniversalTime())
+                if (gameOffering.DateTime < DateTime.Now)
                     continue;
                 var homeTeamId = GetTeamId(gameOffering.HomeTeam);
                 var awayTeamId = GetTeamId(gameOffering.AwayTeam);
