@@ -13,7 +13,7 @@ namespace SportsbookAggregation.SportsBooks
 
         public IEnumerable<GameOffering> AggregateFutureOfferings()
         {
-            var oddsProvider = new KambicdnOddsProvider(GetSportsBookName(), "ubuspa", "1600113940467");
+            var oddsProvider = new KambicdnOddsProvider(GetSportsBookName(), "ubuspa");
             return oddsProvider.AggregateFutureOfferings();
         }
     }

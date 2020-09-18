@@ -112,7 +112,8 @@ namespace SportsbookAggregation.Data
                 new GamblingSite { GamblingSiteId = new Guid("ae98bc03-bf79-491a-8d5a-23acc23908a9"), Name = "Parx" },
                 new GamblingSite { GamblingSiteId = new Guid("89f19651-c30c-4846-8197-8f10e43b4ae6"), Name = "BetAmerica" },
                 new GamblingSite { GamblingSiteId = new Guid("ee7f8f4c-23a7-4c35-a450-fed7cc90a6dd"), Name = "Caesars" },
-                new GamblingSite { GamblingSiteId = new Guid("730346f5-e563-47bf-9230-148d25c424e9"), Name = "SugarHouse" }
+                new GamblingSite { GamblingSiteId = new Guid("730346f5-e563-47bf-9230-148d25c424e9"), Name = "SugarHouse" },
+                new GamblingSite { GamblingSiteId = new Guid("eda5febb-1381-411a-88e8-5db158589212"), Name = "Barstool" }
 
             );
         }
