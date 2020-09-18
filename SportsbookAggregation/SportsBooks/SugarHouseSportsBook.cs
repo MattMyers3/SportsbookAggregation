@@ -4,16 +4,16 @@ using System.Collections.Generic;
 
 namespace SportsbookAggregation.SportsBooks
 {
-    public class BetRiversSportsBook : ISportsBook
+    class SugarHouseSportsBook : ISportsBook
     {
         public string GetSportsBookName()
         {
-            return "BetRivers";
+            return "SugarHouse";
         }
 
         public IEnumerable<GameOffering> AggregateFutureOfferings()
         {
-            var oddsProvider = new BetRiversOddsProvider("https://pa.betrivers.com", GetSportsBookName());
+            var oddsProvider = new BetRiversOddsProvider("https://pa.playsugarhouse.com", GetSportsBookName());
             return oddsProvider.AggregateFutureOfferings();
         }
     }
