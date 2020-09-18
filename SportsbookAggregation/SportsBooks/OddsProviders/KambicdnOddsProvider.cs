@@ -13,11 +13,11 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
         private readonly string NbaRequestUrl;
         private readonly string NflRequestUrl;
         
-        public KambicdnOddsProvider(string sportsbook, string siteRouteName, string ncid)
+        public KambicdnOddsProvider(string sportsbook, string siteRouteName)
         {
             site = sportsbook;
-            NbaRequestUrl = $"https://eu-offering.kambicdn.org/offering/v2018/{siteRouteName}/listView/basketball/nba.json?lang=en_US&market=US&client_id=2&channel_id=1&ncid={ncid}&useCombined=true";
-            NflRequestUrl = $"https://eu-offering.kambicdn.org/offering/v2018/{siteRouteName}/listView/american_football/nfl.json?lang=en_US&market=US&client_id=2&channel_id=1&ncid={ncid}&useCombined=true";
+            NbaRequestUrl = $"https://eu-offering.kambicdn.org/offering/v2018/{siteRouteName}/listView/basketball/nba.json?lang=en_US&market=US&useCombined=true";
+            NflRequestUrl = $"https://eu-offering.kambicdn.org/offering/v2018/{siteRouteName}/listView/american_football/nfl.json?lang=en_US&market=US&useCombined=true";
         }
 
         public IEnumerable<GameOffering> AggregateFutureOfferings()

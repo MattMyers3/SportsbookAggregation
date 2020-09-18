@@ -4,16 +4,16 @@ using System.Collections.Generic;
 
 namespace SportsbookAggregation.SportsBooks
 {
-    public class ParxSportsBook : ISportsBook
+    public class BarstoolSportsBook : ISportsBook
     {
         public string GetSportsBookName()
         {
-            return "Parx";
+            return "Barstool";
         }
 
         public IEnumerable<GameOffering> AggregateFutureOfferings()
         {
-            var oddsProvider = new KambicdnOddsProvider(GetSportsBookName(), "parxuspa");
+            var oddsProvider = new KambicdnOddsProvider(GetSportsBookName(), "pivuspa");
             return oddsProvider.AggregateFutureOfferings();
         }
     }
