@@ -106,6 +106,16 @@ namespace SportsbookAggregation.SportsBooks
                     return "Utah";
                 case "WAS":
                     return "Washington";
+                case "SD":
+                    return "San Diego";
+                case "OAK":
+                    return "Oakland";
+                case "TEX":
+                    return "Texas";
+                case "STL":
+                    return "St. Louis";
+                case "COL":
+                    return "Colorado";
                 default:
                     return abbreviation;
 

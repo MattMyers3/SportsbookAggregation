@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace SportsbookAggregation.SportsBooks
 {
@@ -26,8 +27,9 @@ namespace SportsbookAggregation.SportsBooks
             var token = GetBearerToken();
             var basketballOfferings = GetBasketballOfferings(token);
             var footballOfferings = GetFootballOfferings(token);
+            var baseballOfferings = GetBaseballOfferings(token);
             Program.HttpClient = new HttpClient(); //Clear out state from parsing
-            return basketballOfferings.Concat(footballOfferings);
+            return baseballOfferings.Concat(basketballOfferings.Concat(footballOfferings));
         }
 
         private string GetBearerToken()
@@ -38,13 +40,19 @@ namespace SportsbookAggregation.SportsBooks
         private IEnumerable<GameOffering> GetBasketballOfferings(string token)
         {
             var requestJson = new StringContent("{\"eventState\":\"Mixed\",\"eventTypes\":[\"Fixture\",\"AggregateFixture\"],\"ids\":[\"42648\"],\"regionIds\":[\"227\"],\"marketTypeRequests\":[{\"sportIds\":[\"2\"],\"marketTypeIds\":[\"2_39\",\"1_39\",\"3_39\",\"2_0\",\"1_0\",\"3_0\"],\"statement\":\"Include\"}]}", Encoding.UTF8, "application/json-patch+json");
-            return GetGameOfferings(token, requestJson);
+            return GetGameOfferings(token, requestJson, "FT Spread", "FT Moneyline", "FT O/U");
         }
 
         private IEnumerable<GameOffering> GetFootballOfferings(string token)
         {
             var requestJson = new StringContent("{\"eventState\":\"Mixed\",\"eventTypes\":[\"Fixture\",\"AggregateFixture\"],\"ids\":[\"88808\"],\"regionIds\":[\"227\"],\"marketTypeRequests\":[{\"sportIds\":[\"3\"],\"marketTypeIds\":[\"2_39\",\"1_39\",\"3_39\",\"2_0\",\"1_0\",\"3_0\"],\"statement\":\"Include\"}]}", Encoding.UTF8, "application/json-patch+json");
-            return GetGameOfferings(token, requestJson);
+            return GetGameOfferings(token, requestJson, "FT Spread", "FT Winner", "FT O/U");
+        }
+
+        private IEnumerable<GameOffering> GetBaseballOfferings(string token)
+        {
+            var requestJson = new StringContent("{\"eventState\":\"Mixed\",\"eventTypes\":[\"Fixture\",\"AggregateFixture\"],\"ids\":[\"84240\"],\"regionIds\":[\"227\"],\"marketTypeRequests\":[{\"sportIds\":[\"7\"],\"marketTypeIds\":[\"2_39\",\"1_39\",\"3_39\",\"2_0\",\"1_0\",\"3_0\"],\"statement\":\"Include\"}]}", Encoding.UTF8, "application/json-patch+json");
+            return GetGameOfferings(token, requestJson, "FT Run Line","FT Money Line", "FT O/U Runs");
         }
 
         private dynamic GetGamesJson(string token, StringContent requestJson)
@@ -56,7 +64,7 @@ namespace SportsbookAggregation.SportsBooks
             return JsonConvert.DeserializeObject<dynamic>(response);
         }
 
-        private IEnumerable<GameOffering> GetGameOfferings(string token, StringContent requestJson)
+        private IEnumerable<GameOffering> GetGameOfferings(string token, StringContent requestJson, string spreadLabel, string moneyLineLabel, string totalLabel)
         {
             var gamesJson = GetGamesJson(token, requestJson);
 
@@ -68,13 +76,13 @@ namespace SportsbookAggregation.SportsBooks
             {
                 var linesJson = gameInfo.Where(g => g.eventId == gameInfoJson.id);
 
-                gameOfferings.Add(ParseGameOffering(gameInfoJson, linesJson));
+                gameOfferings.Add(ParseGameOffering(gameInfoJson, linesJson, spreadLabel, moneyLineLabel,totalLabel));
             }
 
             return gameOfferings;
         }
 
-        private GameOffering ParseGameOffering(dynamic gameInfoJson, dynamic linesJson)
+        private GameOffering ParseGameOffering(dynamic gameInfoJson, dynamic linesJson, string spreadLabel, string moneyLineLabel, string totalLabel)
         {
             string awayTeam = ((IEnumerable)gameInfoJson.participants).Cast<dynamic>().FirstOrDefault(g => g.venueRole == "Away").name;
             string homeTeam = ((IEnumerable)gameInfoJson.participants).Cast<dynamic>().FirstOrDefault(g => g.venueRole == "Home").name;
@@ -92,9 +100,21 @@ namespace SportsbookAggregation.SportsBooks
             if (gameOffering.AwayTeam.Contains("Washington [NFL]"))
                 gameOffering.AwayTeam = "Washington Football Team";
 
-            var pointSpreadJson = ((IEnumerable)linesJson).Cast<dynamic>().FirstOrDefault(g => g.name == "FT Spread");
-            var totalPointsJson = ((IEnumerable)linesJson).Cast<dynamic>().FirstOrDefault(g => g.name == "FT O/U");
-            var moneylineJson = ((IEnumerable)linesJson).Cast<dynamic>().FirstOrDefault(g => g.name == "FT Winner" || g.name == "FT Moneyline");
+            if (gameOffering.AwayTeam.Contains("[")) //Team name contains pitcher
+            {
+                gameOffering.AwayTeam = LocationMapper.GetFullTeamName(gameOffering.AwayTeam.Substring(0, gameOffering.AwayTeam.IndexOf("[")));
+                gameOffering.HomeTeam = LocationMapper.GetFullTeamName(gameOffering.HomeTeam.Substring(0, gameOffering.HomeTeam.IndexOf("[")));
+            }
+            Regex gameRegex = new Regex(@"G\d.*");
+            if(gameRegex.IsMatch(gameOffering.AwayTeam))
+            {
+                gameOffering.AwayTeam = LocationMapper.GetFullTeamName(gameOffering.AwayTeam.Substring(3));
+                gameOffering.HomeTeam = LocationMapper.GetFullTeamName(gameOffering.HomeTeam.Substring(3));
+            }
+
+            var pointSpreadJson = ((IEnumerable)linesJson).Cast<dynamic>().FirstOrDefault(g => g.name == spreadLabel);
+            var totalPointsJson = ((IEnumerable)linesJson).Cast<dynamic>().FirstOrDefault(g => g.name == totalLabel);
+            var moneylineJson = ((IEnumerable)linesJson).Cast<dynamic>().FirstOrDefault(g => g.name == moneyLineLabel);
 
             if (pointSpreadJson != null)
             {

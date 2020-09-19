@@ -12,33 +12,43 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
         private readonly string site;
         private readonly string NbaRequestUrl;
         private readonly string NflRequestUrl;
-        
+        private readonly string MlbRequestUrl;
+
+
         public KambicdnOddsProvider(string sportsbook, string siteRouteName)
         {
             site = sportsbook;
             NbaRequestUrl = $"https://eu-offering.kambicdn.org/offering/v2018/{siteRouteName}/listView/basketball/nba.json?lang=en_US&market=US&useCombined=true";
             NflRequestUrl = $"https://eu-offering.kambicdn.org/offering/v2018/{siteRouteName}/listView/american_football/nfl.json?lang=en_US&market=US&useCombined=true";
+            MlbRequestUrl = $"https://eu-offering.kambicdn.org/offering/v2018/{siteRouteName}/listView/baseball/mlb.json?lang=en_US&market=US&useCombined=true";
         }
 
         public IEnumerable<GameOffering> AggregateFutureOfferings()
         {
             var basketballOfferings = GetBasketballOfferings();
             var footballOfferings = GetFootballOfferings();
+            var baseballOfferings = GetBaseballOfferings();
 
-            return basketballOfferings.Concat(footballOfferings);
+            return baseballOfferings.Concat(basketballOfferings.Concat(footballOfferings));
         }
 
         private IEnumerable<GameOffering> GetBasketballOfferings()
         {
-            return GetGameOfferings(NbaRequestUrl);
+            return GetGameOfferings(NbaRequestUrl,"Point Spread", "Moneyline", "Total Points");
         }
 
         private IEnumerable<GameOffering> GetFootballOfferings()
         {
-            return GetGameOfferings(NflRequestUrl);
+            return GetGameOfferings(NflRequestUrl, "Point Spread", "Moneyline", "Total Points");
         }
 
-        private IEnumerable<GameOffering> GetGameOfferings(string sportRequestUrl)
+        private IEnumerable<GameOffering> GetBaseballOfferings()
+        {
+            return GetGameOfferings(MlbRequestUrl, "Run Line", "Moneyline", "Total Runs");
+        }
+
+
+        private IEnumerable<GameOffering> GetGameOfferings(string sportRequestUrl, string spreadLabel, string moneyLineLabel, string totalLabel)
         {
             var requestString =
                 JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(sportRequestUrl).Result).ToString().Replace("event", "Event"); //needed because event is a C# key word
@@ -50,13 +60,13 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
                 var eventInfo = game.Event;
                 var betOffers = game.betOffers;
 
-                gameOfferings.Add(ParseGameOffering(eventInfo, betOffers));
+                gameOfferings.Add(ParseGameOffering(eventInfo, betOffers, spreadLabel, moneyLineLabel, totalLabel));
             }
 
             return gameOfferings;
         }
 
-        private GameOffering ParseGameOffering(dynamic eventInfo, dynamic betOffers)
+        private GameOffering ParseGameOffering(dynamic eventInfo, dynamic betOffers, string spreadLabel, string moneyLineLabel, string totalLabel)
         {
             var gameOffering = new GameOffering
             {
@@ -67,9 +77,9 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
                 DateTime = eventInfo.start.Value.AddHours(-4)
             };
 
-            var pointSpreadJson = ((IEnumerable)betOffers).Cast<dynamic>().FirstOrDefault(g => g.criterion.label == "Point Spread");
-            var totalPointsJson = ((IEnumerable)betOffers).Cast<dynamic>().FirstOrDefault(g => g.criterion.label == "Total Points");
-            var moneylineJson = ((IEnumerable)betOffers).Cast<dynamic>().FirstOrDefault(g => g.criterion.label == "Moneyline");
+            var pointSpreadJson = ((IEnumerable)betOffers).Cast<dynamic>().FirstOrDefault(g => g.criterion.label == spreadLabel);
+            var totalPointsJson = ((IEnumerable)betOffers).Cast<dynamic>().FirstOrDefault(g => g.criterion.label == totalLabel);
+            var moneylineJson = ((IEnumerable)betOffers).Cast<dynamic>().FirstOrDefault(g => g.criterion.label == moneyLineLabel);
 
             if (pointSpreadJson != null)
             {
