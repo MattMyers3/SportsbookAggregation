@@ -74,8 +74,8 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
             var gameOffering = new GameOffering
             {
                 Site = sportsbookName,
-                AwayTeam = LocationMapper.GetFullTeamName(gameJson.participants[1].name.Value),
-                HomeTeam = LocationMapper.GetFullTeamName(gameJson.participants[0].name.Value),
+                AwayTeam = LocationMapper.GetFullTeamName(gameJson.participants[1].name.Value, gameJson.eventInfo[1].name.Value),
+                HomeTeam = LocationMapper.GetFullTeamName(gameJson.participants[0].name.Value, gameJson.eventInfo[1].name.Value),
                 Sport = gameJson.eventInfo[1].name,
                 DateTime = gameJson.start.Value.AddHours(-4)
             };

@@ -72,8 +72,8 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
             {
                 Site = site,
                 Sport = eventInfo.group,
-                AwayTeam = LocationMapper.GetFullTeamName(eventInfo.awayName.Value),
-                HomeTeam = LocationMapper.GetFullTeamName(eventInfo.homeName.Value),
+                AwayTeam = LocationMapper.GetFullTeamName(eventInfo.awayName.Value, eventInfo.group.Value),
+                HomeTeam = LocationMapper.GetFullTeamName(eventInfo.homeName.Value, eventInfo.group.Value),
                 DateTime = eventInfo.start.Value.AddHours(-4)
             };
 
@@ -83,22 +83,28 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
 
             if (pointSpreadJson != null)
             {
+                var homeSelection = ((IEnumerable)pointSpreadJson.outcomes).Cast<dynamic>().FirstOrDefault(g => LocationMapper.GetFullTeamName(g.participant.Value, gameOffering.Sport) == gameOffering.HomeTeam);
+                var awaySelection = ((IEnumerable)pointSpreadJson.outcomes).Cast<dynamic>().FirstOrDefault(g => LocationMapper.GetFullTeamName(g.participant.Value, gameOffering.Sport) == gameOffering.AwayTeam);
                 gameOffering.CurrentSpread = pointSpreadJson.outcomes[0].line.Value / 1000.0;
-                gameOffering.HomeSpreadPayout = Convert.ToInt32(pointSpreadJson.outcomes[0].oddsAmerican.Value);
-                gameOffering.AwaySpreadPayout = Convert.ToInt32(pointSpreadJson.outcomes[1].oddsAmerican.Value);
+                gameOffering.HomeSpreadPayout = Convert.ToInt32(homeSelection.oddsAmerican.Value);
+                gameOffering.AwaySpreadPayout = Convert.ToInt32(awaySelection.oddsAmerican.Value);
             }
 
             if (moneylineJson != null)
             {
-                gameOffering.HomeMoneyLinePayout = Convert.ToInt32(moneylineJson.outcomes[0].oddsAmerican.Value);
-                gameOffering.AwayMoneyLinePayout = Convert.ToInt32(moneylineJson.outcomes[1].oddsAmerican.Value);
+                var homeSelection = ((IEnumerable)moneylineJson.outcomes).Cast<dynamic>().FirstOrDefault(g => LocationMapper.GetFullTeamName(g.participant.Value, gameOffering.Sport) == gameOffering.HomeTeam);
+                var awaySelection = ((IEnumerable)moneylineJson.outcomes).Cast<dynamic>().FirstOrDefault(g => LocationMapper.GetFullTeamName(g.participant.Value, gameOffering.Sport) == gameOffering.AwayTeam);
+                gameOffering.HomeMoneyLinePayout = Convert.ToInt32(homeSelection.oddsAmerican.Value);
+                gameOffering.AwayMoneyLinePayout = Convert.ToInt32(awaySelection.oddsAmerican.Value);
             }
 
             if (totalPointsJson != null)
             {
+                var overSelection = ((IEnumerable)totalPointsJson.outcomes).Cast<dynamic>().FirstOrDefault(g => g.label == "Over");
+                var underSelection = ((IEnumerable)totalPointsJson.outcomes).Cast<dynamic>().FirstOrDefault(g => g.label == "Under");
                 gameOffering.CurrentOverUnder = totalPointsJson.outcomes[0].line.Value / 1000.0;
-                gameOffering.OverPayOut = Convert.ToInt32(totalPointsJson.outcomes[1].oddsAmerican.Value);
-                gameOffering.UnderPayout = Convert.ToInt32(totalPointsJson.outcomes[0].oddsAmerican.Value);
+                gameOffering.OverPayOut = Convert.ToInt32(overSelection.oddsAmerican.Value);
+                gameOffering.UnderPayout = Convert.ToInt32(underSelection.oddsAmerican.Value);
             }
 
             return gameOffering;

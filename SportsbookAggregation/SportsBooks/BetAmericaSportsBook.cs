@@ -90,8 +90,8 @@ namespace SportsbookAggregation.SportsBooks
             {
                 Site = GetSportsBookName(),
                 Sport = gameInfoJson.leagueName,
-                AwayTeam = LocationMapper.GetFullTeamName(awayTeam),
-                HomeTeam = LocationMapper.GetFullTeamName(homeTeam),
+                AwayTeam = LocationMapper.GetFullTeamName(awayTeam, gameInfoJson.leagueName.Value),
+                HomeTeam = LocationMapper.GetFullTeamName(homeTeam, gameInfoJson.leagueName.Value),
                 DateTime = gameInfoJson.startEventDate.Value.AddHours(-4)
             };
 
@@ -102,14 +102,14 @@ namespace SportsbookAggregation.SportsBooks
 
             if (gameOffering.AwayTeam.Contains("[")) //Team name contains pitcher
             {
-                gameOffering.AwayTeam = LocationMapper.GetFullTeamName(gameOffering.AwayTeam.Substring(0, gameOffering.AwayTeam.IndexOf("[")));
-                gameOffering.HomeTeam = LocationMapper.GetFullTeamName(gameOffering.HomeTeam.Substring(0, gameOffering.HomeTeam.IndexOf("[")));
+                gameOffering.AwayTeam = LocationMapper.GetFullTeamName(gameOffering.AwayTeam.Substring(0, gameOffering.AwayTeam.IndexOf("[")), gameOffering.Sport);
+                gameOffering.HomeTeam = LocationMapper.GetFullTeamName(gameOffering.HomeTeam.Substring(0, gameOffering.HomeTeam.IndexOf("[")), gameOffering.Sport);
             }
             Regex gameRegex = new Regex(@"G\d.*");
             if(gameRegex.IsMatch(gameOffering.AwayTeam))
             {
-                gameOffering.AwayTeam = LocationMapper.GetFullTeamName(gameOffering.AwayTeam.Substring(3));
-                gameOffering.HomeTeam = LocationMapper.GetFullTeamName(gameOffering.HomeTeam.Substring(3));
+                gameOffering.AwayTeam = LocationMapper.GetFullTeamName(gameOffering.AwayTeam.Substring(3), gameOffering.Sport);
+                gameOffering.HomeTeam = LocationMapper.GetFullTeamName(gameOffering.HomeTeam.Substring(3), gameOffering.Sport);
             }
 
             var pointSpreadJson = ((IEnumerable)linesJson).Cast<dynamic>().FirstOrDefault(g => g.name == spreadLabel);

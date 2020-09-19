@@ -7,14 +7,14 @@ namespace SportsbookAggregation.SportsBooks
     public class LocationMapper
     {
 
-        public static string GetFullTeamName(string shortTeamName)
+        public static string GetFullTeamName(string shortTeamName, string sport)
         {
             var teamNameArray = shortTeamName.Split(' ');
-            var location = LocationMapper.MapLocation(teamNameArray[0]);
+            var location = LocationMapper.MapLocation(teamNameArray[0], sport);
             return $"{location}{shortTeamName.Substring(teamNameArray[0].Length)}";
         }
 
-        private static string MapLocation(string abbreviation)
+        private static string MapLocation(string abbreviation, string sport)
         {
             switch (abbreviation.ToUpper())
             {
@@ -53,7 +53,7 @@ namespace SportsbookAggregation.SportsBooks
                 case "HOU":
                     return "Houston";
                 case "IND":
-                    return "Indiana";
+                    return sport == "NBA" ? "Indiana" : "Indianapolis";
                 case "JAX":
                     return "Jacksonville";
                 case "KC":
