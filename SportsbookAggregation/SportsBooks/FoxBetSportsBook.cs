@@ -115,7 +115,7 @@ namespace SportsbookAggregation.SportsBooks
             }
 
             var spreadJson = ((IEnumerable) gameJson.markets).Cast<dynamic>()
-                .FirstOrDefault(m => m.name.Value.Contains(spreadLabel) && m.displayed?.Value ?? true);
+                .FirstOrDefault(m => m.name.Value.Contains(spreadLabel) && m.mostBalanced?.Value ?? true && m.displayed?.Value ?? true);
             if (spreadJson != null && spreadJson.selection[0].odds.frac.Value != "-")
             {
                 var spreadInfo = spreadJson.selection;
