@@ -91,10 +91,8 @@ namespace SportsbookAggregation
         private Guid? GetGameId(DateTime gameTime, Guid homeTeamId, Guid awayTeamId)
         {
             var matchingGames = dbContext.GameRepository.Read()
-                .Where(g => g.HomeTeamId == homeTeamId && g.AwayTeamId == awayTeamId);
-            return matchingGames.Count() <= 1
-                ? matchingGames.FirstOrDefault()?.GameId
-                : matchingGames.FirstOrDefault(g => Math.Abs(g.TimeStamp.Hour - gameTime.Hour) <= 1)?.GameId;
+                .Where(g => g.HomeTeamId == homeTeamId && g.AwayTeamId == awayTeamId && g.TimeStamp.Date == gameTime.Date);
+            return matchingGames.FirstOrDefault(g => Math.Abs(g.TimeStamp.Hour - gameTime.Hour) <= 1)?.GameId;
         }
 
         private Guid GetTeamId(string teamName)

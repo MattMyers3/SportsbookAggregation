@@ -38,7 +38,8 @@ namespace SportsbookAggregation.Data
 
             var nbaGuid = new Guid("2cbbd293-8627-447d-8b20-2c5a4fdaa024");
             var nflGuid = new Guid("6e972a45-6bd9-4085-9a78-faddf46294be");
-            modelBuilder.Entity<Sport>().HasData(new Sport { SportId = nbaGuid, Name = "NBA" }, new Sport { Name = "NFL", SportId = nflGuid });
+            var mlbGuid = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8");
+            modelBuilder.Entity<Sport>().HasData(new Sport { SportId = mlbGuid, Name = "MLB" }, new Sport { SportId = nbaGuid, Name = "NBA" }, new Sport { Name = "NFL", SportId = nflGuid });
             modelBuilder.Entity<Team>().HasData(
                 new Team { TeamId = new Guid("327fa1ce-ebd2-42b5-8ae3-af4e1f85c31b"), SportId = nbaGuid, Location = "Atlanta", Mascot = "Hawks" },
                 new Team { TeamId = new Guid("f4646032-8ce2-4115-aa17-6a3f829c48c6"), SportId = nbaGuid, Location = "Boston", Mascot = "Celtics" },
@@ -101,7 +102,37 @@ namespace SportsbookAggregation.Data
                 new Team { TeamId = new Guid("8a7cdedd-a273-4320-b479-2eeae69694d2"), SportId = nflGuid, Location = "San Francisco", Mascot = "49ers" },
                 new Team { TeamId = new Guid("360fd180-6f0e-4545-8d14-5f690944cfdc"), SportId = nflGuid, Location = "Tampa Bay", Mascot = "Buccaneers" },
                 new Team { TeamId = new Guid("4c713570-bf81-4b2f-b170-3258ca86d07e"), SportId = nflGuid, Location = "Tennessee", Mascot = "Titans" },
-                new Team { TeamId = new Guid("2bf36e69-9abd-40e5-92e3-3817e6c13253"), SportId = nflGuid, Location = "Washington", Mascot = "Football Team" }
+                new Team { TeamId = new Guid("2bf36e69-9abd-40e5-92e3-3817e6c13253"), SportId = nflGuid, Location = "Washington", Mascot = "Football Team" },
+                new Team { TeamId = new Guid("b80ba92d-3fea-4da0-a47f-f65cd46eb067"), SportId = mlbGuid, Location = "Arizona", Mascot = "Diamondbacks" },
+                new Team { TeamId = new Guid("c6bc8fc8-6391-4af8-9032-364c86ca59d5"), SportId = mlbGuid, Location = "Atlanta", Mascot = "Braves" },
+                new Team { TeamId = new Guid("764f8f26-b02b-43b5-946a-4429ff9d2ae9"), SportId = mlbGuid, Location = "Baltimore", Mascot = "Orioles" },
+                new Team { TeamId = new Guid("7d297cb2-173e-4e4d-9eeb-86aecf711f7b"), SportId = mlbGuid, Location = "Boston", Mascot = "Red Sox" },
+                new Team { TeamId = new Guid("1f0c79e0-65ff-4d92-8b95-7e09f875beac"), SportId = mlbGuid, Location = "Chicago", Mascot = "Cubs" },
+                new Team { TeamId = new Guid("66dfad29-3097-47a0-964b-136fce7fa365"), SportId = mlbGuid, Location = "Chicago", Mascot = "White Sox" },
+                new Team { TeamId = new Guid("bfb3beb9-76aa-4000-b8d5-e7c616d45c8b"), SportId = mlbGuid, Location = "Cincinnati", Mascot = "Reds" },
+                new Team { TeamId = new Guid("6de834fc-509e-4989-b1d2-49c8b10c1ece"), SportId = mlbGuid, Location = "Cleveland", Mascot = "Indians" },
+                new Team { TeamId = new Guid("da5a4c84-f866-49d3-960c-ead18a08346c"), SportId = mlbGuid, Location = "Colorado", Mascot = "Rockies" },
+                new Team { TeamId = new Guid("61da07c9-a29c-4d0d-8375-7352458bd858"), SportId = mlbGuid, Location = "Detroit", Mascot = "Tigers" },
+                new Team { TeamId = new Guid("093d9c05-cf42-4260-be44-ab6fb8399c38"), SportId = mlbGuid, Location = "Houston", Mascot = "Astros" },
+                new Team { TeamId = new Guid("53ab3b55-5d3f-4991-bbf6-fa5874eeacf5"), SportId = mlbGuid, Location = "Kansas City", Mascot = "Royals" },
+                new Team { TeamId = new Guid("2f47feaf-29fd-49b3-af5e-a5cd3ad1c68d"), SportId = mlbGuid, Location = "Los Angeles", Mascot = "Angels" },
+                new Team { TeamId = new Guid("3105b032-1df3-48c7-be70-21a7ec36d4fd"), SportId = mlbGuid, Location = "Los Angeles", Mascot = "Dodgers" },
+                new Team { TeamId = new Guid("b3d8a035-746e-42c0-9264-a97ec10d5e78"), SportId = mlbGuid, Location = "Miami", Mascot = "Marlins" },
+                new Team { TeamId = new Guid("9aa7dd61-e5d7-4a80-8cef-e3b6e1a93920"), SportId = mlbGuid, Location = "Milwaukee", Mascot = "Brewers" },
+                new Team { TeamId = new Guid("f3d27ac5-73cc-480d-bd44-11af1c8ddce9"), SportId = mlbGuid, Location = "Minnesota", Mascot = "Twins" },
+                new Team { TeamId = new Guid("bde59215-f8be-415a-99e8-31ea7b96d2cf"), SportId = mlbGuid, Location = "New York", Mascot = "Mets" },
+                new Team { TeamId = new Guid("09faad84-aa61-4376-93cc-6d98a3e2a941"), SportId = mlbGuid, Location = "New York", Mascot = "Yankees" },
+                new Team { TeamId = new Guid("a8e4de87-8da4-4bb0-8232-642a059451fe"), SportId = mlbGuid, Location = "Oakland", Mascot = "Athletics" },
+                new Team { TeamId = new Guid("a0ac8958-26bf-4d95-ae39-bba328daa3f1"), SportId = mlbGuid, Location = "Philadelphia", Mascot = "Phillies" },
+                new Team { TeamId = new Guid("30f456f3-caf8-4582-829f-fdfc4ef6c520"), SportId = mlbGuid, Location = "Pittsburgh", Mascot = "Pirates" },
+                new Team { TeamId = new Guid("f460874c-5ba5-4411-b602-239da45af489"), SportId = mlbGuid, Location = "San Diego", Mascot = "Padres" },
+                new Team { TeamId = new Guid("60ecf028-f2b7-49bc-8649-776df8b8f225"), SportId = mlbGuid, Location = "San Francisco", Mascot = "Giants" },
+                new Team { TeamId = new Guid("58e52fc4-c688-4ad2-9944-ee3e5f92337c"), SportId = mlbGuid, Location = "Seattle", Mascot = "Mariners" },
+                new Team { TeamId = new Guid("10ed79cb-f213-403c-84da-c915ae5e4d4c"), SportId = mlbGuid, Location = "St. Louis", Mascot = "Cardinals" },
+                new Team { TeamId = new Guid("53fa4e27-c75f-479a-aeba-94f8014446d1"), SportId = mlbGuid, Location = "Tampa Bay", Mascot = "Rays" },
+                new Team { TeamId = new Guid("2f2cdf19-0cd7-4a35-881f-8cfbd8d4fea8"), SportId = mlbGuid, Location = "Texas", Mascot = "Rangers" },
+                new Team { TeamId = new Guid("c03dd191-1cbd-4fe8-84b1-3dac7c839fff"), SportId = mlbGuid, Location = "Toronto", Mascot = "Blue Jays" },
+                new Team { TeamId = new Guid("d4b12dee-abf7-41a0-b78a-d40072d5e2f8"), SportId = mlbGuid, Location = "Washington", Mascot = "Nationals" }
             );
             modelBuilder.Entity<GamblingSite>().HasData(
                 new GamblingSite { GamblingSiteId = new Guid("1fcec6f7-84b3-4033-af0f-e1f2bcb8528c"), Name = "Fanduel" },

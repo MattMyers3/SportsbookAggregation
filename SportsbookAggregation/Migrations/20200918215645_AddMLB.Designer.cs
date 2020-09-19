@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SportsbookAggregation.Data;
 
 namespace SportsbookAggregation.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20200918215645_AddMLB")]
+    partial class AddMLB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -665,216 +667,6 @@ namespace SportsbookAggregation.Migrations
                             Location = "Washington",
                             Mascot = "Football Team",
                             SportId = new Guid("6e972a45-6bd9-4085-9a78-faddf46294be")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("b80ba92d-3fea-4da0-a47f-f65cd46eb067"),
-                            Location = "Arizona",
-                            Mascot = "Diamondbacks",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("c6bc8fc8-6391-4af8-9032-364c86ca59d5"),
-                            Location = "Atlanta",
-                            Mascot = "Braves",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("764f8f26-b02b-43b5-946a-4429ff9d2ae9"),
-                            Location = "Baltimore",
-                            Mascot = "Orioles",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("7d297cb2-173e-4e4d-9eeb-86aecf711f7b"),
-                            Location = "Boston",
-                            Mascot = "Red Sox",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("1f0c79e0-65ff-4d92-8b95-7e09f875beac"),
-                            Location = "Chicago",
-                            Mascot = "Cubs",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("66dfad29-3097-47a0-964b-136fce7fa365"),
-                            Location = "Chicago",
-                            Mascot = "White Sox",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("bfb3beb9-76aa-4000-b8d5-e7c616d45c8b"),
-                            Location = "Cincinnati",
-                            Mascot = "Reds",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("6de834fc-509e-4989-b1d2-49c8b10c1ece"),
-                            Location = "Cleveland",
-                            Mascot = "Indians",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("da5a4c84-f866-49d3-960c-ead18a08346c"),
-                            Location = "Colorado",
-                            Mascot = "Rockies",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("61da07c9-a29c-4d0d-8375-7352458bd858"),
-                            Location = "Detroit",
-                            Mascot = "Tigers",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("093d9c05-cf42-4260-be44-ab6fb8399c38"),
-                            Location = "Houston",
-                            Mascot = "Astros",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("53ab3b55-5d3f-4991-bbf6-fa5874eeacf5"),
-                            Location = "Kansas City",
-                            Mascot = "Royals",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("2f47feaf-29fd-49b3-af5e-a5cd3ad1c68d"),
-                            Location = "Los Angeles",
-                            Mascot = "Angels",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("3105b032-1df3-48c7-be70-21a7ec36d4fd"),
-                            Location = "Los Angeles",
-                            Mascot = "Dodgers",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("b3d8a035-746e-42c0-9264-a97ec10d5e78"),
-                            Location = "Miami",
-                            Mascot = "Marlins",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("9aa7dd61-e5d7-4a80-8cef-e3b6e1a93920"),
-                            Location = "Milwaukee",
-                            Mascot = "Brewers",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("f3d27ac5-73cc-480d-bd44-11af1c8ddce9"),
-                            Location = "Minnesota",
-                            Mascot = "Twins",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("bde59215-f8be-415a-99e8-31ea7b96d2cf"),
-                            Location = "New York",
-                            Mascot = "Mets",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("09faad84-aa61-4376-93cc-6d98a3e2a941"),
-                            Location = "New York",
-                            Mascot = "Yankees",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("a8e4de87-8da4-4bb0-8232-642a059451fe"),
-                            Location = "Oakland",
-                            Mascot = "Athletics",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("a0ac8958-26bf-4d95-ae39-bba328daa3f1"),
-                            Location = "Philadelphia",
-                            Mascot = "Phillies",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("30f456f3-caf8-4582-829f-fdfc4ef6c520"),
-                            Location = "Pittsburgh",
-                            Mascot = "Pirates",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("f460874c-5ba5-4411-b602-239da45af489"),
-                            Location = "San Diego",
-                            Mascot = "Padres",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("60ecf028-f2b7-49bc-8649-776df8b8f225"),
-                            Location = "San Francisco",
-                            Mascot = "Giants",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("58e52fc4-c688-4ad2-9944-ee3e5f92337c"),
-                            Location = "Seattle",
-                            Mascot = "Mariners",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("10ed79cb-f213-403c-84da-c915ae5e4d4c"),
-                            Location = "St. Louis",
-                            Mascot = "Cardinals",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("53fa4e27-c75f-479a-aeba-94f8014446d1"),
-                            Location = "Tampa Bay",
-                            Mascot = "Rays",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("2f2cdf19-0cd7-4a35-881f-8cfbd8d4fea8"),
-                            Location = "Texas",
-                            Mascot = "Rangers",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("c03dd191-1cbd-4fe8-84b1-3dac7c839fff"),
-                            Location = "Toronto",
-                            Mascot = "Blue Jays",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
-                        },
-                        new
-                        {
-                            TeamId = new Guid("d4b12dee-abf7-41a0-b78a-d40072d5e2f8"),
-                            Location = "Washington",
-                            Mascot = "Nationals",
-                            SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8")
                         });
                 });
 

@@ -23,83 +23,63 @@ namespace SportsbookAggregation.SportsBooks
 
             IEnumerable<GameOffering> basketballOfferings = GetBasketballOfferings(initialJson);
             IEnumerable<GameOffering> footballOfferings = GetFootballOfferings(initialJson);
+            IEnumerable<GameOffering> baseballOfferings = GetBaseballOfferings(initialJson);
 
-            return basketballOfferings.Concat(footballOfferings);
+
+            return baseballOfferings.Concat(basketballOfferings.Concat(footballOfferings));
         }
 
         private IEnumerable<GameOffering> GetBasketballOfferings(dynamic initialJson)
         {
             var basketballJson = ((IEnumerable) initialJson.bonavigationnodes).Cast<dynamic>()
                 .First(g => g.name == "Basketball");
-            return GetNbaGameOfferings(basketballJson);
+            return GetGameOfferings(basketballJson, "NBA", "NBA Tab Coupon", "Spread Betting", "Moneyline", "Total Points Scored");
         }
 
         private IEnumerable<GameOffering> GetFootballOfferings(dynamic initialJson)
         {
             var footballJson = ((IEnumerable)initialJson.bonavigationnodes).Cast<dynamic>()
                 .First(g => g.name == "Football");
-            return GetNflGameOfferings(footballJson);
+            return GetGameOfferings(footballJson,  "NFL", "Season Coupon", "Spread", "Moneyline", "Total Match Points");
         }
 
-        private IEnumerable<GameOffering> GetNbaGameOfferings(dynamic basketballJson)
+        private IEnumerable<GameOffering> GetBaseballOfferings(dynamic initialJson)
         {
-            var nbaJson = ((IEnumerable) basketballJson.bonavigationnodes).Cast<dynamic>().First(g => g.name == "NBA");
-            var nbaTabCouponJson = ((IEnumerable) nbaJson.bonavigationnodes).Cast<dynamic>()
-                .First(g => g.name == "NBA Tab Coupon");
-            var gamesMarketGroup = ((IEnumerable) nbaTabCouponJson.bonavigationnodes).Cast<dynamic>()
-                .First(g => g.name.Value.EndsWith("Games")).marketgroups[0].idfwmarketgroup;
-            var nbaGamesUrl = $"https://sportsbook.fanduel.com/cache/psmg/UK/{gamesMarketGroup}.json";
+            var footballJson = ((IEnumerable)initialJson.bonavigationnodes).Cast<dynamic>()
+                .First(g => g.name == "Baseball");
+            return GetGameOfferings(footballJson, "MLB", "MLB Tab Coupon", "Run Line", "Money Line", "Total Runs");
+        }
 
-            var nbaGamesJson = JsonConvert
-                .DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(nbaGamesUrl).Result).events;
-            var nbaGameNumbers = new List<string>();
-            foreach (var nbaGame in nbaGamesJson)
+        private IEnumerable<GameOffering> GetGameOfferings(dynamic json, string sport, string tabCouponName, string spreadLabel, string moneyLineLabel, string totalLabel)
+        {
+            var sportJson = ((IEnumerable)json.bonavigationnodes).Cast<dynamic>().First(g => g.name == sport);
+            var tabCouponJson = ((IEnumerable)sportJson.bonavigationnodes).Cast<dynamic>()
+                .First(g => g.name == tabCouponName);
+            var gamesMarketGroup = ((IEnumerable)tabCouponJson.bonavigationnodes).Cast<dynamic>()
+                .First(g => g.name.Value == "Games").marketgroups[0].idfwmarketgroup;
+            var gamesUrl = $"https://sportsbook.fanduel.com/cache/psmg/UK/{gamesMarketGroup}.json";
+
+            var sportsGamesJson = JsonConvert
+                .DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(gamesUrl).Result).events;
+            var gameNumbers = new List<string>();
+            foreach (var game in sportsGamesJson)
             {
-                nbaGameNumbers.Add(nbaGame.idfoevent.ToString());
+                gameNumbers.Add(game.idfoevent.ToString());
             }
 
             var gameOfferings = new List<GameOffering>();
-            foreach (var gameNumber in nbaGameNumbers)
+            foreach (var gameNumber in gameNumbers)
             {
-                var nbaGameUrl = $"https://sportsbook.fanduel.com/cache/psevent/UK/1/false/{gameNumber}.json";
+                var gameUrl = $"https://sportsbook.fanduel.com/cache/psevent/UK/1/false/{gameNumber}.json";
                 var gameJson =
-                    JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(nbaGameUrl).Result);
-                gameOfferings.Add(ParseNbaGameOffering(gameJson));
+                    JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(gameUrl).Result);
+                gameOfferings.Add(ParseGameOffering(gameJson, spreadLabel, moneyLineLabel, totalLabel));
             }
 
             return gameOfferings;
         }
 
-        private IEnumerable<GameOffering> GetNflGameOfferings(dynamic footballJson)
-        {
-            var nflJson = ((IEnumerable)footballJson.bonavigationnodes).Cast<dynamic>().First(g => g.name == "NFL");
-            var nflTabCouponJson = ((IEnumerable)nflJson.bonavigationnodes).Cast<dynamic>()
-                .First(g => g.name == "Season Coupon");
-            var gamesMarketGroup = ((IEnumerable)nflTabCouponJson.bonavigationnodes).Cast<dynamic>()
-                .First(g => g.name.Value.EndsWith("Games")).marketgroups[0].idfwmarketgroup;
-            var nflGamesUrl = $"https://sportsbook.fanduel.com/cache/psmg/UK/{gamesMarketGroup}.json";
-
-            var nflGamesJson = JsonConvert
-                .DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(nflGamesUrl).Result).events;
-            var nflGameNumbers = new List<string>();
-            foreach (var nflGame in nflGamesJson)
-            {
-                nflGameNumbers.Add(nflGame.idfoevent.ToString());
-            }
-
-            var gameOfferings = new List<GameOffering>();
-            foreach (var gameNumber in nflGameNumbers)
-            {
-                var nflGameUrl = $"https://sportsbook.fanduel.com/cache/psevent/UK/1/false/{gameNumber}.json";
-                var gameJson =
-                    JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(nflGameUrl).Result);
-                gameOfferings.Add(ParseNflGameOffering(gameJson));
-            }
-
-            return gameOfferings;
-        }
-
-        private GameOffering ParseNbaGameOffering(dynamic gameJson)
+        private GameOffering ParseGameOffering(dynamic gameJson, string spreadLabel, string moneyLineLabel, string totalLabel)
         {
             var gameOffering = new GameOffering
             {
@@ -118,7 +98,7 @@ namespace SportsbookAggregation.SportsBooks
             if (marketList == null)
                 return gameOffering;
 
-            var spreadInfo = ((IEnumerable) marketList).Cast<dynamic>().FirstOrDefault(g => g.name == "Spread Betting")
+            var spreadInfo = ((IEnumerable) marketList).Cast<dynamic>().FirstOrDefault(g => g.name.Value.Contains(spreadLabel))
                 ?.selections;
             if (spreadInfo != null)
             {
@@ -129,7 +109,7 @@ namespace SportsbookAggregation.SportsBooks
                     spreadInfo[0].currentpriceup.Value);
             }
 
-            var moneyLineInfo = ((IEnumerable) marketList).Cast<dynamic>().FirstOrDefault(g => g.name == "Moneyline")
+            var moneyLineInfo = ((IEnumerable) marketList).Cast<dynamic>().FirstOrDefault(g => g.name.Value.Contains(moneyLineLabel))
                 ?.selections;
             if (moneyLineInfo != null)
             {
@@ -140,63 +120,7 @@ namespace SportsbookAggregation.SportsBooks
             }
 
             var totalPointsInfo = ((IEnumerable) marketList).Cast<dynamic>()
-                .FirstOrDefault(g => g.name == "Total Points Scored");
-            if (totalPointsInfo == null) return gameOffering;
-
-            var totalPointsInfoSelections = totalPointsInfo?.selections;
-            gameOffering.OverPayOut = CalculateOdds(totalPointsInfoSelections[0].currentpricedown.Value,
-                totalPointsInfoSelections[0].currentpriceup.Value);
-            gameOffering.UnderPayout = CalculateOdds(totalPointsInfoSelections[1].currentpricedown.Value,
-                totalPointsInfoSelections[1].currentpriceup.Value);
-            gameOffering.CurrentOverUnder = totalPointsInfo.currentmatchhandicap;
-
-            return gameOffering;
-        }
-
-        
-        
-        private GameOffering ParseNflGameOffering(dynamic gameJson)
-        {
-            var gameOffering = new GameOffering
-            {
-                Site = GetSportsBookName(),
-                AwayTeam = gameJson.participantname_away,
-                HomeTeam = gameJson.participantname_home,
-                Sport = gameJson.sportname,
-                DateTime = gameJson.tsstart
-            };
-
-            if (gameJson.eventmarketgroups == null)
-                return gameOffering;
-
-            var marketList = ((IEnumerable)gameJson.eventmarketgroups).Cast<dynamic>()
-                .FirstOrDefault(g => g.name == "All")?.markets;
-            if (marketList == null)
-                return gameOffering;
-
-            var spreadInfo = ((IEnumerable)marketList).Cast<dynamic>().FirstOrDefault(g => g.name == "Spread")
-                ?.selections;
-            if (spreadInfo != null)
-            {
-                gameOffering.CurrentSpread = spreadInfo[0].currenthandicap;
-                gameOffering.HomeSpreadPayout = CalculateOdds(spreadInfo[1].currentpricedown.Value,
-                    spreadInfo[1].currentpriceup.Value);
-                gameOffering.AwaySpreadPayout = CalculateOdds(spreadInfo[0].currentpricedown.Value,
-                    spreadInfo[0].currentpriceup.Value);
-            }
-
-            var moneyLineInfo = ((IEnumerable)marketList).Cast<dynamic>().FirstOrDefault(g => g.name == "Moneyline")
-                ?.selections;
-            if (moneyLineInfo != null)
-            {
-                gameOffering.HomeMoneyLinePayout = CalculateOdds(moneyLineInfo[1].currentpricedown.Value,
-                    moneyLineInfo[1].currentpriceup.Value);
-                gameOffering.AwayMoneyLinePayout = CalculateOdds(moneyLineInfo[0].currentpricedown.Value,
-                    moneyLineInfo[0].currentpriceup.Value);
-            }
-
-            var totalPointsInfo = ((IEnumerable)marketList).Cast<dynamic>()
-                .FirstOrDefault(g => g.name == "Total Match Points");
+                .FirstOrDefault(g => g.name.Value.Contains(totalLabel));
             if (totalPointsInfo == null) return gameOffering;
 
             var totalPointsInfoSelections = totalPointsInfo?.selections;
