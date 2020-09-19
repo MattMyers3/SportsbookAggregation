@@ -13,7 +13,7 @@ namespace SportsbookAggregation.SportsBooks
 
         public IEnumerable<GameOffering> AggregateFutureOfferings()
         {
-            var oddsProvider = new BetRiversOddsProvider("https://pa.playsugarhouse.com", GetSportsBookName());
+            var oddsProvider = new KambicdnOddsProvider(GetSportsBookName(), "rsiuspa");
             return oddsProvider.AggregateFutureOfferings();
         }
     }
