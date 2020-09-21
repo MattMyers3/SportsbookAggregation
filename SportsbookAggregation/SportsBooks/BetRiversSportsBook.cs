@@ -13,7 +13,7 @@ namespace SportsbookAggregation.SportsBooks
 
         public IEnumerable<GameOffering> AggregateFutureOfferings()
         {
-            var oddsProvider = new BetRiversOddsProvider("https://pa.betrivers.com", GetSportsBookName());
+            var oddsProvider = new KambicdnOddsProvider(GetSportsBookName(), "rsi2uspa");
             return oddsProvider.AggregateFutureOfferings();
         }
     }
