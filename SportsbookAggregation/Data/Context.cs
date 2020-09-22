@@ -5,6 +5,7 @@ using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
+using SportsbookAggregation.Alerts.Models;
 using SportsbookAggregation.Data.Configuration;
 using SportsbookAggregation.Data.Models;
 
@@ -26,6 +27,8 @@ namespace SportsbookAggregation.Data
         public IRepository<Team> TeamRepository => new SqlServerRepository<Team>(this);
         public IRepository<Sport> SportRepository => new SqlServerRepository<Sport>(this);
         public IRepository<GameResult> GameResultRepository => new SqlServerRepository<GameResult>(this);
+        public IRepository<Alert> AlertRepository => new SqlServerRepository<Alert>(this);
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -35,7 +38,7 @@ namespace SportsbookAggregation.Data
             modelBuilder.ApplyConfiguration(new TeamConfiguration());
             modelBuilder.ApplyConfiguration(new SportConfiguration());
             modelBuilder.ApplyConfiguration(new GameResultConfiguration());
-
+            modelBuilder.ApplyConfiguration(new AlertConfiguration());
             var nbaGuid = new Guid("2cbbd293-8627-447d-8b20-2c5a4fdaa024");
             var nflGuid = new Guid("6e972a45-6bd9-4085-9a78-faddf46294be");
             var mlbGuid = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8");
@@ -145,7 +148,6 @@ namespace SportsbookAggregation.Data
                 new GamblingSite { GamblingSiteId = new Guid("ee7f8f4c-23a7-4c35-a450-fed7cc90a6dd"), Name = "Caesars" },
                 new GamblingSite { GamblingSiteId = new Guid("730346f5-e563-47bf-9230-148d25c424e9"), Name = "SugarHouse" },
                 new GamblingSite { GamblingSiteId = new Guid("eda5febb-1381-411a-88e8-5db158589212"), Name = "Barstool" }
-
             );
         }
 

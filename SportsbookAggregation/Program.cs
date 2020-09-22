@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Mail;
+using SportsbookAggregation.Alerts;
 using SportsbookAggregation.Data;
 using SportsbookAggregation.SportsBooks;
 using SportsbookAggregation.SportsBooks.Models;
@@ -17,15 +19,15 @@ namespace SportsbookAggregation
         {
             var dbContext = new Context();
 
-            List<ISportsBook> sportsbooks = new List<ISportsBook> { new DraftKingsSportsBook(), new FanDuelSportsBook(), new FoxBetSportsBook(), new BarstoolSportsBook(), new BetAmericaSportsBook(), new CaesarsSportBook(), new BetRiversSportsBook(), new ParxSportsBook(), new UnibetSportsBook(), new SugarHouseSportsBook()};
+            List<ISportsBook> sportsbooks = new List<ISportsBook> { new DraftKingsSportsBook(), new FanDuelSportsBook(), new FoxBetSportsBook(), new BarstoolSportsBook(), new BetAmericaSportsBook(), new CaesarsSportBook(), new BetRiversSportsBook(), new ParxSportsBook(), new UnibetSportsBook(), new SugarHouseSportsBook() };
             var gameOfferings = new List<GameOffering>();
-            foreach(var sportsbook in sportsbooks)
+            foreach (var sportsbook in sportsbooks)
             {
                 try
                 {
-                    gameOfferings.AddRange(sportsbook.AggregateFutureOfferings().ToList());               
+                    gameOfferings.AddRange(sportsbook.AggregateFutureOfferings().ToList());
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     LogError(ex);
                     Console.WriteLine("Failed to Parse: " + sportsbook.GetSportsBookName());
@@ -37,11 +39,12 @@ namespace SportsbookAggregation
                 var databaseUpdater = new SportsbookOfferingsUpdater(dbContext);
                 databaseUpdater.WriteGameOfferings(gameOfferings);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 LogError(ex);
                 throw ex;
             }
+            AlertsService.Run(dbContext);
         }
 
         public static void LogError(Exception ex)
