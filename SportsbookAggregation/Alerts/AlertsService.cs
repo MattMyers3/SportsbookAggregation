@@ -124,8 +124,10 @@ namespace SportsbookAggregation.Alerts
             var message = new MailMessage();
             message.From = new MailAddress("SportsAggregation@gmail.com");
 
-            message.To.Add(new MailAddress("4102927305@vtext.com"));
-            message.To.Add(new MailAddress("3015025056@vtext.com"));                                                    
+            message.To.Add(new MailAddress("4102927305@vtext.com")); //Nick
+            message.To.Add(new MailAddress("3015025056@vtext.com")); //Myers
+            message.To.Add(new MailAddress("4842134124@vtext.com")); //Murph
+            message.To.Add(new MailAddress("7179798657@vtext.com")); //Jordan
 
             message.Subject = "Free Money";
             message.Body = content;
