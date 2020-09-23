@@ -97,7 +97,7 @@ namespace SportsbookAggregation
 
         private Guid GetTeamId(string teamName)
         {
-            var teamNameSplit = teamName.Split(' ');
+            var teamNameSplit = teamName.Trim().Split(' ');
             var firstWord = teamNameSplit.First();
             var lastWord = teamNameSplit.Last();
             return dbContext.TeamRepository.Read()
