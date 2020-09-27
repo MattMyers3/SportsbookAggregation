@@ -55,8 +55,12 @@ namespace SportsbookAggregation.SportsBooks
             var sportJson = ((IEnumerable)json.bonavigationnodes).Cast<dynamic>().First(g => g.name == sport);
             var tabCouponJson = ((IEnumerable)sportJson.bonavigationnodes).Cast<dynamic>()
                 .First(g => g.name == tabCouponName);
-            var gamesMarketGroup = ((IEnumerable)tabCouponJson.bonavigationnodes).Cast<dynamic>()
-                .First(g => g.name.Value == "Games").marketgroups[0].idfwmarketgroup;
+            var gamesMarketGroups = ((IEnumerable)tabCouponJson.bonavigationnodes).Cast<dynamic>()
+                .First(g => g.name.Value == "Games").marketgroups;
+            if (gamesMarketGroups.Count == 0)
+                return Enumerable.Empty<GameOffering>();
+
+            var gamesMarketGroup = gamesMarketGroups[0].idfwmarketgroup;
             var gamesUrl = $"https://sportsbook.fanduel.com/cache/psmg/UK/{gamesMarketGroup}.json";
 
             var sportsGamesJson = JsonConvert
