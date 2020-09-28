@@ -60,7 +60,8 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
                 var eventInfo = game.Event;
                 var betOffers = game.betOffers;
 
-                gameOfferings.Add(ParseGameOffering(eventInfo, betOffers, spreadLabel, moneyLineLabel, totalLabel));
+                if(eventInfo.awayName != null && eventInfo.homeName != null)
+                    gameOfferings.Add(ParseGameOffering(eventInfo, betOffers, spreadLabel, moneyLineLabel, totalLabel));
             }
 
             return gameOfferings;

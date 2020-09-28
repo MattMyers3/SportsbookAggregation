@@ -60,7 +60,9 @@ namespace SportsbookAggregation.SportsBooks
                 JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(InitialBaseballRequest).Result);
 
             var usaCategoryJson = ((IEnumerable)initialJson.categories).Cast<dynamic>()
-                .First(g => g.name == "USA");
+                .FirstOrDefault(g => g.name == "USA");
+            if (usaCategoryJson == null)
+                return Enumerable.Empty<GameOffering>();
 
             return GetGameOfferings(usaCategoryJson, "MLB", "Money Line", "Run Line", "Total Runs");
         }
