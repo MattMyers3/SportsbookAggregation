@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SportsbookAggregation.Data
 {
@@ -31,6 +33,12 @@ namespace SportsbookAggregation.Data
         public void Update(T entity)
         {
             context.Update(entity);
+            context.SaveChanges();
+        }
+
+        public void UpdateRange(IEnumerable<Object> entities)
+        {
+            context.UpdateRange(entities);
             context.SaveChanges();
         }
     }

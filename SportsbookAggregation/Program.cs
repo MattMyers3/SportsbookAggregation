@@ -37,7 +37,12 @@ namespace SportsbookAggregation
             try
             {
                 var databaseUpdater = new SportsbookOfferingsUpdater(dbContext);
-                databaseUpdater.WriteGameOfferings(gameOfferings);
+                using (var dbContextTransaction = dbContext.Database.BeginTransaction())
+                {
+                    databaseUpdater.SetGameOfferingsToNotAvailable();
+                    databaseUpdater.WriteGameOfferings(gameOfferings);
+                    dbContextTransaction.Commit();
+                }
             }
             catch (Exception ex)
             {
