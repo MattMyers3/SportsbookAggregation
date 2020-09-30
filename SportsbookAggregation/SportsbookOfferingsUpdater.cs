@@ -37,6 +37,16 @@ namespace SportsbookAggregation
             }
         }
 
+        public void SetGameOfferingsToNotAvailable()
+        {
+            var allLines = dbContext.GameLineRepository.Read();
+            foreach (var gameLine in allLines)
+                gameLine.IsAvailable = false;
+            
+            
+            dbContext.GameLineRepository.UpdateRange(allLines);
+        }
+
         private void UpdateGameLine(GameLine gameLine, GameOffering gameOffering)
         {
             if (gameLine.OpeningSpread == null)
@@ -52,6 +62,7 @@ namespace SportsbookAggregation
             gameLine.HomeSpreadPayout = gameOffering.HomeSpreadPayout;
             gameLine.AwaySpreadPayout = gameOffering.AwaySpreadPayout;
             gameLine.LastRefresh = DateTime.Now;
+            gameLine.IsAvailable = true;
             dbContext.GameLineRepository.Update(gameLine);
         }
 
@@ -71,7 +82,8 @@ namespace SportsbookAggregation
                 OpeningSpread = gameOffering.CurrentSpread,
                 OverPayOut = gameOffering.OverPayOut,
                 UnderPayout = gameOffering.UnderPayout,
-                LastRefresh = DateTime.Now
+                LastRefresh = DateTime.Now,
+                IsAvailable = true
             });
         }
 

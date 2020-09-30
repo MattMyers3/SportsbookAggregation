@@ -19,7 +19,8 @@ namespace SportsbookAggregation
         {
             var dbContext = new Context();
 
-            List<ISportsBook> sportsbooks = new List<ISportsBook> { new DraftKingsSportsBook(), new FanDuelSportsBook(), new FoxBetSportsBook(), new BarstoolSportsBook(), new BetAmericaSportsBook(), new CaesarsSportBook(), new BetRiversSportsBook(), new ParxSportsBook(), new UnibetSportsBook(), new SugarHouseSportsBook() };
+            // List<ISportsBook> sportsbooks = new List<ISportsBook> { new DraftKingsSportsBook(), new FanDuelSportsBook(), new FoxBetSportsBook(), new BarstoolSportsBook(), new BetAmericaSportsBook(), new CaesarsSportBook(), new BetRiversSportsBook(), new ParxSportsBook(), new UnibetSportsBook(), new SugarHouseSportsBook() };
+            List<ISportsBook> sportsbooks = new List<ISportsBook> { new DraftKingsSportsBook() };
             var gameOfferings = new List<GameOffering>();
             foreach (var sportsbook in sportsbooks)
             {
@@ -37,14 +38,19 @@ namespace SportsbookAggregation
             try
             {
                 var databaseUpdater = new SportsbookOfferingsUpdater(dbContext);
-                databaseUpdater.WriteGameOfferings(gameOfferings);
+                using (var dbContextTransaction = dbContext.Database.BeginTransaction())
+                {
+                    databaseUpdater.SetGameOfferingsToNotAvailable();
+                    databaseUpdater.WriteGameOfferings(gameOfferings);
+                    dbContextTransaction.Commit();
+                }
             }
             catch (Exception ex)
             {
                 LogError(ex);
                 throw ex;
             }
-            AlertsService.Run(dbContext);
+            //AlertsService.Run(dbContext);
         }
 
         public static void LogError(Exception ex)

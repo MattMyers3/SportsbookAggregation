@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SportsbookAggregation.Data
 {
@@ -8,5 +10,6 @@ namespace SportsbookAggregation.Data
         void Create(T entity);
         void Delete(T entity);
         void Update(T entity);
+        void UpdateRange(IEnumerable<Object> entities);
     }
 }
