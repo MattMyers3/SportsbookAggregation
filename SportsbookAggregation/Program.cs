@@ -49,7 +49,7 @@ namespace SportsbookAggregation
                 LogError(ex);
                 throw ex;
             }
-            //AlertsService.Run(dbContext);
+            AlertsService.Run(dbContext);
         }
 
         public static void LogError(Exception ex)
