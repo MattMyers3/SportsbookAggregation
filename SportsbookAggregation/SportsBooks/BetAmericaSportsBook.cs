@@ -92,7 +92,7 @@ namespace SportsbookAggregation.SportsBooks
                 Sport = gameInfoJson.leagueName,
                 AwayTeam = LocationMapper.GetFullTeamName(awayTeam, gameInfoJson.leagueName.Value),
                 HomeTeam = LocationMapper.GetFullTeamName(homeTeam, gameInfoJson.leagueName.Value),
-                DateTime = gameInfoJson.startEventDate.Value.AddHours(-4)
+                DateTime = gameInfoJson.startEventDate.Value
             };
 
             if (gameOffering.HomeTeam.Contains("Washington [NFL]"))

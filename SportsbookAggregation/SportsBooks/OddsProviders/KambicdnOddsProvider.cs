@@ -75,7 +75,7 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
                 Sport = eventInfo.group,
                 AwayTeam = LocationMapper.GetFullTeamName(eventInfo.awayName.Value, eventInfo.group.Value),
                 HomeTeam = LocationMapper.GetFullTeamName(eventInfo.homeName.Value, eventInfo.group.Value),
-                DateTime = eventInfo.start.Value.AddHours(-4)
+                DateTime = eventInfo.start.Value
             };
 
             var pointSpreadJson = ((IEnumerable)betOffers).Cast<dynamic>().FirstOrDefault(g => g.criterion.label == spreadLabel);

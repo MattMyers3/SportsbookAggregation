@@ -37,7 +37,7 @@ namespace SportsbookAggregation.SportsBooks
 
         private string GetSportsUrl(string sportsCode)
         {
-            var date = DateTime.Now.ToString("yyyy-MM-dd");
+            var date = DateTime.UtcNow.ToString("yyyy-MM-dd"); //No idea if this is right. Having trouble testing. Might need to redo some of this book, site might have updated
             return $"https://sb-content.pa.caesarsonline.com/content-service/api/v1/q/event-list?startTimeFrom={date}&started=false&active=true&maxMarkets=10&orderMarketsBy=displayOrder&marketSortsIncluded=HH%2CHL%2CMR%2CWH&eventSortsIncluded=MTCH&includeChildMarkets=true&prioritisePrimaryMarkets=true&includeMedia=true&drilldownTagIds={sportsCode}";
         }
 
@@ -62,7 +62,7 @@ namespace SportsbookAggregation.SportsBooks
             {
                 Site = GetSportsBookName(),
                 Sport = GetSport(game),
-                DateTime = game.startTime.Value.AddHours(-4)
+                DateTime = game.startTime.Value
             };
 
             gameOffering.HomeTeam = ((IEnumerable)game.teams).Cast<dynamic>().FirstOrDefault(g => g.side == "HOME").name;

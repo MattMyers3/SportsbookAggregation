@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Mail;
 using SportsbookAggregation.Alerts;
 using SportsbookAggregation.Data;
 using SportsbookAggregation.SportsBooks;
@@ -49,7 +48,7 @@ namespace SportsbookAggregation
                 LogError(ex);
                 throw ex;
             }
-            AlertsService.Run(dbContext);
+           AlertsService.Run(dbContext);
         }
 
         public static void LogError(Exception ex)

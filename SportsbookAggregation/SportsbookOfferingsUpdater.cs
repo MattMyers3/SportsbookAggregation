@@ -20,7 +20,7 @@ namespace SportsbookAggregation
         {
             foreach (var gameOffering in gameOfferings)
             {
-                if (gameOffering.DateTime < DateTime.Now)
+                if (gameOffering.DateTime < DateTime.UtcNow)
                     continue;
                 var homeTeamId = GetTeamId(gameOffering.HomeTeam);
                 var awayTeamId = GetTeamId(gameOffering.AwayTeam);
@@ -61,7 +61,7 @@ namespace SportsbookAggregation
             gameLine.UnderPayout = gameOffering.UnderPayout;
             gameLine.HomeSpreadPayout = gameOffering.HomeSpreadPayout;
             gameLine.AwaySpreadPayout = gameOffering.AwaySpreadPayout;
-            gameLine.LastRefresh = DateTime.Now;
+            gameLine.LastRefresh = DateTime.UtcNow;
             gameLine.IsAvailable = true;
             dbContext.GameLineRepository.Update(gameLine);
         }
@@ -82,7 +82,7 @@ namespace SportsbookAggregation
                 OpeningSpread = gameOffering.CurrentSpread,
                 OverPayOut = gameOffering.OverPayOut,
                 UnderPayout = gameOffering.UnderPayout,
-                LastRefresh = DateTime.Now,
+                LastRefresh = DateTime.UtcNow,
                 IsAvailable = true
             });
         }

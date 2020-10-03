@@ -21,12 +21,12 @@ namespace SportsbookAggregation.SportsBooks
         {
             var initialJson = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(InitialRequest).Result);
 
-            IEnumerable<GameOffering> basketballOfferings = GetBasketballOfferings(initialJson);
+           // IEnumerable<GameOffering> basketballOfferings = GetBasketballOfferings(initialJson);
             IEnumerable<GameOffering> footballOfferings = GetFootballOfferings(initialJson);
             IEnumerable<GameOffering> baseballOfferings = GetBaseballOfferings(initialJson);
 
-
-            return baseballOfferings.Concat(basketballOfferings.Concat(footballOfferings));
+            return null;
+            //return baseballOfferings.Concat(basketballOfferings.Concat(footballOfferings));
         }
 
         private IEnumerable<GameOffering> GetBasketballOfferings(dynamic initialJson)
@@ -55,12 +55,8 @@ namespace SportsbookAggregation.SportsBooks
             var sportJson = ((IEnumerable)json.bonavigationnodes).Cast<dynamic>().First(g => g.name == sport);
             var tabCouponJson = ((IEnumerable)sportJson.bonavigationnodes).Cast<dynamic>()
                 .First(g => g.name == tabCouponName);
-            var gamesMarketGroups = ((IEnumerable)tabCouponJson.bonavigationnodes).Cast<dynamic>()
-                .First(g => g.name.Value == "Games").marketgroups;
-            if (gamesMarketGroups.Count == 0)
-                return Enumerable.Empty<GameOffering>();
-
-            var gamesMarketGroup = gamesMarketGroups[0].idfwmarketgroup;
+            var gamesMarketGroup = ((IEnumerable)tabCouponJson.bonavigationnodes).Cast<dynamic>()
+                .First(g => g.name.Value == "Games").marketgroups[0].idfwmarketgroup;
             var gamesUrl = $"https://sportsbook.fanduel.com/cache/psmg/UK/{gamesMarketGroup}.json";
 
             var sportsGamesJson = JsonConvert
@@ -93,7 +89,7 @@ namespace SportsbookAggregation.SportsBooks
                 Sport = gameJson.sportname,
                 DateTime = gameJson.tsstart
             };
-
+            gameOffering.DateTime = gameOffering.DateTime.AddHours(4);
             if (gameJson.eventmarketgroups == null)
                 return gameOffering;
 
