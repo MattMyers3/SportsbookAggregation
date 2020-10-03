@@ -21,12 +21,11 @@ namespace SportsbookAggregation.SportsBooks
         {
             var initialJson = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(InitialRequest).Result);
 
-           // IEnumerable<GameOffering> basketballOfferings = GetBasketballOfferings(initialJson);
+            IEnumerable<GameOffering> basketballOfferings = GetBasketballOfferings(initialJson);
             IEnumerable<GameOffering> footballOfferings = GetFootballOfferings(initialJson);
             IEnumerable<GameOffering> baseballOfferings = GetBaseballOfferings(initialJson);
 
-            return null;
-            //return baseballOfferings.Concat(basketballOfferings.Concat(footballOfferings));
+            return baseballOfferings.Concat(basketballOfferings.Concat(footballOfferings));
         }
 
         private IEnumerable<GameOffering> GetBasketballOfferings(dynamic initialJson)
