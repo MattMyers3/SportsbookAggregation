@@ -25,7 +25,6 @@ namespace SportsbookAggregation.SportsBooks
             IEnumerable<GameOffering> footballOfferings = GetFootballOfferings(initialJson);
             IEnumerable<GameOffering> baseballOfferings = GetBaseballOfferings(initialJson);
 
-
             return baseballOfferings.Concat(basketballOfferings.Concat(footballOfferings));
         }
 
@@ -58,7 +57,7 @@ namespace SportsbookAggregation.SportsBooks
             var gamesMarketGroups = ((IEnumerable)tabCouponJson.bonavigationnodes).Cast<dynamic>()
                 .First(g => g.name.Value == "Games").marketgroups;
             if (gamesMarketGroups.Count == 0)
-                return Enumerable.Empty<GameOffering>();
+                return Enumerable.Empty<GameOffering>();//This could create silent failing. It's not parsing NBA Finals because the name is NBA Finals instead of Games
 
             var gamesMarketGroup = gamesMarketGroups[0].idfwmarketgroup;
             var gamesUrl = $"https://sportsbook.fanduel.com/cache/psmg/UK/{gamesMarketGroup}.json";
@@ -93,7 +92,7 @@ namespace SportsbookAggregation.SportsBooks
                 Sport = gameJson.sportname,
                 DateTime = gameJson.tsstart
             };
-
+            gameOffering.DateTime = gameOffering.DateTime.AddHours(4);
             if (gameJson.eventmarketgroups == null)
                 return gameOffering;
 

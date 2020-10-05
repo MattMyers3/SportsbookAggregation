@@ -17,7 +17,7 @@ namespace SportsbookAggregation.Alerts
             System.Net.NetworkCredential basicAuthenticationInfo = new
                System.Net.NetworkCredential("SportsAggregation@gmail.com", "MattNick69");
             client.Credentials = basicAuthenticationInfo;
-            var now = DateTime.Now;
+            var now = DateTime.UtcNow;
 
             var futureGames = dbContext.GameRepository.Read().Where(g => g.TimeStamp > now).ToList();
             foreach (var game in futureGames)

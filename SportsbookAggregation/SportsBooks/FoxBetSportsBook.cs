@@ -99,7 +99,7 @@ namespace SportsbookAggregation.SportsBooks
             {
                 Site = GetSportsBookName(),
                 DateTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
-                    .AddMilliseconds(Convert.ToDouble(gameJson.eventsTime.Value)).AddHours(-5),
+                    .AddMilliseconds(Convert.ToDouble(gameJson.eventsTime.Value))
             };
             var participantList = ((IEnumerable) gameJson.participants.participant).Cast<dynamic>().ToList();
             gameOffering.HomeTeam = participantList.Single(p => p.type == "HOME").names.longName;

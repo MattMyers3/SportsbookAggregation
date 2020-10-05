@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Mail;
 using SportsbookAggregation.Alerts;
 using SportsbookAggregation.Data;
 using SportsbookAggregation.SportsBooks;
