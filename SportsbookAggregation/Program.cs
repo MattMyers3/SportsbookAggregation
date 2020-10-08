@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Mail;
 using SportsbookAggregation.Alerts;
 using SportsbookAggregation.Data;
 using SportsbookAggregation.SportsBooks;
@@ -29,6 +30,7 @@ namespace SportsbookAggregation
                 catch (Exception ex)
                 {
                     LogError(ex);
+                    SendAlerts("Failed to Parse: " + sportsbook.GetSportsBookName());
                     Console.WriteLine("Failed to Parse: " + sportsbook.GetSportsBookName());
                 }
             }
@@ -46,6 +48,7 @@ namespace SportsbookAggregation
             catch (Exception ex)
             {
                 LogError(ex);
+                SendAlerts("Failed writing games to DB");
                 throw ex;
             }
             AlertsService.Run(dbContext);
@@ -71,6 +74,28 @@ namespace SportsbookAggregation
                     exception = exception.InnerException;
                 }
             }
+        }
+
+        public static void SendAlerts(string content)
+        {
+            var client = new SmtpClient("smtp.gmail.com", 587);
+            client.EnableSsl = true;
+            client.UseDefaultCredentials = false;
+            System.Net.NetworkCredential basicAuthenticationInfo = new
+               System.Net.NetworkCredential("SportsAggregation@gmail.com", "MattNick69");
+            client.Credentials = basicAuthenticationInfo;
+
+            var message = new MailMessage();
+            message.From = new MailAddress("SportsAggregation@gmail.com");
+
+            message.To.Add(new MailAddress("4102927305@vtext.com")); //Nick
+            message.To.Add(new MailAddress("3015025056@vtext.com")); //Myers
+
+            message.Subject = "PROD ALERT";
+            message.Body = content;
+
+
+            client.Send(message);
         }
     }
 }
