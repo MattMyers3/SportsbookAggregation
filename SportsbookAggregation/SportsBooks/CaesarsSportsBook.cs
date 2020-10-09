@@ -76,7 +76,7 @@ namespace SportsbookAggregation.SportsBooks
             var totalPointsJson = markets.FirstOrDefault(g => g.name == "Total Points Over/Under");
             var moneylineJson = markets.FirstOrDefault(g => g.name == "Money Line");
 
-            if (pointSpreadJson != null)
+            if (pointSpreadJson != null && pointSpreadJson.status != "SUSPENDED")
             {
                 var homeSelection = ((IEnumerable)pointSpreadJson.outcomes).Cast<dynamic>().FirstOrDefault(g => g.name == gameOffering.HomeTeam);
                 var awaySelection = ((IEnumerable)pointSpreadJson.outcomes).Cast<dynamic>().FirstOrDefault(g => g.name == gameOffering.AwayTeam);
@@ -85,7 +85,7 @@ namespace SportsbookAggregation.SportsBooks
                 gameOffering.AwaySpreadPayout = Convert.ToInt32(CalculateOdds(awaySelection.prices[0].denominator.Value, awaySelection.prices[0].numerator.Value));
             }
 
-            if (moneylineJson != null)
+            if (moneylineJson != null && moneylineJson.status != "SUSPENDED")
             {
                 var homeSelection = ((IEnumerable)moneylineJson.outcomes).Cast<dynamic>().FirstOrDefault(g => g.name == gameOffering.HomeTeam);
                 var awaySelection = ((IEnumerable)moneylineJson.outcomes).Cast<dynamic>().FirstOrDefault(g => g.name == gameOffering.AwayTeam);
@@ -93,7 +93,7 @@ namespace SportsbookAggregation.SportsBooks
                 gameOffering.AwayMoneyLinePayout = Convert.ToInt32(CalculateOdds(awaySelection.prices[0].denominator.Value, awaySelection.prices[0].numerator.Value));
             }
 
-            if (totalPointsJson != null)
+            if (totalPointsJson != null && totalPointsJson.status != "SUSPENDED")
             {
                 var overSelection = ((IEnumerable)totalPointsJson.outcomes).Cast<dynamic>().FirstOrDefault(g => g.name == "Over");
                 var underSelection = ((IEnumerable)totalPointsJson.outcomes).Cast<dynamic>().FirstOrDefault(g => g.name == "Under");
