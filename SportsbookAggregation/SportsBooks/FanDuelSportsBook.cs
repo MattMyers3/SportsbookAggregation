@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using SportsbookAggregation.Data.Models;
 using SportsbookAggregation.SportsBooks.Models;
 
 namespace SportsbookAggregation.SportsBooks
@@ -141,6 +142,11 @@ namespace SportsbookAggregation.SportsBooks
             return priceDown < priceUp
                 ? Convert.ToInt32(100 / priceDown * priceUp)
                 : Convert.ToInt32(-1 * (100 / priceUp) * priceDown);
+        }
+
+        public IEnumerable<OddsBoostOffering> AggregateOddsBoost()
+        {
+            throw new NotImplementedException();
         }
     }
 }

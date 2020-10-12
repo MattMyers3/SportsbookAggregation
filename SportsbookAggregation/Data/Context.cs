@@ -28,6 +28,8 @@ namespace SportsbookAggregation.Data
         public IRepository<Sport> SportRepository => new SqlServerRepository<Sport>(this);
         public IRepository<GameResult> GameResultRepository => new SqlServerRepository<GameResult>(this);
         public IRepository<Alert> AlertRepository => new SqlServerRepository<Alert>(this);
+        public IRepository<OddsBoost> OddsBoostRepository => new SqlServerRepository<OddsBoost>(this);
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -39,6 +41,8 @@ namespace SportsbookAggregation.Data
             modelBuilder.ApplyConfiguration(new SportConfiguration());
             modelBuilder.ApplyConfiguration(new GameResultConfiguration());
             modelBuilder.ApplyConfiguration(new AlertConfiguration());
+            modelBuilder.ApplyConfiguration(new OddsBoostConfiguration());
+
             var nbaGuid = new Guid("2cbbd293-8627-447d-8b20-2c5a4fdaa024");
             var nflGuid = new Guid("6e972a45-6bd9-4085-9a78-faddf46294be");
             var mlbGuid = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8");

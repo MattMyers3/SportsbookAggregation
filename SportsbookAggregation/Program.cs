@@ -19,18 +19,21 @@ namespace SportsbookAggregation
         {
             var dbContext = new Context();
 
-            List<ISportsBook> sportsbooks = new List<ISportsBook> { new DraftKingsSportsBook(), new FanDuelSportsBook(), new FoxBetSportsBook(), new BarstoolSportsBook(), new BetAmericaSportsBook(), new CaesarsSportBook(), new BetRiversSportsBook(), new ParxSportsBook(), new UnibetSportsBook(), new SugarHouseSportsBook() };
+            List<ISportsBook> sportsbooks = new List<ISportsBook> { new DraftKingsSportsBook()};
             var gameOfferings = new List<GameOffering>();
+            var oddsBoosts = new List<OddsBoostOffering>();
+
             foreach (var sportsbook in sportsbooks)
             {
                 try
                 {
-                    gameOfferings.AddRange(sportsbook.AggregateFutureOfferings().ToList());
+                    // gameOfferings.AddRange(sportsbook.AggregateFutureOfferings().ToList());
+                    oddsBoosts.AddRange(sportsbook.AggregateOddsBoost().ToList());
                 }
                 catch (Exception ex)
                 {
                     LogError(ex);
-                    SendAlerts("Failed to Parse: " + sportsbook.GetSportsBookName());
+                   // SendAlerts("Failed to Parse: " + sportsbook.GetSportsBookName());
                     Console.WriteLine("Failed to Parse: " + sportsbook.GetSportsBookName());
                 }
             }
@@ -48,7 +51,7 @@ namespace SportsbookAggregation
             catch (Exception ex)
             {
                 LogError(ex);
-                SendAlerts("Failed writing games to DB");
+               // SendAlerts("Failed writing games to DB");
                 throw ex;
             }
             AlertsService.Run(dbContext);

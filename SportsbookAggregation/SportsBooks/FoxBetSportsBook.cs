@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using SportsbookAggregation.Data.Models;
 using SportsbookAggregation.SportsBooks.Models;
 
 namespace SportsbookAggregation.SportsBooks
@@ -162,6 +163,11 @@ namespace SportsbookAggregation.SportsBooks
                 return Convert.ToInt32(fracAsDouble * 100);
 
             return -1 * Convert.ToInt32(100 / fracAsDouble);
+        }
+
+        public IEnumerable<OddsBoostOffering> AggregateOddsBoost()
+        {
+            throw new NotImplementedException();
         }
     }
 }

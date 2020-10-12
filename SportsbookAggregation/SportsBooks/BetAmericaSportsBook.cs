@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SportsbookAggregation.Data.Models;
 using SportsbookAggregation.SportsBooks.Models;
 using System;
 using System.Collections;
@@ -143,6 +144,11 @@ namespace SportsbookAggregation.SportsBooks
             }
 
             return gameOffering;
+        }
+
+        public IEnumerable<OddsBoostOffering> AggregateOddsBoost()
+        {
+            throw new NotImplementedException();
         }
     }
 }

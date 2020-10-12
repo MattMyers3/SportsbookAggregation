@@ -1,4 +1,5 @@
-﻿using SportsbookAggregation.SportsBooks.Models;
+﻿using SportsbookAggregation.Data.Models;
+using SportsbookAggregation.SportsBooks.Models;
 using SportsbookAggregation.SportsBooks.OddsProviders;
 using System.Collections.Generic;
 
@@ -13,8 +14,13 @@ namespace SportsbookAggregation.SportsBooks
 
         public IEnumerable<GameOffering> AggregateFutureOfferings()
         {
-            var oddsProvider = new KambicdnOddsProvider(GetSportsBookName(), "rsi2uspa");
+            var oddsProvider = new KambicdnOddsProvider(GetSportsBookName(), "rsi2uspa", "betrivers");
             return oddsProvider.AggregateFutureOfferings();
+        }
+
+        public IEnumerable<OddsBoostOffering> AggregateOddsBoost()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
