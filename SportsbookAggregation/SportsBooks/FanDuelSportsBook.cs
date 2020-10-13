@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
-using SportsbookAggregation.Data.Models;
 using SportsbookAggregation.SportsBooks.Models;
 
 namespace SportsbookAggregation.SportsBooks
@@ -146,7 +145,51 @@ namespace SportsbookAggregation.SportsBooks
 
         public IEnumerable<OddsBoostOffering> AggregateOddsBoost()
         {
-            throw new NotImplementedException();
+            var initialJson = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(InitialRequest).Result);
+
+            var boostJson = ((IEnumerable)initialJson.bonavigationnodes).Cast<dynamic>()
+                .First(g => g.name == "Boosts");
+
+            return GetOddsBoosts(boostJson);
+        }
+
+        private IEnumerable<OddsBoostOffering> GetOddsBoosts(dynamic boostJson)
+        {
+            var oddsBoostJson = ((IEnumerable)boostJson.bonavigationnodes).Cast<dynamic>().First(g => g.name == "Odds Boosts");
+            var obCouponJson = ((IEnumerable)oddsBoostJson.bonavigationnodes).Cast<dynamic>().First(g => g.name == "OB Coupon");
+            var sportMarketGroups = ((IEnumerable)obCouponJson.bonavigationnodes).Cast<dynamic>().First(g => g.name.Value == "Odds Boosts").marketgroups;
+
+            if (sportMarketGroups.Count == 0)
+                return Enumerable.Empty<OddsBoostOffering>();
+
+            var oddsBoostOfferings = new List<OddsBoostOffering>();
+            foreach(var marketGroup in sportMarketGroups)
+            {
+                var marketGroupNumber = marketGroup.idfwmarketgroup;
+                var groupUrl = $"https://sportsbook.fanduel.com/cache/psmg/UK/{marketGroupNumber}.json";
+                var oddsBoostEvents = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(groupUrl).Result).events;
+                foreach(var boostEvent in oddsBoostEvents)
+                {
+                    oddsBoostOfferings.Add(GetOddsBoostOffering(boostEvent));
+                }                
+            }
+            return oddsBoostOfferings;
+        }
+
+        private OddsBoostOffering GetOddsBoostOffering(dynamic boostEvent)
+        {
+            var oddsBoostOffering = new OddsBoostOffering
+            {
+                Site = GetSportsBookName(),
+                Date = boostEvent.tsstart,
+                Description = boostEvent.externaldescription,
+                Sport = boostEvent.sportname
+            };
+
+            var oddsBoostSelections = ((IEnumerable)boostEvent.markets).Cast<dynamic>().FirstOrDefault()?.selections;
+            oddsBoostOffering.PreviousOdds = CalculateOdds(oddsBoostSelections[0].estimatepricedown.Value, oddsBoostSelections[0].estimatepriceup.Value);
+            oddsBoostOffering.BoostedOdds = CalculateOdds(oddsBoostSelections[0].currentpricedown.Value, oddsBoostSelections[0].currentpriceup.Value);
+            return oddsBoostOffering;
         }
     }
 }
