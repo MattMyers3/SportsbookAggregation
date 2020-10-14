@@ -47,7 +47,6 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
             foreach(var eventObject in eventList)
             {
                 var eventId = eventObject.Event.id;
-                var sport = eventObject.Event.name.ToString().Split(' ')[0]; //This is not always right.. "Alvin Kamera special" on unibet
                 var url = BaseUrl + $"/betoffer/event/{eventId}.json?lang=en_US&market=US&includeParticipants=true";
 
                 var betOfferResponse = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(url).Result).ToString();//needed because event is a C# key word
@@ -59,7 +58,6 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
                     oddsBoost.BoostedOdds = ((IEnumerable)betOffer.outcomes).Cast<dynamic>().FirstOrDefault(g => g.status == "OPEN").oddsAmerican;
                     oddsBoost.Site = site;
                     oddsBoost.Date = betOffer.closed;
-                    oddsBoost.Sport = sport; 
                     oddsBoostOfferings.Add(oddsBoost);
                 }
             }
