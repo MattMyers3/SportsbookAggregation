@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using SportsbookAggregation.Data.Models;
 using SportsbookAggregation.SportsBooks.Models;
 using SportsbookAggregation.SportsBooks.OddsProviders;
 using System.Collections;
@@ -39,7 +38,8 @@ namespace SportsbookAggregation.SportsBooks
                     var oddsBoost = new OddsBoostOffering();
                     oddsBoost.Description = betOffer.label;
                     oddsBoost.BoostedOdds = betOffer.outcomes[0].oddsAmerican;
-                    oddsBoost.PreviousOdds = betOffer.outcomes[0].unboostedOutcome.oddsAmerican;
+                    if(betOffer.outcomes[0].unboostedOutcome != null)
+                        oddsBoost.PreviousOdds = betOffer.outcomes[0].unboostedOutcome.oddsAmerican;
                     oddsBoost.Site = GetSportsBookName();
                     oddsBoostOfferings.Add(oddsBoost);
                 }
