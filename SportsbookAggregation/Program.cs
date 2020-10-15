@@ -53,7 +53,7 @@ namespace SportsbookAggregation
                 var databaseUpdater = new SportsbookOfferingsUpdater(dbContext);
                 using (var dbContextTransaction = dbContext.Database.BeginTransaction())
                 {
-                    databaseUpdater.SetGameOfferingsToNotAvailable();
+                    databaseUpdater.SetOfferingsToNotAvailable();
                     databaseUpdater.WriteGameOfferings(gameOfferings);
                     databaseUpdater.WriteOddsBoosts(oddsBoosts);
                     dbContextTransaction.Commit();

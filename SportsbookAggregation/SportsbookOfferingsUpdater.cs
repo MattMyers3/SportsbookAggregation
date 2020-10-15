@@ -75,7 +75,7 @@ namespace SportsbookAggregation
             }
         }
 
-        public void SetGameOfferingsToNotAvailable()
+        public void SetOfferingsToNotAvailable()
         {
             var allLines = dbContext.GameLineRepository.Read();
             foreach (var gameLine in allLines)
@@ -83,6 +83,13 @@ namespace SportsbookAggregation
             
             
             dbContext.GameLineRepository.UpdateRange(allLines);
+
+            var allBoosts = dbContext.OddsBoostRepository.Read();
+            foreach (var boost in allBoosts)
+                boost.IsAvailable = false;
+
+
+            dbContext.OddsBoostRepository.UpdateRange(allBoosts);
         }
 
         private void UpdateGameLine(GameLine gameLine, GameOffering gameOffering)
