@@ -39,7 +39,9 @@ namespace SportsbookAggregation.SportsBooks
                 JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(InitialBasketballRequest).Result);
 
             var usaCategoryJson = ((IEnumerable) initialJson.categories).Cast<dynamic>()
-                .First(g => g.name == "USA");
+                .FirstOrDefault(g => g.name == "USA");
+            if (usaCategoryJson == null)
+                return Enumerable.Empty<GameOffering>();
 
             return GetGameOfferings(usaCategoryJson, "NBA", "Money Line", "Spread", "Total Points");
         }
@@ -50,7 +52,9 @@ namespace SportsbookAggregation.SportsBooks
                 JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(InitialFootballRequest).Result);
 
             var usaCategoryJson = ((IEnumerable)initialJson.categories).Cast<dynamic>()
-                .First(g => g.name == "USA");
+                .FirstOrDefault(g => g.name == "USA");
+            if (usaCategoryJson == null)
+                return Enumerable.Empty<GameOffering>();
 
             return GetGameOfferings(usaCategoryJson, "NFL", "Money Line", "Spread", "Total Points");
         }
@@ -167,7 +171,47 @@ namespace SportsbookAggregation.SportsBooks
 
         public IEnumerable<OddsBoostOffering> AggregateOddsBoost()
         {
-            throw new NotImplementedException();
+            var sports = new string[] { "football", "mlb" };
+            var oddsBoosts = new List<OddsBoostOffering>();
+            foreach(var sport in sports)
+            {
+                var boostUrl = $"https://sports.mtairycasino.foxbet.com/sportsbook/v1/api/getCouponCompetitions?slug={sport}-odds-boost-pa&channelId=15";
+                var sportInformationJson = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(boostUrl).Result.ToString().Replace("event", "events"));
+                var leagueListJson = ((IEnumerable) sportInformationJson).Cast<dynamic>();
+                foreach(var leagueJson in leagueListJson)
+                {
+                    var gamesJson = ((IEnumerable)leagueJson.events).Cast<dynamic>();
+                    foreach(var gameJson in gamesJson)
+                    {
+                        var sportName = gameJson.compName.ToString();
+                        var game = gameJson.name.ToString();
+                        var gameTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(Convert.ToDouble(gameJson.eventsTime.Value));
+                        var boostsJson = ((IEnumerable)gameJson.markets[0].selection).Cast<dynamic>();
+                        foreach (var boostJson in boostsJson)
+                        { 
+                            oddsBoosts.Add(ParseOddsBoost(boostJson, game, sportName, gameTime));
+                        }
+                    }
+                }
+            }
+
+            return oddsBoosts;
+        }
+
+        private OddsBoostOffering ParseOddsBoost(dynamic boostJson, string game, string sportName, DateTime gameTime)
+        {
+            var betDesc = boostJson.names.longName;
+
+            return new OddsBoostOffering()
+            {
+                BoostedOdds = CalculateOdds(boostJson.odds.frac.Value),
+                PreviousOdds = CalculateOdds(((IEnumerable)boostJson.wasPrice).Cast<dynamic>().Single(b => b.channel == "PA").fractionalOdds.Value),
+                Description = $"({game}) {betDesc}",
+                Sport = sportName,
+                Date = gameTime,
+                Site = GetSportsBookName()
+            };
+
         }
     }
 }

@@ -130,7 +130,7 @@ namespace SportsbookAggregation.SportsBooks
 
         public IEnumerable<OddsBoostOffering> AggregateOddsBoost()
         {
-            throw new NotImplementedException();
+            return new List<OddsBoostOffering>();
         }
     }
 }
