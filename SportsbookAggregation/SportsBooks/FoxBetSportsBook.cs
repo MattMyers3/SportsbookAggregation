@@ -40,7 +40,8 @@ namespace SportsbookAggregation.SportsBooks
 
             var usaCategoryJson = ((IEnumerable) initialJson.categories).Cast<dynamic>()
                 .FirstOrDefault(g => g.name == "USA");
-            if (usaCategoryJson == null)
+
+            if(usaCategoryJson == null)
                 return Enumerable.Empty<GameOffering>();
 
             return GetGameOfferings(usaCategoryJson, "NBA", "Money Line", "Spread", "Total Points");
@@ -53,6 +54,7 @@ namespace SportsbookAggregation.SportsBooks
 
             var usaCategoryJson = ((IEnumerable)initialJson.categories).Cast<dynamic>()
                 .FirstOrDefault(g => g.name == "USA");
+
             if (usaCategoryJson == null)
                 return Enumerable.Empty<GameOffering>();
 
@@ -66,6 +68,7 @@ namespace SportsbookAggregation.SportsBooks
 
             var usaCategoryJson = ((IEnumerable)initialJson.categories).Cast<dynamic>()
                 .FirstOrDefault(g => g.name == "USA");
+
             if (usaCategoryJson == null)
                 return Enumerable.Empty<GameOffering>();
 

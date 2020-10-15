@@ -123,7 +123,7 @@ namespace SportsbookAggregation.SportsBooks
             }
 
             var totalPointsInfo = ((IEnumerable) marketList).Cast<dynamic>()
-                .FirstOrDefault(g => g.name.Value.Contains(totalLabel));
+                .FirstOrDefault(g => g.name.Value == totalLabel);
             if (totalPointsInfo == null) return gameOffering;
 
             var totalPointsInfoSelections = totalPointsInfo?.selections;
