@@ -171,7 +171,11 @@ namespace SportsbookAggregation
             if (name == null) 
                 return dbContext.SportRepository.Read().Single(s => s.Name == "Unknown").SportId;
 
-            return dbContext.SportRepository.Read().Single(s => s.Name == name).SportId;
+            var sport = dbContext.SportRepository.Read().FirstOrDefault(s => s.Name == name);
+            if(sport == null)
+                return dbContext.SportRepository.Read().Single(s => s.Name == "Unknown").SportId;
+
+            return sport.SportId;
         }
     }
 }
