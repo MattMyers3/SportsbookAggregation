@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SportsbookAggregation.Data.Models;
 using SportsbookAggregation.SportsBooks.Models;
 using System;
 using System.Collections;
@@ -14,8 +15,9 @@ namespace SportsbookAggregation.SportsBooks
     public class BetAmericaSportsBook : ISportsBook
     {
         private const string urlToRetrieveBearerToken = "https://api-usp.sbtech.com/auth/v2/GetTokenBySiteId/15006";
-        private const string RequestUrl =
+        private const string GamesUrl =
             "https://api-pap.sbtech.com/betamericapa/sportscontent/sportsbook/v1/Events/GetByLeagueId";
+        private const string OddsBoostUrl = "https://api-pap.sbtech.com/betamericapa/sportscontent/sportsbook/v1/Events/GetBySportId";
 
         public string GetSportsBookName()
         {
@@ -52,21 +54,21 @@ namespace SportsbookAggregation.SportsBooks
         private IEnumerable<GameOffering> GetBaseballOfferings(string token)
         {
             var requestJson = new StringContent("{\"eventState\":\"Mixed\",\"eventTypes\":[\"Fixture\",\"AggregateFixture\"],\"ids\":[\"84240\"],\"regionIds\":[\"227\"],\"marketTypeRequests\":[{\"sportIds\":[\"7\"],\"marketTypeIds\":[\"2_39\",\"1_39\",\"3_39\",\"2_0\",\"1_0\",\"3_0\"],\"statement\":\"Include\"}]}", Encoding.UTF8, "application/json-patch+json");
-            return GetGameOfferings(token, requestJson, "FT Run Line","FT Money Line", "FT O/U Runs");
+            return GetGameOfferings(token, requestJson, "FT Run Line", "FT Money Line", "FT O/U Runs");
         }
 
-        private dynamic GetGamesJson(string token, StringContent requestJson)
+        private dynamic GetGamesJson(string url, string token, StringContent requestJson)
         {
             Program.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             Program.HttpClient.DefaultRequestHeaders.Host = "api-pap.sbtech.com";
-            var responseJson = Program.HttpClient.PostAsync(RequestUrl, requestJson).Result.Content.ReadAsStringAsync();
+            var responseJson = Program.HttpClient.PostAsync(url, requestJson).Result.Content.ReadAsStringAsync();
             var response = responseJson.Result.ToString().Replace("−", "-");//Not sure what this is. But it's not a minus sign. 
             return JsonConvert.DeserializeObject<dynamic>(response);
         }
 
         private IEnumerable<GameOffering> GetGameOfferings(string token, StringContent requestJson, string spreadLabel, string moneyLineLabel, string totalLabel)
         {
-            var gamesJson = GetGamesJson(token, requestJson);
+            var gamesJson = GetGamesJson(GamesUrl,token, requestJson);
 
 
             var eventInfo = ((IEnumerable)gamesJson.events).Cast<dynamic>();
@@ -143,6 +145,30 @@ namespace SportsbookAggregation.SportsBooks
             }
 
             return gameOffering;
+        }
+
+        public IEnumerable<OddsBoostOffering> AggregateOddsBoost()
+        {
+            var token = GetBearerToken();
+            var requestJson = new StringContent("{\"eventState\":\"Mixed\",\"eventTypes\":[\"Outright\"],\"ids\":[\"201\"],\"eventTags\":[],\"leagueState\":\"Regular\",\"pagination\":{\"top\":100,\"skip\":0}}", Encoding.UTF8, "application/json-patch+json");
+            var oddsBoostJson = GetGamesJson(OddsBoostUrl, token, requestJson);
+
+            var oddsBoosts = new List<OddsBoostOffering>();
+            var eventsInfo = ((IEnumerable)oddsBoostJson.markets).Cast<dynamic>();
+            foreach (var eventInfo in eventsInfo)
+            {
+                var nameSplit = eventInfo.name.ToString().Split(new string[] { "(Was ", "(was " }, StringSplitOptions.None);
+                var oddsBoost = new OddsBoostOffering();
+                oddsBoost.BoostedOdds = Convert.ToInt32(eventInfo.selections[0].displayOdds.american);
+                oddsBoost.Date = eventInfo.startDate;
+                oddsBoost.Description = $"({nameSplit[0]}) {eventInfo.selections[0].name}";
+                oddsBoost.PreviousOdds = Convert.ToInt32(nameSplit[1].ToString().Substring(0, nameSplit[1].IndexOf(')')));
+                oddsBoost.Site = GetSportsBookName();
+                oddsBoosts.Add(oddsBoost);
+            }
+
+            Program.HttpClient = new HttpClient(); //Clear out state from parsing
+            return oddsBoosts;
         }
     }
 }

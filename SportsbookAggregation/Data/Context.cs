@@ -28,6 +28,8 @@ namespace SportsbookAggregation.Data
         public IRepository<Sport> SportRepository => new SqlServerRepository<Sport>(this);
         public IRepository<GameResult> GameResultRepository => new SqlServerRepository<GameResult>(this);
         public IRepository<Alert> AlertRepository => new SqlServerRepository<Alert>(this);
+        public IRepository<OddsBoost> OddsBoostRepository => new SqlServerRepository<OddsBoost>(this);
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -39,10 +41,16 @@ namespace SportsbookAggregation.Data
             modelBuilder.ApplyConfiguration(new SportConfiguration());
             modelBuilder.ApplyConfiguration(new GameResultConfiguration());
             modelBuilder.ApplyConfiguration(new AlertConfiguration());
+            modelBuilder.ApplyConfiguration(new OddsBoostConfiguration());
+
             var nbaGuid = new Guid("2cbbd293-8627-447d-8b20-2c5a4fdaa024");
             var nflGuid = new Guid("6e972a45-6bd9-4085-9a78-faddf46294be");
+            var ncaafGuid = new Guid("43ecce0d-7a55-4cdb-9378-6777ae8ab0aa");
             var mlbGuid = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8");
-            modelBuilder.Entity<Sport>().HasData(new Sport { SportId = mlbGuid, Name = "MLB" }, new Sport { SportId = nbaGuid, Name = "NBA" }, new Sport { Name = "NFL", SportId = nflGuid });
+            var mlsGuid = new Guid("c50f0844-6549-47e7-9409-921ad9bf160b");
+            var unknownGuid = new Guid("d6904dda-e7e7-43b1-b25d-0353f2029ab6");
+
+            modelBuilder.Entity<Sport>().HasData(new Sport { SportId = ncaafGuid, Name = "NCAAF" }, new Sport { SportId = unknownGuid, Name = "Unknown" }, new Sport { SportId = mlbGuid, Name = "MLB" }, new Sport { SportId = nbaGuid, Name = "NBA" }, new Sport { Name = "NFL", SportId = nflGuid }, new Sport { Name = "MLS", SportId = mlsGuid });
             modelBuilder.Entity<Team>().HasData(
                 new Team { TeamId = new Guid("327fa1ce-ebd2-42b5-8ae3-af4e1f85c31b"), SportId = nbaGuid, Location = "Atlanta", Mascot = "Hawks" },
                 new Team { TeamId = new Guid("f4646032-8ce2-4115-aa17-6a3f829c48c6"), SportId = nbaGuid, Location = "Boston", Mascot = "Celtics" },

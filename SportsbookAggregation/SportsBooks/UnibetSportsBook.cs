@@ -1,4 +1,5 @@
-﻿using SportsbookAggregation.SportsBooks.Models;
+﻿using SportsbookAggregation.Data.Models;
+using SportsbookAggregation.SportsBooks.Models;
 using SportsbookAggregation.SportsBooks.OddsProviders;
 using System.Collections.Generic;
 
@@ -13,8 +14,14 @@ namespace SportsbookAggregation.SportsBooks
 
         public IEnumerable<GameOffering> AggregateFutureOfferings()
         {
-            var oddsProvider = new KambicdnOddsProvider(GetSportsBookName(), "ubuspa");
+            var oddsProvider = new KambicdnOddsProvider(GetSportsBookName(), "ubuspa", "unibet");
             return oddsProvider.AggregateFutureOfferings();
+        }
+
+        public IEnumerable<OddsBoostOffering> AggregateOddsBoost()
+        {
+            var oddsProvider = new KambicdnOddsProvider(GetSportsBookName(), "ubuspa", "unibet_featured");
+            return oddsProvider.AggregateOddsBoost();
         }
     }
 }

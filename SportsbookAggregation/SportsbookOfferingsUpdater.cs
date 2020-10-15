@@ -16,6 +16,44 @@ namespace SportsbookAggregation
             this.dbContext = dbContext;
         }
 
+
+        public void WriteOddsBoosts(IEnumerable<OddsBoostOffering> oddsBoostOfferings)
+        {
+            foreach(var oddsBoostOffering in oddsBoostOfferings)
+            {
+                var boostExists = dbContext.OddsBoostRepository.Read().Any(o => o.Description == oddsBoostOffering.Description);
+                if (boostExists)
+                    UpdateBoost(oddsBoostOffering);
+                else
+                    CreateBoost(oddsBoostOffering);
+            }
+        }
+
+        private void UpdateBoost(OddsBoostOffering oddsBoostOffering)
+        {
+            var oddsBoost = dbContext.OddsBoostRepository.Read().Single(o => o.Description == oddsBoostOffering.Description);
+            oddsBoost.IsAvailable = true;
+            oddsBoost.LastRefresh = DateTime.UtcNow;
+            dbContext.OddsBoostRepository.Update(oddsBoost);
+        }
+
+        private void CreateBoost(OddsBoostOffering oddsBoostOffering)
+        {
+            var siteId = GetSiteId(oddsBoostOffering.Site);
+            var sportId = GetSportId(oddsBoostOffering.Sport);
+            dbContext.OddsBoostRepository.Create(new OddsBoost
+            {
+                BoostedOdds = oddsBoostOffering.BoostedOdds,
+                Date = oddsBoostOffering.Date,
+                Description = oddsBoostOffering.Description,
+                GamblingSiteId = siteId,
+                PreviousOdds = oddsBoostOffering.PreviousOdds,
+                SportId = sportId,
+                LastRefresh = DateTime.UtcNow,
+                IsAvailable = true
+            });
+        }
+
         public void WriteGameOfferings(IEnumerable<GameOffering> gameOfferings)
         {
             foreach (var gameOffering in gameOfferings)
@@ -119,6 +157,14 @@ namespace SportsbookAggregation
         private Guid GetSiteId(string site)
         {
             return dbContext.GamblingSiteRepository.Read().Single(s => s.Name == site).GamblingSiteId;
+        }
+
+        private Guid GetSportId(string name)
+        {
+            if (name == null) 
+                return dbContext.SportRepository.Read().Single(s => s.Name == "Unknown").SportId;
+
+            return dbContext.SportRepository.Read().Single(s => s.Name == name).SportId;
         }
     }
 }

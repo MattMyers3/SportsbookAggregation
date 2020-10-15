@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SportsbookAggregation.Data.Models;
 using SportsbookAggregation.SportsBooks.Models;
 using System;
 using System.Collections;
@@ -13,14 +14,19 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
         private readonly string NbaRequestUrl;
         private readonly string NflRequestUrl;
         private readonly string MlbRequestUrl;
+        private readonly string OddsBoostUrl;
+        private readonly string BaseUrl;
 
 
-        public KambicdnOddsProvider(string sportsbook, string siteRouteName)
+
+        public KambicdnOddsProvider(string sportsbook, string siteRouteName, string siteSpecialsName)
         {
             site = sportsbook;
-            NbaRequestUrl = $"https://eu-offering.kambicdn.org/offering/v2018/{siteRouteName}/listView/basketball/nba.json?lang=en_US&market=US&useCombined=true";
-            NflRequestUrl = $"https://eu-offering.kambicdn.org/offering/v2018/{siteRouteName}/listView/american_football/nfl.json?lang=en_US&market=US&useCombined=true";
-            MlbRequestUrl = $"https://eu-offering.kambicdn.org/offering/v2018/{siteRouteName}/listView/baseball/mlb.json?lang=en_US&market=US&useCombined=true";
+            BaseUrl = $"https://eu-offering.kambicdn.org/offering/v2018/{siteRouteName}";
+            NbaRequestUrl = BaseUrl + $"/listView/basketball/nba.json?lang=en_US&market=US&useCombined=true";
+            NflRequestUrl = BaseUrl + $"/listView/american_football/nfl.json?lang=en_US&market=US&useCombined=true";
+            MlbRequestUrl = BaseUrl + $"/listView/baseball/mlb.json?lang=en_US&market=US&useCombined=true";
+            OddsBoostUrl =  BaseUrl + $"/listView/{siteSpecialsName}.json?lang=en_US&market=US&&useCombined=true";
         }
 
         public IEnumerable<GameOffering> AggregateFutureOfferings()
@@ -30,6 +36,32 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
             var baseballOfferings = GetBaseballOfferings();
 
             return baseballOfferings.Concat(basketballOfferings.Concat(footballOfferings));
+        }
+
+        public IEnumerable<OddsBoostOffering> AggregateOddsBoost()
+        {
+            var oddsBoostOfferings = new List<OddsBoostOffering>();
+            var requestString =
+                JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(OddsBoostUrl).Result).ToString().Replace("event", "Event"); //needed because event is a C# key word
+            var eventList = ((IEnumerable)JsonConvert.DeserializeObject<dynamic>(requestString).Events).Cast<dynamic>();
+            foreach(var eventObject in eventList)
+            {
+                var eventId = eventObject.Event.id;
+                var url = BaseUrl + $"/betoffer/event/{eventId}.json?lang=en_US&market=US&includeParticipants=true";
+
+                var betOfferResponse = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(url).Result).ToString();//needed because event is a C# key word
+                var betOfferList = ((IEnumerable)JsonConvert.DeserializeObject<dynamic>(betOfferResponse).betOffers).Cast<dynamic>();
+                foreach(var betOffer in betOfferList)
+                {
+                    var oddsBoost = new OddsBoostOffering();
+                    oddsBoost.Description = betOffer.criterion.englishLabel;
+                    oddsBoost.BoostedOdds = ((IEnumerable)betOffer.outcomes).Cast<dynamic>().FirstOrDefault(g => g.status == "OPEN").oddsAmerican;
+                    oddsBoost.Site = site;
+                    oddsBoost.Date = betOffer.closed;
+                    oddsBoostOfferings.Add(oddsBoost);
+                }
+            }
+            return oddsBoostOfferings;
         }
 
         private IEnumerable<GameOffering> GetBasketballOfferings()

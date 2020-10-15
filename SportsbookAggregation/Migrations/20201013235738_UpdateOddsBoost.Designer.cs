@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SportsbookAggregation.Data;
 
 namespace SportsbookAggregation.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20201013235738_UpdateOddsBoost")]
+    partial class UpdateOddsBoost
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -250,9 +252,6 @@ namespace SportsbookAggregation.Migrations
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<DateTime>("LastRefresh")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<int>("PreviousOdds")
                         .HasColumnType("int");
 
@@ -282,16 +281,6 @@ namespace SportsbookAggregation.Migrations
                     b.ToTable("Sport");
 
                     b.HasData(
-                        new
-                        {
-                            SportId = new Guid("43ecce0d-7a55-4cdb-9378-6777ae8ab0aa"),
-                            Name = "NCAAF"
-                        },
-                        new
-                        {
-                            SportId = new Guid("d6904dda-e7e7-43b1-b25d-0353f2029ab6"),
-                            Name = "Unknown"
-                        },
                         new
                         {
                             SportId = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8"),
