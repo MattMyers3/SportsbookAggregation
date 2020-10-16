@@ -150,7 +150,9 @@ namespace SportsbookAggregation.SportsBooks
             var boostJson = ((IEnumerable)initialJson.bonavigationnodes).Cast<dynamic>()
                 .First(g => g.name == "Boosts");
 
-            return GetOddsBoosts(boostJson);
+            var regularBoosts = GetOddsBoosts(boostJson);
+            var superBoosts = GetSuperBoosts(boostJson);
+            return regularBoosts.Concat(superBoosts);
         }
 
         private IEnumerable<OddsBoostOffering> GetOddsBoosts(dynamic boostJson)
@@ -172,6 +174,29 @@ namespace SportsbookAggregation.SportsBooks
                 {
                     oddsBoostOfferings.Add(GetOddsBoostOffering(boostEvent));
                 }                
+            }
+            return oddsBoostOfferings;
+        }
+
+        private IEnumerable<OddsBoostOffering> GetSuperBoosts(dynamic boostJson)
+        {
+            var oddsBoostJson = ((IEnumerable)boostJson.bonavigationnodes).Cast<dynamic>().First(g => g.name == "Super Boosts");
+            var obCouponJson = ((IEnumerable)oddsBoostJson.bonavigationnodes).Cast<dynamic>().First(g => g.name == "SB Coupon");
+            var sportMarketGroups = ((IEnumerable)obCouponJson.bonavigationnodes).Cast<dynamic>().First(g => g.name.Value == "Super Boosts").marketgroups;
+
+            if (sportMarketGroups.Count == 0)
+                return Enumerable.Empty<OddsBoostOffering>();
+
+            var oddsBoostOfferings = new List<OddsBoostOffering>();
+            foreach (var marketGroup in sportMarketGroups)
+            {
+                var marketGroupNumber = marketGroup.idfwmarketgroup;
+                var groupUrl = $"https://sportsbook.fanduel.com/cache/psmg/UK/{marketGroupNumber}.json";
+                var oddsBoostEvents = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(groupUrl).Result).events;
+                foreach (var boostEvent in oddsBoostEvents)
+                {
+                    oddsBoostOfferings.Add(GetOddsBoostOffering(boostEvent));
+                }
             }
             return oddsBoostOfferings;
         }
