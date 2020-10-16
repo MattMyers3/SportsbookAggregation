@@ -150,9 +150,10 @@ namespace SportsbookAggregation.SportsBooks
             var boostJson = ((IEnumerable)initialJson.bonavigationnodes).Cast<dynamic>()
                 .First(g => g.name == "Boosts");
 
-            var regularBoosts = GetOddsBoosts(boostJson);
-            var superBoosts = GetSuperBoosts(boostJson);
-            return regularBoosts.Concat(superBoosts);
+            List<OddsBoostOffering> boosts = new List<OddsBoostOffering>();
+            boosts.AddRange(GetOddsBoosts(boostJson));
+            boosts.AddRange(GetSuperBoosts(boostJson));
+            return boosts;
         }
 
         private IEnumerable<OddsBoostOffering> GetOddsBoosts(dynamic boostJson)
