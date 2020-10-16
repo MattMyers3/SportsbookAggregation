@@ -32,14 +32,15 @@ namespace SportsbookAggregation.SportsBooks
                 var url = $"https://sportsbook.draftkings.com//sites/US-SB/api/v1/eventgroup/{eventId}/full?includePromotions=true&format=json";
 
                 var betOfferResponse = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(url).Result).ToString();//needed because event is a C# key word
-                var betOfferList = ((IEnumerable)JsonConvert.DeserializeObject<dynamic>(betOfferResponse).eventGroup.offerCategories[0].offerSubcategoryDescriptors[0].offerSubcategory.offers[0]).Cast<dynamic>();
+                var betOfferList = ((IEnumerable)JsonConvert.DeserializeObject<dynamic>(betOfferResponse).eventGroup.offerCategories[0].offerSubcategoryDescriptors[0].offerSubcategory.offers).Cast<dynamic>();
                 foreach (var betOffer in betOfferList)
                 {
+                    var innerBetOffer = betOffer[0];
                     var oddsBoost = new OddsBoostOffering();
-                    oddsBoost.Description = betOffer.label;
-                    oddsBoost.BoostedOdds = betOffer.outcomes[0].oddsAmerican;
-                    if(betOffer.outcomes[0].unboostedOutcome != null)
-                        oddsBoost.PreviousOdds = betOffer.outcomes[0].unboostedOutcome.oddsAmerican;
+                    oddsBoost.Description = innerBetOffer.label;
+                    oddsBoost.BoostedOdds = innerBetOffer.outcomes[0].oddsAmerican;
+                    if(innerBetOffer.outcomes[0].unboostedOutcome != null)
+                        oddsBoost.PreviousOdds = innerBetOffer.outcomes[0].unboostedOutcome.oddsAmerican;
                     oddsBoost.Site = GetSportsBookName();
                     oddsBoostOfferings.Add(oddsBoost);
                 }
