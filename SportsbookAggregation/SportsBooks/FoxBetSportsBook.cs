@@ -204,17 +204,17 @@ namespace SportsbookAggregation.SportsBooks
         private OddsBoostOffering ParseOddsBoost(dynamic boostJson, string game, string sportName, DateTime gameTime)
         {
             var betDesc = boostJson.names.longName;
+            var prevPriceJson = ((IEnumerable)boostJson.wasPrice).Cast<dynamic>();
 
             return new OddsBoostOffering()
             {
                 BoostedOdds = CalculateOdds(boostJson.odds.frac.Value),
-                PreviousOdds = CalculateOdds(((IEnumerable)boostJson.wasPrice).Cast<dynamic>().Single(b => b.channel == "PA").fractionalOdds.Value),
+                PreviousOdds = prevPriceJson.Any(b => b.channel == "PA") ? CalculateOdds(prevPriceJson.Single(b => b.channel == "PA").fractionalOdds.Value) : 0,
                 Description = $"({game}) {betDesc}",
                 Sport = sportName,
                 Date = gameTime,
                 Site = GetSportsBookName()
             };
-
         }
     }
 }

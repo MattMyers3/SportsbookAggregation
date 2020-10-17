@@ -69,6 +69,9 @@ namespace SportsbookAggregation.SportsBooks
             gameOffering.HomeTeam = ((IEnumerable)game.teams).Cast<dynamic>().FirstOrDefault(g => g.side == "HOME").name;
             gameOffering.AwayTeam = ((IEnumerable)game.teams).Cast<dynamic>().FirstOrDefault(g => g.side == "AWAY").name;
 
+            if (gameOffering.HomeTeam.StartsWith("Look Ahead") || gameOffering.AwayTeam.StartsWith("Look Ahead"))//Don't Ask
+                return new GameOffering();
+
             var markets = ((IEnumerable)game.markets).Cast<dynamic>();
             if (gameOffering.HomeTeam == "Washington Football Team" || gameOffering.AwayTeam == "Washington Football Team")
                 markets = ((IEnumerable)JsonConvert.DeserializeObject<dynamic>(markets.ToString().Replace("Washington Redskins", "Washington Football Team"))).Cast<dynamic>();

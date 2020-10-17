@@ -42,7 +42,9 @@ namespace SportsbookAggregation.SportsBooks
         {
             string description = betOffer.criterion.englishLabel.ToString();
             var split = description.Split(new[] { " (Was ", " (was " }, StringSplitOptions.None);
-            var prevOdds = Convert.ToInt32(split[1].Trim(')'));
+            var prevOdds = 0;
+            if(split[1] != null)
+                prevOdds = Convert.ToInt32(split[1].Trim(')'));
             description = split[0];
             return new OddsBoostOffering()
             {
