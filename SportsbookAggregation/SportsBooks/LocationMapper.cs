@@ -9,11 +9,43 @@ namespace SportsbookAggregation.SportsBooks
 
         public static string GetFullTeamName(string shortTeamName, string sport)
         {
+            if (sport == "NCAAF")
+                return MapCollege(shortTeamName);
+
             var teamNameArray = shortTeamName.Split(' ');
             var location = LocationMapper.MapLocation(teamNameArray[0], sport);
             return $"{location}{shortTeamName.Substring(teamNameArray[0].Length)}";
         }
-
+        
+        private static string MapCollege(string college)
+        {
+            college = college.Replace('-', '-');
+            if (college.StartsWith('#'))//#1 Villanova, need to strip the rank
+                college = college.Substring(college.IndexOf(' ') + 1);
+            switch(college.ToLower())
+            {
+                case "florida intl":
+                case "florida international":  
+                    return "FIU";
+                case "louisiana-lafayette":
+                case "la lafayette":
+                    return "Louisiana";
+                case "southern mississippi":
+                    return "Southern Miss";
+                case "abilene christian university":
+                    return "Abilene Christian";
+                case "miami florida":
+                    return "Miami (FL)";
+                case "north carolina state":
+                    return "NC State";
+                case "middle tennessee state":
+                    return "Middle Tennessee";
+                case "ut san antonio":
+                    return "UTSA";
+                default:
+                    return college;
+            }
+        }
         private static string MapLocation(string abbreviation, string sport)
         {
             switch (abbreviation.ToUpper())

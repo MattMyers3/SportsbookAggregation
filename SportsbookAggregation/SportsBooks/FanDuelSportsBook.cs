@@ -22,10 +22,11 @@ namespace SportsbookAggregation.SportsBooks
             var initialJson = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(InitialRequest).Result);
 
             IEnumerable<GameOffering> basketballOfferings = GetBasketballOfferings(initialJson);
-            IEnumerable<GameOffering> footballOfferings = GetFootballOfferings(initialJson);
+            IEnumerable<GameOffering> nflOfferings = GetNFLOfferings(initialJson);
             IEnumerable<GameOffering> baseballOfferings = GetBaseballOfferings(initialJson);
+            IEnumerable<GameOffering> ncaafOfferings = GetNCAAFOfferings(initialJson);
 
-            return baseballOfferings.Concat(basketballOfferings.Concat(footballOfferings));
+            return ncaafOfferings.Concat(baseballOfferings.Concat(basketballOfferings.Concat(nflOfferings)));
         }
 
         private IEnumerable<GameOffering> GetBasketballOfferings(dynamic initialJson)
@@ -35,11 +36,18 @@ namespace SportsbookAggregation.SportsBooks
             return GetGameOfferings(basketballJson, "NBA", "NBA Tab Coupon", "Spread Betting", "Moneyline", "Total Points Scored");
         }
 
-        private IEnumerable<GameOffering> GetFootballOfferings(dynamic initialJson)
+        private IEnumerable<GameOffering> GetNFLOfferings(dynamic initialJson)
         {
             var footballJson = ((IEnumerable)initialJson.bonavigationnodes).Cast<dynamic>()
                 .First(g => g.name == "Football");
             return GetGameOfferings(footballJson,  "NFL", "Season Coupon", "Spread", "Moneyline", "Total Match Points");
+        }
+
+        private IEnumerable<GameOffering> GetNCAAFOfferings(dynamic initialJson)
+        {
+            var footballJson = ((IEnumerable)initialJson.bonavigationnodes).Cast<dynamic>()
+                .First(g => g.name == "College Football");
+            return GetGameOfferings(footballJson, "Games", "CFB Coupon", "Spread", "Moneyline", "Total Match Points");
         }
 
         private IEnumerable<GameOffering> GetBaseballOfferings(dynamic initialJson)
@@ -55,7 +63,7 @@ namespace SportsbookAggregation.SportsBooks
             var tabCouponJson = ((IEnumerable)sportJson.bonavigationnodes).Cast<dynamic>()
                 .First(g => g.name == tabCouponName);
             var gamesMarketGroups = ((IEnumerable)tabCouponJson.bonavigationnodes).Cast<dynamic>()
-                .First(g => g.name.Value == "Games").marketgroups;
+                .First(g => g.name.Value.ToString().Contains("Games")).marketgroups;
             if (gamesMarketGroups.Count == 0)
                 return Enumerable.Empty<GameOffering>();//This could create silent failing. It's not parsing NBA Finals because the name is NBA Finals instead of Games
 
@@ -92,6 +100,10 @@ namespace SportsbookAggregation.SportsBooks
                 Sport = gameJson.sportname,
                 DateTime = gameJson.tsstart
             };
+
+            if (gameOffering.Sport == "College Football")
+                gameOffering.Sport = "NCAAF"; //can we move this to a higher level mapper?
+
             gameOffering.DateTime = gameOffering.DateTime.AddHours(4);
             if (gameJson.eventmarketgroups == null)
                 return gameOffering;

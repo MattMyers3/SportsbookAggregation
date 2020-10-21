@@ -26,11 +26,12 @@ namespace SportsbookAggregation.SportsBooks
         public IEnumerable<GameOffering> AggregateFutureOfferings()
         {
             var basketballOfferings = GetBasketballOfferings().ToList();
-            var footballOfferings = GetFootballOfferings().ToList();
+            var nflOfferings = GetNFLOfferings().ToList();
             var baseballOfferings = GetBaseballOfferings().ToList();
+            var ncaafOfferings = GetNCAAFOfferings().ToList();
 
 
-            return baseballOfferings.Concat(basketballOfferings.Concat(footballOfferings));
+            return ncaafOfferings.Concat(baseballOfferings.Concat(basketballOfferings.Concat(nflOfferings)));
         }
 
         private IEnumerable<GameOffering> GetBasketballOfferings()
@@ -47,7 +48,7 @@ namespace SportsbookAggregation.SportsBooks
             return GetGameOfferings(usaCategoryJson, "NBA", "Money Line", "Spread", "Total Points");
         }
 
-        private IEnumerable<GameOffering> GetFootballOfferings()
+        private IEnumerable<GameOffering> GetNFLOfferings()
         {
             var initialJson =
                 JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(InitialFootballRequest).Result);
@@ -73,6 +74,27 @@ namespace SportsbookAggregation.SportsBooks
                 return Enumerable.Empty<GameOffering>();
 
             return GetGameOfferings(usaCategoryJson, "MLB", "Money Line", "Run Line", "Total Runs");
+        }
+
+        private IEnumerable<GameOffering> GetNCAAFOfferings()
+        {
+            var initialJson =
+                JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(InitialFootballRequest).Result);
+
+            var usaCategoryJson = ((IEnumerable)initialJson.categories).Cast<dynamic>()
+                .FirstOrDefault(g => g.name == "USA");
+
+            if (usaCategoryJson == null)
+                return Enumerable.Empty<GameOffering>();
+
+            IEnumerable<GameOffering> gameOfferings = GetGameOfferings(usaCategoryJson, "NCAAF", "Money Line", "Spread", "Total Points");
+            foreach(var offering in gameOfferings)
+            {
+                offering.AwayTeam = LocationMapper.GetFullTeamName(offering.AwayTeam, offering.Sport);
+                offering.HomeTeam = LocationMapper.GetFullTeamName(offering.HomeTeam, offering.Sport);
+            }
+
+            return gameOfferings;
         }
 
         private IEnumerable<GameOffering> GetGameOfferings(dynamic usaCategoryJson, string sportName, string moneyLineLabel, string spreadLabel, string totalLabel)

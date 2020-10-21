@@ -58,23 +58,36 @@ namespace SportsbookAggregation
         {
             foreach (var gameOffering in gameOfferings)
             {
-                if (gameOffering.DateTime < DateTime.UtcNow)
-                    continue;
-                var homeTeamId = GetTeamId(gameOffering.HomeTeam);
-                var awayTeamId = GetTeamId(gameOffering.AwayTeam);
-                var siteId = GetSiteId(gameOffering.Site);
+                try
+                {
+                    if (gameOffering.DateTime < DateTime.UtcNow)
+                        continue;
 
-                var gameId = GetGameId(gameOffering.DateTime, homeTeamId, awayTeamId) ??
-                             CreateGame(gameOffering.DateTime, homeTeamId, awayTeamId);
+                    var sportGuid = GetSportId(gameOffering.Sport);
+                    var homeTeamId = isCollegeSport(gameOffering.Sport) ? GetTeamIdForCollege(gameOffering.HomeTeam, sportGuid) : GetTeamIdFromFullTeamName(gameOffering.HomeTeam);
+                    var awayTeamId = isCollegeSport(gameOffering.Sport) ? GetTeamIdForCollege(gameOffering.AwayTeam, sportGuid) : GetTeamIdFromFullTeamName(gameOffering.AwayTeam);
+                    var siteId = GetSiteId(gameOffering.Site);
 
-                var gameLine = GetGameLine(gameId, siteId);
-                if (gameLine == null)
-                    CreateGameLine(gameId, siteId, gameOffering);
-                else
-                    UpdateGameLine(gameLine, gameOffering);
+                    var gameId = GetGameId(gameOffering.DateTime, homeTeamId, awayTeamId) ??
+                                 CreateGame(gameOffering.DateTime, homeTeamId, awayTeamId);
+
+                    var gameLine = GetGameLine(gameId, siteId);
+                    if (gameLine == null)
+                        CreateGameLine(gameId, siteId, gameOffering);
+                    else
+                        UpdateGameLine(gameLine, gameOffering);
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine(gameOffering.AwayTeam + " - " + gameOffering.HomeTeam);
+                }
             }
         }
 
+        private bool isCollegeSport(string sport)
+        {
+            return sport == "NCAAF";
+        }
         public void SetOfferingsToNotAvailable()
         {
             var allLines = dbContext.GameLineRepository.Read();
@@ -152,13 +165,19 @@ namespace SportsbookAggregation
             return matchingGames.FirstOrDefault(g => Math.Abs(g.TimeStamp.Hour - gameTime.Hour) <= 1)?.GameId;
         }
 
-        private Guid GetTeamId(string teamName)
+        private Guid GetTeamIdFromFullTeamName(string teamName)
         {
             var teamNameSplit = teamName.Trim().Split(' ');
             var firstWord = teamNameSplit.First();
             var lastWord = teamNameSplit.Last();
             return dbContext.TeamRepository.Read()
                 .Single(t => t.Location.StartsWith(firstWord) && t.Mascot.EndsWith(lastWord)).TeamId;
+        }
+
+        private Guid GetTeamIdForCollege(string collegeName, Guid sportGuid)
+        {
+            return dbContext.TeamRepository.Read()
+               .Single(t => t.Location == collegeName && t.Sport.SportId==sportGuid).TeamId;
         }
 
         private Guid GetSiteId(string site)
