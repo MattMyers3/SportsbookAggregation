@@ -47,7 +47,14 @@ namespace SportsbookAggregation.SportsBooks
         {
             var footballJson = ((IEnumerable)initialJson.bonavigationnodes).Cast<dynamic>()
                 .First(g => g.name == "College Football");
-            return GetGameOfferings(footballJson, "Games", "CFB Coupon", "Spread", "Moneyline", "Total Match Points");
+            var games = GetGameOfferings(footballJson, "Games", "CFB Coupon", "Spread", "Moneyline", "Total Match Points");
+            foreach (var offering in games)
+            {
+                offering.AwayTeam = LocationMapper.GetFullTeamName(offering.AwayTeam, offering.Sport);
+                offering.HomeTeam = LocationMapper.GetFullTeamName(offering.HomeTeam, offering.Sport);
+            }
+
+            return games;
         }
 
         private IEnumerable<GameOffering> GetBaseballOfferings(dynamic initialJson)

@@ -177,7 +177,7 @@ namespace SportsbookAggregation
         private Guid GetTeamIdForCollege(string collegeName, Guid sportGuid)
         {
             return dbContext.TeamRepository.Read()
-               .Single(t => t.Location == collegeName && t.Sport.SportId==sportGuid).TeamId;
+               .Single(t =>  ((t.Location + " " + t.Mascot == collegeName) || (t.Location == collegeName)) && t.Sport.SportId==sportGuid).TeamId; 
         }
 
         private Guid GetSiteId(string site)
