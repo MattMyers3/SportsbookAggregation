@@ -58,29 +58,22 @@ namespace SportsbookAggregation
         {
             foreach (var gameOffering in gameOfferings)
             {
-                try
-                {
-                    if (gameOffering.DateTime < DateTime.UtcNow)
-                        continue;
+                if (gameOffering.DateTime < DateTime.UtcNow)
+                    continue;
 
-                    var sportGuid = GetSportId(gameOffering.Sport);
-                    var homeTeamId = isCollegeSport(gameOffering.Sport) ? GetTeamIdForCollege(gameOffering.HomeTeam, sportGuid) : GetTeamIdFromFullTeamName(gameOffering.HomeTeam);
-                    var awayTeamId = isCollegeSport(gameOffering.Sport) ? GetTeamIdForCollege(gameOffering.AwayTeam, sportGuid) : GetTeamIdFromFullTeamName(gameOffering.AwayTeam);
-                    var siteId = GetSiteId(gameOffering.Site);
+                var sportGuid = GetSportId(gameOffering.Sport);
+                var homeTeamId = isCollegeSport(gameOffering.Sport) ? GetTeamIdForCollege(gameOffering.HomeTeam, sportGuid) : GetTeamIdFromFullTeamName(gameOffering.HomeTeam);
+                var awayTeamId = isCollegeSport(gameOffering.Sport) ? GetTeamIdForCollege(gameOffering.AwayTeam, sportGuid) : GetTeamIdFromFullTeamName(gameOffering.AwayTeam);
+                var siteId = GetSiteId(gameOffering.Site);
 
-                    var gameId = GetGameId(gameOffering.DateTime, homeTeamId, awayTeamId) ??
-                                 CreateGame(gameOffering.DateTime, homeTeamId, awayTeamId);
+                var gameId = GetGameId(gameOffering.DateTime, homeTeamId, awayTeamId) ??
+                                CreateGame(gameOffering.DateTime, homeTeamId, awayTeamId);
 
-                    var gameLine = GetGameLine(gameId, siteId);
-                    if (gameLine == null)
-                        CreateGameLine(gameId, siteId, gameOffering);
-                    else
-                        UpdateGameLine(gameLine, gameOffering);
-                }
-                catch(Exception e)
-                {
-                    Console.WriteLine(gameOffering.AwayTeam + " - " + gameOffering.HomeTeam);
-                }
+                var gameLine = GetGameLine(gameId, siteId);
+                if (gameLine == null)
+                    CreateGameLine(gameId, siteId, gameOffering);
+                else
+                    UpdateGameLine(gameLine, gameOffering);
             }
         }
 
