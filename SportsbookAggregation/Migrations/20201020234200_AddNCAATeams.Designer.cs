@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SportsbookAggregation.Data;
 
 namespace SportsbookAggregation.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20201020234200_AddNCAATeams")]
+    partial class AddNCAATeams
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1326,7 +1328,7 @@ namespace SportsbookAggregation.Migrations
                         new
                         {
                             TeamId = new Guid("2d1c1515-d4f5-409f-bb81-d77604310a6c"),
-                            Location = "Louisiana-Monroe",
+                            Location = "Louisiana–Monroe",
                             Mascot = "Warhawks",
                             SportId = new Guid("43ecce0d-7a55-4cdb-9378-6777ae8ab0aa")
                         },
