@@ -56,6 +56,8 @@ namespace SportsbookAggregation.SportsBooks
                 case "north carolina st wolfpack":
                 case "north carolina state":
                     return "NC State";
+                case "se missouri state":
+                    return "Southeast Missouri State";
                 case "southern methodist mustangs":
                     return "SMU";
                 case "southern mississippi":
