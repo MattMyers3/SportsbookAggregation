@@ -32,7 +32,8 @@ namespace SportsbookAggregation.SportsBooks
                 case "central florida":
                     return "UCF";
                 case "florida intl":
-                case "florida international":  
+                case "florida international":
+                case "florida international panthers":
                     return "FIU";
                 case "hawaii warriors":
                     return "Hawaii";
