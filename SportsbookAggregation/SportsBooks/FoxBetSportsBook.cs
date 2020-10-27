@@ -115,7 +115,7 @@ namespace SportsbookAggregation.SportsBooks
             var gameOfferings = new List<GameOffering>();
             foreach (var game in games)
             {
-                var gameOffering = ParseGameOffering(game, moneyLineLabel, spreadLabel, totalLabel);
+                var gameOffering = ParseGameOffering(game, moneyLineLabel, spreadLabel, totalLabel, sportName);
                 gameOffering.Sport = sportName;
                 gameOfferings.Add(gameOffering);
             }
@@ -123,7 +123,7 @@ namespace SportsbookAggregation.SportsBooks
             return gameOfferings;
         }
 
-        private GameOffering ParseGameOffering(dynamic gameJson, string moneyLineLabel, string spreadLabel, string totalLabel)
+        private GameOffering ParseGameOffering(dynamic gameJson, string moneyLineLabel, string spreadLabel, string totalLabel, string sportName)
         {
             var gameOffering = new GameOffering
             {
@@ -171,9 +171,9 @@ namespace SportsbookAggregation.SportsBooks
                     .First(s => s.names.longName.Value.Contains("Under")).odds.frac.Value);
             }
 
-            if (gameOffering.HomeTeam == "Washington")
+            if (gameOffering.HomeTeam == "Washington" && sportName == "NFL")
                 gameOffering.HomeTeam = "Washington Football Team";
-            else if (gameOffering.AwayTeam == "Washington")
+            else if (gameOffering.AwayTeam == "Washington" && sportName == "NFL")
                 gameOffering.AwayTeam = "Washington Football Team";
 
             return gameOffering;
