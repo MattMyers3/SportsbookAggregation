@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SportsbookAggregation.Data;
 
 namespace SportsbookAggregation.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20201021000514_FixNCAATeam")]
+    partial class FixNCAATeam
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -266,37 +268,6 @@ namespace SportsbookAggregation.Migrations
                     b.HasIndex("SportId");
 
                     b.ToTable("OddsBoost");
-                });
-
-            modelBuilder.Entity("SportsbookAggregation.Data.Models.Player", b =>
-                {
-                    b.Property<Guid>("PlayerId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("binary(16)");
-
-                    b.Property<string>("FirstName")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<string>("LastName")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.HasKey("PlayerId");
-
-                    b.ToTable("Player");
-                });
-
-            modelBuilder.Entity("SportsbookAggregation.Data.Models.PropBetType", b =>
-                {
-                    b.Property<Guid>("PropBetTypeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("binary(16)");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.HasKey("PropBetTypeId");
-
-                    b.ToTable("PropBetType");
                 });
 
             modelBuilder.Entity("SportsbookAggregation.Data.Models.Sport", b =>

@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using SportsbookAggregation.Data.Models;
 using SportsbookAggregation.SportsBooks.Models;
 using System;
 using System.Collections;
@@ -12,6 +11,7 @@ namespace SportsbookAggregation.SportsBooks
     {
         private const string NbaCode = "77";
         private const string NflCode = "55";
+        private const string NcaafCode = "58";
 
         public string GetSportsBookName()
         {
@@ -22,27 +22,39 @@ namespace SportsbookAggregation.SportsBooks
         {
             var basketballOfferings = GetBasketballOfferings();
             var footballOfferings = GetFootballOfferings();
+            var ncaafOfferings = GetNCAFFOfferings();
 
-            return basketballOfferings.Concat(footballOfferings);
+            return ncaafOfferings.Concat(basketballOfferings.Concat(footballOfferings));
         }
 
         private IEnumerable<GameOffering> GetBasketballOfferings()
         {
-            return GetGameOfferings(NbaCode);
+            return GetGameOfferings(NbaCode, "NBA");
         }
 
         private IEnumerable<GameOffering> GetFootballOfferings()
         {
-            return GetGameOfferings(NflCode);
+            return GetGameOfferings(NflCode, "NFL");
+        }
+
+        private IEnumerable<GameOffering> GetNCAFFOfferings()
+        {
+            var games = GetGameOfferings(NcaafCode, "NCAAF");
+            foreach (var offering in games)
+            {
+                offering.AwayTeam = LocationMapper.GetFullTeamName(offering.AwayTeam, offering.Sport);
+                offering.HomeTeam = LocationMapper.GetFullTeamName(offering.HomeTeam, offering.Sport);
+            }
+
+            return games;
         }
 
         private string GetSportsUrl(string sportsCode)
         {
-            var date = DateTime.UtcNow.ToString("yyyy-MM-dd"); //No idea if this is right. Having trouble testing. Might need to redo some of this book, site might have updated
-            return $"https://sb-content.pa.caesarsonline.com/content-service/api/v1/q/event-list?startTimeFrom={date}&started=false&active=true&maxMarkets=10&orderMarketsBy=displayOrder&marketSortsIncluded=HH%2CHL%2CMR%2CWH&eventSortsIncluded=MTCH&includeChildMarkets=true&prioritisePrimaryMarkets=true&includeMedia=true&drilldownTagIds={sportsCode}";
+            return $"https://sb-content.pa.caesarsonline.com/content-service/api/v1/q/event-list?started=false&active=true&marketSortsIncluded=HH%2CHL%2CMR%2CWH&eventSortsIncluded=MTCH&includeChildMarkets=true&drilldownTagIds={sportsCode}";
         }
 
-        private IEnumerable<GameOffering> GetGameOfferings(string sportsCode)
+        private IEnumerable<GameOffering> GetGameOfferings(string sportsCode, string sportName)
         {
             var responseString =
                 JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(GetSportsUrl(sportsCode)).Result);
@@ -51,23 +63,26 @@ namespace SportsbookAggregation.SportsBooks
             var gameOfferings = new List<GameOffering>();
             foreach (var game in games)
             {
-                gameOfferings.Add(ParseGameOffering(game));
+                gameOfferings.Add(ParseGameOffering(game, sportName));
             }
 
             return gameOfferings;
         }
 
-        private GameOffering ParseGameOffering(dynamic game)
+        private GameOffering ParseGameOffering(dynamic game, string sportName)
         {
             var gameOffering = new GameOffering
             {
                 Site = GetSportsBookName(),
-                Sport = GetSport(game),
+                Sport = sportName,
                 DateTime = game.startTime.Value
             };
 
             gameOffering.HomeTeam = ((IEnumerable)game.teams).Cast<dynamic>().FirstOrDefault(g => g.side == "HOME").name;
             gameOffering.AwayTeam = ((IEnumerable)game.teams).Cast<dynamic>().FirstOrDefault(g => g.side == "AWAY").name;
+
+            if (gameOffering.HomeTeam.StartsWith("Look Ahead") || gameOffering.AwayTeam.StartsWith("Look Ahead"))//Don't Ask
+                return new GameOffering();
 
             var markets = ((IEnumerable)game.markets).Cast<dynamic>();
             if (gameOffering.HomeTeam == "Washington Football Team" || gameOffering.AwayTeam == "Washington Football Team")
@@ -111,21 +126,6 @@ namespace SportsbookAggregation.SportsBooks
             return denominator < numerator
                 ? Convert.ToInt32(100 / denominator * numerator)
                 : Convert.ToInt32(-1 * (100 / numerator) * denominator);
-        }
-
-        private string GetSport(dynamic game)
-        {
-            switch (game.category.code.Value)
-            {
-                case "AMERICAN_FOOTBAL"://this is not a typo
-                    return "NFL";
-                case "BASKETBALL":
-                    return "NBA";
-                default:
-                     throw new Exception(game.category.code.Value + " not a recognized sport");
-
-            }
-
         }
 
         public IEnumerable<OddsBoostOffering> AggregateOddsBoost()

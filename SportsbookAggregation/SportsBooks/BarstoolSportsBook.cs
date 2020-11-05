@@ -41,8 +41,10 @@ namespace SportsbookAggregation.SportsBooks
         public OddsBoostOffering GetOddsBoost(dynamic betOffer)
         {
             string description = betOffer.criterion.englishLabel.ToString();
-            var split = description.Split(new[] { " (Was ", " (was " }, StringSplitOptions.None);
-            var prevOdds = Convert.ToInt32(split[1].Trim(')'));
+            var split = description.Split(new[] { " (Was", " (was" }, StringSplitOptions.None);
+            var prevOdds = 0;
+            if(split[1] != null)
+                prevOdds = Convert.ToInt32(split[1].TrimStart().Trim(')'));
             description = split[0];
             return new OddsBoostOffering()
             {

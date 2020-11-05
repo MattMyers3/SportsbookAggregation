@@ -26,11 +26,12 @@ namespace SportsbookAggregation.SportsBooks
         public IEnumerable<GameOffering> AggregateFutureOfferings()
         {
             var basketballOfferings = GetBasketballOfferings().ToList();
-            var footballOfferings = GetFootballOfferings().ToList();
+            var nflOfferings = GetNFLOfferings().ToList();
             var baseballOfferings = GetBaseballOfferings().ToList();
+            var ncaafOfferings = GetNCAAFOfferings().ToList();
 
 
-            return baseballOfferings.Concat(basketballOfferings.Concat(footballOfferings));
+            return ncaafOfferings.Concat(baseballOfferings.Concat(basketballOfferings.Concat(nflOfferings)));
         }
 
         private IEnumerable<GameOffering> GetBasketballOfferings()
@@ -47,7 +48,7 @@ namespace SportsbookAggregation.SportsBooks
             return GetGameOfferings(usaCategoryJson, "NBA", "Money Line", "Spread", "Total Points");
         }
 
-        private IEnumerable<GameOffering> GetFootballOfferings()
+        private IEnumerable<GameOffering> GetNFLOfferings()
         {
             var initialJson =
                 JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(InitialFootballRequest).Result);
@@ -75,6 +76,27 @@ namespace SportsbookAggregation.SportsBooks
             return GetGameOfferings(usaCategoryJson, "MLB", "Money Line", "Run Line", "Total Runs");
         }
 
+        private IEnumerable<GameOffering> GetNCAAFOfferings()
+        {
+            var initialJson =
+                JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(InitialFootballRequest).Result);
+
+            var usaCategoryJson = ((IEnumerable)initialJson.categories).Cast<dynamic>()
+                .FirstOrDefault(g => g.name == "USA");
+
+            if (usaCategoryJson == null)
+                return Enumerable.Empty<GameOffering>();
+
+            IEnumerable<GameOffering> gameOfferings = GetGameOfferings(usaCategoryJson, "NCAAF", "Money Line", "Spread", "Total Points");
+            foreach(var offering in gameOfferings)
+            {
+                offering.AwayTeam = LocationMapper.GetFullTeamName(offering.AwayTeam, offering.Sport);
+                offering.HomeTeam = LocationMapper.GetFullTeamName(offering.HomeTeam, offering.Sport);
+            }
+
+            return gameOfferings;
+        }
+
         private IEnumerable<GameOffering> GetGameOfferings(dynamic usaCategoryJson, string sportName, string moneyLineLabel, string spreadLabel, string totalLabel)
         {
             var nflCompetitionJson =
@@ -93,7 +115,7 @@ namespace SportsbookAggregation.SportsBooks
             var gameOfferings = new List<GameOffering>();
             foreach (var game in games)
             {
-                var gameOffering = ParseGameOffering(game, moneyLineLabel, spreadLabel, totalLabel);
+                var gameOffering = ParseGameOffering(game, moneyLineLabel, spreadLabel, totalLabel, sportName);
                 gameOffering.Sport = sportName;
                 gameOfferings.Add(gameOffering);
             }
@@ -101,7 +123,7 @@ namespace SportsbookAggregation.SportsBooks
             return gameOfferings;
         }
 
-        private GameOffering ParseGameOffering(dynamic gameJson, string moneyLineLabel, string spreadLabel, string totalLabel)
+        private GameOffering ParseGameOffering(dynamic gameJson, string moneyLineLabel, string spreadLabel, string totalLabel, string sportName)
         {
             var gameOffering = new GameOffering
             {
@@ -149,9 +171,9 @@ namespace SportsbookAggregation.SportsBooks
                     .First(s => s.names.longName.Value.Contains("Under")).odds.frac.Value);
             }
 
-            if (gameOffering.HomeTeam == "Washington")
+            if (gameOffering.HomeTeam == "Washington" && sportName == "NFL")
                 gameOffering.HomeTeam = "Washington Football Team";
-            else if (gameOffering.AwayTeam == "Washington")
+            else if (gameOffering.AwayTeam == "Washington" && sportName == "NFL")
                 gameOffering.AwayTeam = "Washington Football Team";
 
             return gameOffering;
@@ -204,17 +226,17 @@ namespace SportsbookAggregation.SportsBooks
         private OddsBoostOffering ParseOddsBoost(dynamic boostJson, string game, string sportName, DateTime gameTime)
         {
             var betDesc = boostJson.names.longName;
+            var prevPriceJson = ((IEnumerable)boostJson.wasPrice).Cast<dynamic>();
 
             return new OddsBoostOffering()
             {
                 BoostedOdds = CalculateOdds(boostJson.odds.frac.Value),
-                PreviousOdds = CalculateOdds(((IEnumerable)boostJson.wasPrice).Cast<dynamic>().Single(b => b.channel == "PA").fractionalOdds.Value),
+                PreviousOdds = prevPriceJson.Any(b => b.channel == "PA") ? CalculateOdds(prevPriceJson.Single(b => b.channel == "PA").fractionalOdds.Value) : 0,
                 Description = $"({game}) {betDesc}",
                 Sport = sportName,
                 Date = gameTime,
                 Site = GetSportsBookName()
             };
-
         }
     }
 }

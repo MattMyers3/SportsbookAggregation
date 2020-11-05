@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SportsbookAggregation.Data;
 
 namespace SportsbookAggregation.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20201020234200_AddNCAATeams")]
+    partial class AddNCAATeams
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -266,37 +268,6 @@ namespace SportsbookAggregation.Migrations
                     b.HasIndex("SportId");
 
                     b.ToTable("OddsBoost");
-                });
-
-            modelBuilder.Entity("SportsbookAggregation.Data.Models.Player", b =>
-                {
-                    b.Property<Guid>("PlayerId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("binary(16)");
-
-                    b.Property<string>("FirstName")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<string>("LastName")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.HasKey("PlayerId");
-
-                    b.ToTable("Player");
-                });
-
-            modelBuilder.Entity("SportsbookAggregation.Data.Models.PropBetType", b =>
-                {
-                    b.Property<Guid>("PropBetTypeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("binary(16)");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.HasKey("PropBetTypeId");
-
-                    b.ToTable("PropBetType");
                 });
 
             modelBuilder.Entity("SportsbookAggregation.Data.Models.Sport", b =>
@@ -1357,7 +1328,7 @@ namespace SportsbookAggregation.Migrations
                         new
                         {
                             TeamId = new Guid("2d1c1515-d4f5-409f-bb81-d77604310a6c"),
-                            Location = "Louisiana-Monroe",
+                            Location = "Louisiana–Monroe",
                             Mascot = "Warhawks",
                             SportId = new Guid("43ecce0d-7a55-4cdb-9378-6777ae8ab0aa")
                         },

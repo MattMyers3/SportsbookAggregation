@@ -14,6 +14,7 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
         private readonly string NbaRequestUrl;
         private readonly string NflRequestUrl;
         private readonly string MlbRequestUrl;
+        private readonly string NcaafRequestUrl;
         private readonly string OddsBoostUrl;
         private readonly string BaseUrl;
 
@@ -26,16 +27,18 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
             NbaRequestUrl = BaseUrl + $"/listView/basketball/nba.json?lang=en_US&market=US&useCombined=true";
             NflRequestUrl = BaseUrl + $"/listView/american_football/nfl.json?lang=en_US&market=US&useCombined=true";
             MlbRequestUrl = BaseUrl + $"/listView/baseball/mlb.json?lang=en_US&market=US&useCombined=true";
+            NcaafRequestUrl = BaseUrl + $"/listView/american_football/ncaaf.json?lang=en_US&market=US&useCombined=true";
             OddsBoostUrl =  BaseUrl + $"/listView/{siteSpecialsName}.json?lang=en_US&market=US&&useCombined=true";
         }
 
         public IEnumerable<GameOffering> AggregateFutureOfferings()
         {
             var basketballOfferings = GetBasketballOfferings();
-            var footballOfferings = GetFootballOfferings();
+            var nflOfferings = GetNFLOfferings();
             var baseballOfferings = GetBaseballOfferings();
+            var ncaafOfferings = GetNCAAFOfferings();
 
-            return baseballOfferings.Concat(basketballOfferings.Concat(footballOfferings));
+            return ncaafOfferings.Concat(baseballOfferings.Concat(basketballOfferings.Concat(nflOfferings)));
         }
 
         public IEnumerable<OddsBoostOffering> AggregateOddsBoost()
@@ -69,7 +72,7 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
             return GetGameOfferings(NbaRequestUrl,"Point Spread", "Moneyline", "Total Points");
         }
 
-        private IEnumerable<GameOffering> GetFootballOfferings()
+        private IEnumerable<GameOffering> GetNFLOfferings()
         {
             return GetGameOfferings(NflRequestUrl, "Point Spread", "Moneyline", "Total Points");
         }
@@ -77,6 +80,11 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
         private IEnumerable<GameOffering> GetBaseballOfferings()
         {
             return GetGameOfferings(MlbRequestUrl, "Run Line", "Moneyline", "Total Runs");
+        }
+
+        private IEnumerable<GameOffering> GetNCAAFOfferings()
+        {
+            return GetGameOfferings(NcaafRequestUrl, "Point Spread", "Moneyline", "Total Points");
         }
 
 

@@ -9,11 +9,68 @@ namespace SportsbookAggregation.SportsBooks
 
         public static string GetFullTeamName(string shortTeamName, string sport)
         {
+            if (sport == "NCAAF")
+                return MapCollege(shortTeamName);
+
             var teamNameArray = shortTeamName.Split(' ');
             var location = LocationMapper.MapLocation(teamNameArray[0], sport);
             return $"{location}{shortTeamName.Substring(teamNameArray[0].Length)}";
         }
-
+        
+        private static string MapCollege(string college)
+        {
+            college = college.Replace('-', '-');
+            if (college.StartsWith('#'))//#1 Villanova, need to strip the rank
+                college = college.Substring(college.IndexOf(' ') + 1);
+            switch(college.ToLower())
+            {
+                case "abilene christian university":
+                    return "Abilene Christian";
+                case "brigham young cougars":
+                    return "BYU";
+                case "central florida knights":
+                case "central florida":
+                    return "UCF";
+                case "florida intl":
+                case "florida international":
+                case "florida international panthers":
+                    return "FIU";
+                case "hawaii warriors":
+                    return "Hawaii";
+                case "la lafayette":
+                case "louisiana-lafayette":
+                case "louisiana lafayette ragin cajuns":
+                case "ul lafayette":
+                    return "Louisiana";
+                case "louisiana monroe warhawks":
+                case "ul monroe":
+                    return "Louisiana-Monroe";
+                case "miami florida":
+                case "miami florida hurricanes":
+                    return "Miami (FL)";
+                case "middle tennessee state":
+                case "middle tenn state blue raiders":
+                    return "Middle Tennessee";
+                case "mississippi rebels":
+                case "mississippi":
+                    return "Ole Miss";
+                case "north carolina st wolfpack":
+                case "north carolina state":
+                    return "NC State";
+                case "se missouri state":
+                    return "Southeast Missouri State";
+                case "southern methodist mustangs":
+                    return "SMU";
+                case "southern mississippi":
+                case "southern mississippi golden eagles":
+                    return "Southern Miss";
+                case "ut san antonio":
+                case "texas san antonio roadrunners":
+                    return "UTSA";
+                default:
+                    return college;
+            }
+        }
         private static string MapLocation(string abbreviation, string sport)
         {
             switch (abbreviation.ToUpper())
