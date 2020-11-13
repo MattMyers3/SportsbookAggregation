@@ -48,6 +48,8 @@ namespace SportsbookAggregation.SportsBooks
                 case "miami florida":
                 case "miami florida hurricanes":
                     return "Miami (FL)";
+                case "miami ohio":
+                    return "Miami (OH)";
                 case "middle tennessee state":
                 case "middle tenn state blue raiders":
                     return "Middle Tennessee";

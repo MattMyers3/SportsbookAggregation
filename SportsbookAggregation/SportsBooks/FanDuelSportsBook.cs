@@ -91,7 +91,8 @@ namespace SportsbookAggregation.SportsBooks
                 var gameUrl = $"https://sportsbook.fanduel.com/cache/psevent/UK/1/false/{gameNumber}.json";
                 var gameJson =
                     JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(gameUrl).Result);
-                gameOfferings.Add(ParseGameOffering(gameJson, spreadLabel, moneyLineLabel, totalLabel));
+                if(gameJson.participantname_home != null) // temp code. find a better way to handle this
+                    gameOfferings.Add(ParseGameOffering(gameJson, spreadLabel, moneyLineLabel, totalLabel));
             }
 
             return gameOfferings;
