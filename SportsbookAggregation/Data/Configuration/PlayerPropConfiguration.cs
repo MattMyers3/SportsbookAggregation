@@ -4,9 +4,9 @@ using SportsbookAggregation.Data.Models;
 
 namespace SportsbookAggregation.Data.Configuration
 {
-    class PlayerPropConfiguration : IEntityTypeConfiguration<GamblingSite>
+    class PlayerPropConfiguration : IEntityTypeConfiguration<PlayerProp>
     {
-        public void Configure(EntityTypeBuilder<GamblingSite> builder)
+        public void Configure(EntityTypeBuilder<PlayerProp> builder)
         {
             //default
         }
