@@ -26,7 +26,8 @@ namespace SportsbookAggregation.SportsBooks
 
         public IEnumerable<PlayerPropOffering> AggregatePlayerProps()
         {
-            throw new System.NotImplementedException();
+            var oddsProvider = new KambicdnOddsProvider(GetSportsBookName(), "rsi2uspa", "betrivers");
+            return oddsProvider.AggregatePlayerProps();
         }
     }
 }

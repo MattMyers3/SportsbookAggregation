@@ -1,5 +1,4 @@
-﻿using SportsbookAggregation.Data.Models;
-using SportsbookAggregation.SportsBooks.Models;
+﻿using SportsbookAggregation.SportsBooks.Models;
 using SportsbookAggregation.SportsBooks.OddsProviders;
 using System.Collections.Generic;
 
@@ -26,7 +25,8 @@ namespace SportsbookAggregation.SportsBooks
 
         public IEnumerable<PlayerPropOffering> AggregatePlayerProps()
         {
-            throw new System.NotImplementedException();
+            var oddsProvider = new KambicdnOddsProvider(GetSportsBookName(), "ubuspa", "unibet");
+            return oddsProvider.AggregatePlayerProps();
         }
     }
 }

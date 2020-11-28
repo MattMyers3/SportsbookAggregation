@@ -77,7 +77,8 @@ namespace SportsbookAggregation.SportsBooks
 
         public IEnumerable<PlayerPropOffering> AggregatePlayerProps()
         {
-            throw new NotImplementedException();
+            var oddsProvider = new KambicdnOddsProvider(GetSportsBookName(), "pivuspa", "barstool");
+            return oddsProvider.AggregatePlayerProps();
         }
     }
 }
