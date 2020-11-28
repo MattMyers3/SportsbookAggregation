@@ -23,5 +23,11 @@ namespace SportsbookAggregation.SportsBooks
             var oddsProvider = new KambicdnOddsProvider(GetSportsBookName(), "parxuspa", "parx_specials");
             return oddsProvider.AggregateOddsBoost();
         }
+
+        public IEnumerable<PlayerPropOffering> AggregatePlayerProps()
+        {
+            var oddsProvider = new KambicdnOddsProvider(GetSportsBookName(), "parxuspa", "parx");
+            return oddsProvider.AggregatePlayerProps();
+        }
     }
 }

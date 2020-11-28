@@ -74,5 +74,10 @@ namespace SportsbookAggregation.SportsBooks
             }
             throw new Exception("Can't find Odds Boost ID");
         }
+
+        public IEnumerable<PlayerPropOffering> AggregatePlayerProps()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

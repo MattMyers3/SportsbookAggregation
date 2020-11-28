@@ -7,6 +7,7 @@ namespace SportsbookAggregation.SportsBooks
     {
         IEnumerable<GameOffering> AggregateFutureOfferings();
         IEnumerable<OddsBoostOffering> AggregateOddsBoost();
+        IEnumerable<PlayerPropOffering> AggregatePlayerProps();
         string GetSportsBookName();
     }
 }

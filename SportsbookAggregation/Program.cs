@@ -19,32 +19,44 @@ namespace SportsbookAggregation
         {
             var dbContext = new Context();
 
-            List<ISportsBook> sportsbooks = new List<ISportsBook> { new DraftKingsSportsBook(), new FanDuelSportsBook(), new FoxBetSportsBook(), new BarstoolSportsBook(), new BetAmericaSportsBook(), new CaesarsSportBook(), new BetRiversSportsBook(), new ParxSportsBook(), new UnibetSportsBook(), new SugarHouseSportsBook() };
+            List<ISportsBook> sportsbooks = new List<ISportsBook> { new ParxSportsBook() };
             var gameOfferings = new List<GameOffering>();
             var oddsBoosts = new List<OddsBoostOffering>();
+            var playerProps = new List<PlayerPropOffering>();
 
             foreach (var sportsbook in sportsbooks)
             {
-                try
-                {
-                    gameOfferings.AddRange(sportsbook.AggregateFutureOfferings().ToList());
-                }
-                catch (Exception ex)
-                {
-                    LogError(ex);
-                    SendAlerts("Failed to parse games lines for: " + sportsbook.GetSportsBookName());
-                    Console.WriteLine("Failed to parse games lines for:  " + sportsbook.GetSportsBookName());
-                }
+                //try
+                //{
+                //    gameOfferings.AddRange(sportsbook.AggregateFutureOfferings().ToList());
+                //}
+                //catch (Exception ex)
+                //{
+                //    LogError(ex);
+                //    SendAlerts("Failed to parse games lines for: " + sportsbook.GetSportsBookName());
+                //    Console.WriteLine("Failed to parse games lines for:  " + sportsbook.GetSportsBookName());
+                //}
+
+                //try
+                //{
+                //    oddsBoosts.AddRange(sportsbook.AggregateOddsBoost().ToList());
+                //}
+                //catch (Exception ex)
+                //{
+                //    LogError(ex);
+                //    SendAlerts("Failed to parse odds boost for: " + sportsbook.GetSportsBookName());
+                //    Console.WriteLine("Failed to parse odds boost for: " + sportsbook.GetSportsBookName());
+                //}
 
                 try
                 {
-                    oddsBoosts.AddRange(sportsbook.AggregateOddsBoost().ToList());
+                    playerProps.AddRange(sportsbook.AggregatePlayerProps().ToList());
                 }
                 catch (Exception ex)
                 {
                     LogError(ex);
-                    SendAlerts("Failed to parse odds boost for: " + sportsbook.GetSportsBookName());
-                    Console.WriteLine("Failed to parse odds boost for: " + sportsbook.GetSportsBookName());
+                    //SendAlerts("Failed to parse player props for: " + sportsbook.GetSportsBookName());
+                    Console.WriteLine("Failed to parse player props for: " + sportsbook.GetSportsBookName());
                 }
             }
 
@@ -62,7 +74,7 @@ namespace SportsbookAggregation
             catch (Exception ex)
             {
                 LogError(ex);
-                SendAlerts("Failed writing games to DB");
+                //SendAlerts("Failed writing games to DB");
                 throw ex;
             }
             AlertsService.Run(dbContext);

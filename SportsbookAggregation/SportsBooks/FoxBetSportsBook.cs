@@ -238,5 +238,10 @@ namespace SportsbookAggregation.SportsBooks
                 Site = GetSportsBookName()
             };
         }
+
+        public IEnumerable<PlayerPropOffering> AggregatePlayerProps()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

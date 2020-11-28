@@ -3105,6 +3105,9 @@ namespace SportsbookAggregation.Data
                 new Player { FirstName = "Matt", LastName = "Sokol", PlayerId = new Guid("f8593e1f-727d-4526-89dd-8d62874a9bbe") },
                 new Player { FirstName = "Donte"	, LastName= " Vaughn", PlayerId= new Guid("4ae9bff6-abc1-4459-8717-1b05d485034a") }
             );
+            modelBuilder.Entity<PropBetType>().HasData(
+                new PropBetType { Description = "First Touchdown Scorer", PropBetTypeId = new Guid("d399e68e-ac96-4eb1-9091-87ab18408dbb") }
+            );
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

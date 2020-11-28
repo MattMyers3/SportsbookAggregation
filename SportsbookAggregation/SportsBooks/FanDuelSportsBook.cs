@@ -236,5 +236,10 @@ namespace SportsbookAggregation.SportsBooks
             oddsBoostOffering.BoostedOdds = CalculateOdds(oddsBoostSelections[0].currentpricedown.Value, oddsBoostSelections[0].currentpriceup.Value);
             return oddsBoostOffering;
         }
+
+        public IEnumerable<PlayerPropOffering> AggregatePlayerProps()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

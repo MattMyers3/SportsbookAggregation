@@ -23,5 +23,10 @@ namespace SportsbookAggregation.SportsBooks
             var oddsProvider = new KambicdnOddsProvider(GetSportsBookName(), "rsi2uspa", "sugar_house_specials");
             return oddsProvider.AggregateOddsBoost();
         }
+
+        public IEnumerable<PlayerPropOffering> AggregatePlayerProps()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
