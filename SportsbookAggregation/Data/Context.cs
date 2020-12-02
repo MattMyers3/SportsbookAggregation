@@ -31,7 +31,7 @@ namespace SportsbookAggregation.Data
         public IRepository<GameResult> GameResultRepository => new SqlServerRepository<GameResult>(this);
         public IRepository<Alert> AlertRepository => new SqlServerRepository<Alert>(this);
         public IRepository<OddsBoost> OddsBoostRepository => new SqlServerRepository<OddsBoost>(this);
-        public IRepository<UserSettings> UserSettingsRepositor => new SqlServerRepository<UserSettings>(this);
+        public IRepository<UserSettings> UserSettingsRepository => new SqlServerRepository<UserSettings>(this);
 
 
 
