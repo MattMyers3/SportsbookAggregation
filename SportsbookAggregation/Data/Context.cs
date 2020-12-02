@@ -8,6 +8,8 @@ using MySql.Data.MySqlClient;
 using SportsbookAggregation.Alerts.Models;
 using SportsbookAggregation.Data.Configuration;
 using SportsbookAggregation.Data.Models;
+using SportsbookAggregation.UserSettingsInfo.Configuration;
+using SportsbookAggregation.UserSettingsInfo.Models;
 
 namespace SportsbookAggregation.Data
 {
@@ -29,6 +31,7 @@ namespace SportsbookAggregation.Data
         public IRepository<GameResult> GameResultRepository => new SqlServerRepository<GameResult>(this);
         public IRepository<Alert> AlertRepository => new SqlServerRepository<Alert>(this);
         public IRepository<OddsBoost> OddsBoostRepository => new SqlServerRepository<OddsBoost>(this);
+        public IRepository<UserSettings> UserSettingsRepository => new SqlServerRepository<UserSettings>(this);
 
 
 
@@ -42,6 +45,8 @@ namespace SportsbookAggregation.Data
             modelBuilder.ApplyConfiguration(new GameResultConfiguration());
             modelBuilder.ApplyConfiguration(new AlertConfiguration());
             modelBuilder.ApplyConfiguration(new OddsBoostConfiguration());
+            modelBuilder.ApplyConfiguration(new UserSettingsConfiguration());
+
 
             var nbaGuid = new Guid("2cbbd293-8627-447d-8b20-2c5a4fdaa024");
             var nflGuid = new Guid("6e972a45-6bd9-4085-9a78-faddf46294be");
