@@ -143,6 +143,8 @@ namespace SportsbookAggregation.SportsBooks
                     return "Philadelphia";
                 case "PIT":
                     return "Pittsburgh";
+                case "PHO":
+                    return "Phoenix";
                 case "PHX":
                     return "Phoenix";
                 case "POR":

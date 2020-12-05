@@ -47,7 +47,7 @@ namespace SportsbookAggregation.SportsBooks
         {
             var footballJson = ((IEnumerable)initialJson.bonavigationnodes).Cast<dynamic>()
                 .First(g => g.name == "College Football");
-            var games = GetGameOfferings(footballJson, "Games", "CFB Coupon", "Spread", "Moneyline", "Total Match Points");
+            var games = GetGameOfferings(footballJson, "College Football", "CFB Coupon", "Spread", "Moneyline", "Total Match Points");
             foreach (var offering in games)
             {
                 offering.AwayTeam = LocationMapper.GetFullTeamName(offering.AwayTeam, offering.Sport);
@@ -193,7 +193,9 @@ namespace SportsbookAggregation.SportsBooks
                 var oddsBoostEvents = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(groupUrl).Result).events;
                 foreach(var boostEvent in oddsBoostEvents)
                 {
-                    oddsBoostOfferings.Add(GetOddsBoostOffering(boostEvent));
+                    var oddsBoost = GetOddsBoostOffering(boostEvent);
+                    if (oddsBoost != null)
+                        oddsBoostOfferings.Add(oddsBoost);
                 }                
             }
             return oddsBoostOfferings;
@@ -216,7 +218,9 @@ namespace SportsbookAggregation.SportsBooks
                 var oddsBoostEvents = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(groupUrl).Result).events;
                 foreach (var boostEvent in oddsBoostEvents)
                 {
-                    oddsBoostOfferings.Add(GetOddsBoostOffering(boostEvent));
+                    var oddsBoost = GetOddsBoostOffering(boostEvent);
+                    if(oddsBoost != null)
+                        oddsBoostOfferings.Add(oddsBoost);
                 }
             }
             return oddsBoostOfferings;
@@ -233,6 +237,10 @@ namespace SportsbookAggregation.SportsBooks
             };
 
             var oddsBoostSelections = ((IEnumerable)boostEvent.markets).Cast<dynamic>().FirstOrDefault()?.selections;
+
+            if (oddsBoostSelections[0].estimatepricedown == null)
+                return null; //Weird case where the boost was a super boost but was showing in both parsing. Did not contain previous odds
+
             oddsBoostOffering.PreviousOdds = CalculateOdds(oddsBoostSelections[0].estimatepricedown.Value, oddsBoostSelections[0].estimatepriceup.Value);
             oddsBoostOffering.BoostedOdds = CalculateOdds(oddsBoostSelections[0].currentpricedown.Value, oddsBoostSelections[0].currentpriceup.Value);
             return oddsBoostOffering;
