@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SportsbookAggregation.SportsBooks.Models;
 using SportsbookAggregation.SportsBooks.OddsProviders;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,16 @@ namespace SportsbookAggregation.SportsBooks
         {
             var eventIdJson = "https://sportsbook.draftkings.com//sites/US-SB/api/v1/displaygroup/815?includePromotions=true&format=json";
             var oddsBoostOfferings = new List<OddsBoostOffering>();
-            var requestString = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(eventIdJson).Result).ToString();
+            string requestString = string.Empty;
+            try
+            {
+                requestString = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(eventIdJson).Result).ToString();
+            }
+            catch(Exception ex)
+            {
+                return Enumerable.Empty<OddsBoostOffering>(); //No Odds Boosts are available
+            }
+            
             var eventList = ((IEnumerable)JsonConvert.DeserializeObject<dynamic>(requestString).displayGroup.eventGroupDescriptors).Cast<dynamic>();
             foreach (var eventObject in eventList)
             {
