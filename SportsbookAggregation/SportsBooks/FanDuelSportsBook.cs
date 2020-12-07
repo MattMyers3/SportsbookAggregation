@@ -239,7 +239,112 @@ namespace SportsbookAggregation.SportsBooks
 
         public IEnumerable<PlayerPropOffering> AggregatePlayerProps()
         {
-            throw new NotImplementedException();
+            var initialJson = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(InitialRequest).Result);
+            var sportsTabJson = ((IEnumerable)initialJson.bonavigationnodes).Cast<dynamic>()
+                .First(g => g.name == "Sports home tab container");
+
+            IEnumerable<PlayerPropOffering> nflOfferings = GetNFLPlayerProps(sportsTabJson);
+            return nflOfferings;
+
+        }
+
+        private IEnumerable<PlayerPropOffering> GetNFLPlayerProps(dynamic sportsTabJson)
+        {
+            var gamesMarketGroups = ((IEnumerable)sportsTabJson.bonavigationnodes).Cast<dynamic>().First(g => g.name == "NFL").marketgroups;
+            if (gamesMarketGroups.Count == 0)
+                return Enumerable.Empty<PlayerPropOffering>();
+
+            var nflMarketGroup = ((IEnumerable)gamesMarketGroups).Cast<dynamic>()
+                .First(g => g.name.Value.ToString() == "NFL Games");
+
+            var idfwmarketgroup = nflMarketGroup.idfwmarketgroup;
+            var gamesUrl = $"https://sportsbook.fanduel.com/cache/psmg/UK/{idfwmarketgroup}.json";
+
+            var sportsGamesJson = JsonConvert
+               .DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(gamesUrl).Result).events;
+            var gameNumbers = new List<string>();
+            foreach (var game in sportsGamesJson)
+            {
+                gameNumbers.Add(game.idfoevent.ToString());
+            }
+
+            var playerProps = new List<PlayerPropOffering>();
+            foreach (var gameNumber in gameNumbers)
+            {
+                var gameUrl = $"https://sportsbook.fanduel.com/cache/psevent/UK/1/false/{gameNumber}.json";
+                var gameJson =
+                    JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(gameUrl).Result);
+
+                playerProps.AddRange(ParsePlayerProps(gameJson, "NFL", gameJson.participantname_home.ToString(), gameJson.participantname_away.ToString(), gameJson.tsstart));
+            }
+
+            return playerProps;
+        }
+
+        private IEnumerable<PlayerPropOffering> ParsePlayerProps(dynamic gameJson, string sport, string homeTeam, string awayTeam, dynamic gameTime)
+        {
+            if(gameJson.eventmarketgroups == null)
+                return Enumerable.Empty<PlayerPropOffering>();
+
+            var playerPropsJson = ((IEnumerable)gameJson.eventmarketgroups).Cast<dynamic>().FirstOrDefault(g => g.name.Value.ToString() == "Player Props");
+            if (playerPropsJson == null)
+                return Enumerable.Empty<PlayerPropOffering>();
+
+            var firstTouchdownJson = ((IEnumerable)playerPropsJson.markets).Cast<dynamic>().FirstOrDefault(g => g.name.Value.ToString() == "First Touchdown Scorer");
+            if (firstTouchdownJson == null)
+                return Enumerable.Empty<PlayerPropOffering>();
+
+            var playerProps = new List<PlayerPropOffering>();
+            var playerPropSelections = firstTouchdownJson.selections;
+
+            foreach(var selection in playerPropSelections)
+            {
+                var playerProp = new PlayerPropOffering
+                {
+                    Site = GetSportsBookName(),
+                    Sport = sport,
+                    AwayTeam = awayTeam,
+                    HomeTeam = homeTeam,
+                    DateTime = gameTime,
+                    Description = "First Touchdown Scorer",//This needs to be parsed in the future
+                    Payout = CalculateOdds(selection.currentpricedown.Value, selection.currentpriceup.Value),
+                    PropValue = 1 //Need to discuss this again
+                };
+
+                var playerName = selection.name.ToString();
+                var playerNameAsArray = playerName.Split(" ");
+                if(playerName.ToLower() == "no touchdown scored")
+                {
+                    playerProp.FirstName = playerName;
+                }
+                else if (playerName.ToLower().StartsWith("any other")) //Good way to store this?
+                {
+                    playerProp.OnHomeTeam = selection.hadvalue.Value.ToString() == "H";
+                    playerProp.FirstName = "Any Other";
+                    if (playerProp.OnHomeTeam)
+                        playerProp.LastName = homeTeam;
+                    else
+                        playerProp.LastName = awayTeam;
+                }
+                else if(playerName.ToLower().EndsWith("d/st"))
+                {
+                    playerProp.OnHomeTeam = selection.hadvalue.Value.ToString() == "H";
+                    playerProp.FirstName = "D/ST";
+                    if (playerProp.OnHomeTeam)
+                        playerProp.LastName = homeTeam;
+                    else
+                        playerProp.LastName = awayTeam;
+                }
+                else
+                {
+                    playerProp.OnHomeTeam = selection.hadvalue.Value.ToString() == "H";
+                    playerProp.FirstName = playerNameAsArray[playerNameAsArray.Length - 2];
+                    playerProp.LastName = playerNameAsArray[playerNameAsArray.Length - 1];
+                }
+
+                playerProps.Add(playerProp);
+            }
+            return playerProps;
         }
     }
 }
