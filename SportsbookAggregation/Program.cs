@@ -19,7 +19,7 @@ namespace SportsbookAggregation
         {
             var dbContext = new Context();
 
-            List<ISportsBook> sportsbooks = new List<ISportsBook> { new FanDuelSportsBook() };
+            List<ISportsBook> sportsbooks = new List<ISportsBook> { new FoxBetSportsBook() };
             var gameOfferings = new List<GameOffering>();
             var oddsBoosts = new List<OddsBoostOffering>();
             var playerProps = new List<PlayerPropOffering>();
