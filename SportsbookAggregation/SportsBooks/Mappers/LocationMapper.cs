@@ -9,7 +9,7 @@ namespace SportsbookAggregation.SportsBooks
 
         public static string GetFullTeamName(string shortTeamName, string sport)
         {
-            if (sport == "NCAAF")
+            if (sport == "NCAAF" || sport == "NCAAB")
                 return MapCollege(shortTeamName);
 
             var teamNameArray = shortTeamName.Split(' ');
@@ -27,7 +27,10 @@ namespace SportsbookAggregation.SportsBooks
                 case "abilene christian university":
                     return "Abilene Christian";
                 case "brigham young cougars":
+                case "brigham young":
                     return "BYU";
+                case "cal poly slo":
+                    return "Cal Poly";
                 case "central florida knights":
                 case "central florida":
                     return "UCF";
@@ -35,8 +38,12 @@ namespace SportsbookAggregation.SportsBooks
                 case "florida international":
                 case "florida international panthers":
                     return "FIU";
+                case "gardner webb":
+                    return "Gardner-Webb";
                 case "hawaii warriors":
                     return "Hawaii";
+                case "long beach state 49ers":
+                    return "Long Beach State";
                 case "la lafayette":
                 case "louisiana-lafayette":
                 case "louisiana lafayette ragin cajuns":
@@ -58,9 +65,13 @@ namespace SportsbookAggregation.SportsBooks
                 case "mississippi rebels":
                 case "mississippi":
                     return "Ole Miss";
+                case "north alabama":
+                    return "UNA";
                 case "north carolina st wolfpack":
                 case "north carolina state":
                     return "NC State";
+                case "san josé state":
+                    return "San Jose State";
                 case "se missouri state":
                     return "Southeast Missouri State";
                 case "southern methodist mustangs":
@@ -68,9 +79,32 @@ namespace SportsbookAggregation.SportsBooks
                 case "southern mississippi":
                 case "southern mississippi golden eagles":
                     return "Southern Miss";
+                case "stephen f austin":
+                    return "Stephen F. Austin";
+                case "seattle university":
+                case "seattle":
+                case "seattle redhawks":
+                case "seattle u":
+                    return "SU";
+                case "utah valley state":
+                    return "Utah Valley";
+                case "t a&m corpus christi":
+                case "texas a&m-corpus christi": //took me forever to figure out that's a different dash
+                    return "Texas A&M–Corpus Christi";
+                case "california riverside highlanders":
+                    return "UC Riverside";
+                case "missouri kansas city kangaroos":
+                    return "UMKC";
+                case "north carolina greensboro":
+                    return "UNC Greensboro";
+                case "ut rio grande valley":
+                case "texas rio grande":
+                    return "UTRGV";
                 case "ut san antonio":
                 case "texas san antonio roadrunners":
                     return "UTSA";
+                case "virginia military keydets":
+                    return "VMI";
                 default:
                     return college;
             }

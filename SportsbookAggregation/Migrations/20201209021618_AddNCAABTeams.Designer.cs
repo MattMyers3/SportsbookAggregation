@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SportsbookAggregation.Data;
 
 namespace SportsbookAggregation.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20201209021618_AddNCAABTeams")]
+    partial class AddNCAABTeams
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3640,13 +3642,13 @@ namespace SportsbookAggregation.Migrations
                         new
                         {
                             TeamId = new Guid("43f58925-3aaa-435f-a078-556ba535d9bc"),
-                            Location = "Loyola Chicago",
+                            Location = "Loyola (Chicago)",
                             Mascot = "Ramblers"
                         },
                         new
                         {
                             TeamId = new Guid("4d25165c-b394-4bf2-8fce-6b0277e3dd5e"),
-                            Location = "Loyola Maryland",
+                            Location = "Loyola (Maryland)",
                             Mascot = "Greyhounds"
                         },
                         new
@@ -3844,7 +3846,7 @@ namespace SportsbookAggregation.Migrations
                         new
                         {
                             TeamId = new Guid("878a0978-4828-4262-bbf4-87c4dcf3001a"),
-                            Location = "SU",
+                            Location = "Seattle",
                             Mascot = "Redhawks"
                         },
                         new
@@ -3990,24 +3992,6 @@ namespace SportsbookAggregation.Migrations
                             TeamId = new Guid("3ce1fb16-497e-466b-8c3a-a549cf4f0f03"),
                             Location = "Xavier",
                             Mascot = "Musketeers"
-                        },
-                        new
-                        {
-                            TeamId = new Guid("05b00303-9ef9-4b2d-8fcd-64c111447536"),
-                            Location = "UNA",
-                            Mascot = "Lions"
-                        },
-                        new
-                        {
-                            TeamId = new Guid("e0c9bc0e-2b51-44dc-93e9-7fb1126927c1"),
-                            Location = "Coppin State",
-                            Mascot = "Eagles"
-                        },
-                        new
-                        {
-                            TeamId = new Guid("a26364b1-c1a4-4cad-b2fe-3065f85966e3"),
-                            Location = "UMKC",
-                            Mascot = "Kangaroos"
                         });
                 });
 

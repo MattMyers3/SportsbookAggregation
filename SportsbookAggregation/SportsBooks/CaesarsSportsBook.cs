@@ -12,19 +12,22 @@ namespace SportsbookAggregation.SportsBooks
         private const string NbaCode = "77";
         private const string NflCode = "55";
         private const string NcaafCode = "58";
+        private const string NcaabCode = "76";
+
 
         public string GetSportsBookName()
         {
             return "Caesars";
         }
 
-        public IEnumerable<GameOffering> AggregateFutureOfferings()
+        public IEnumerable<GameOffering> AggregateFutureOfferings() //make sure you are on pa.caesarsonline.com
         {
             var basketballOfferings = GetBasketballOfferings();
             var footballOfferings = GetFootballOfferings();
-            var ncaafOfferings = GetNCAFFOfferings();
+            var ncaafOfferings = GetNCAAFOfferings();
+            var ncaabOfferings = GetNCAABOfferings();
 
-            return ncaafOfferings.Concat(basketballOfferings.Concat(footballOfferings));
+            return ncaabOfferings.Concat(ncaafOfferings.Concat(basketballOfferings.Concat(footballOfferings)));
         }
 
         private IEnumerable<GameOffering> GetBasketballOfferings()
@@ -37,16 +40,14 @@ namespace SportsbookAggregation.SportsBooks
             return GetGameOfferings(NflCode, "NFL");
         }
 
-        private IEnumerable<GameOffering> GetNCAFFOfferings()
+        private IEnumerable<GameOffering> GetNCAAFOfferings()
         {
-            var games = GetGameOfferings(NcaafCode, "NCAAF");
-            foreach (var offering in games)
-            {
-                offering.AwayTeam = LocationMapper.GetFullTeamName(offering.AwayTeam, offering.Sport);
-                offering.HomeTeam = LocationMapper.GetFullTeamName(offering.HomeTeam, offering.Sport);
-            }
+            return GetGameOfferings(NcaafCode, "NCAAF");
+        }
 
-            return games;
+        private IEnumerable<GameOffering> GetNCAABOfferings()
+        {
+            return GetGameOfferings(NcaabCode, "NCAAB");
         }
 
         private string GetSportsUrl(string sportsCode)
