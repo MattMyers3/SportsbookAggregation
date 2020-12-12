@@ -533,7 +533,8 @@ namespace SportsbookAggregation.SportsBooks.Mappers
             { "Xavier", "Musketeers" },
             { "UNA", "Lions" },
             { "Coppin State", "Eagles" },
-            { "UMKC", "Kangaroos" }
+            { "UMKC", "Kangaroos" },
+            { "Dixie State", "Trailblazers" }
         };
     }
 }
