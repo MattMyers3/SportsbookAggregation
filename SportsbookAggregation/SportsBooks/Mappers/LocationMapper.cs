@@ -28,11 +28,15 @@ namespace SportsbookAggregation.SportsBooks
                     return "Abilene Christian";
                 case "arkansas pine bluff":
                     return "Arkansas-Pine Bluff";
+                case "austin peay state":
+                    return "Austin Peay";
                 case "brigham young cougars":
                 case "brigham young":
                     return "BYU";
                 case "cal poly slo":
                     return "Cal Poly";
+                case "central conn. state":
+                    return "Central Connecticut";
                 case "csu bakersfield":
                     return "Cal State Bakersfield";
                 case "csu fullerton":
@@ -74,6 +78,7 @@ namespace SportsbookAggregation.SportsBooks
                 case "miami florida hurricanes":
                     return "Miami (FL)";
                 case "miami ohio":
+                case "miami-ohio redhawks":
                     return "Miami (OH)";
                 case "miami ohio red hawks":
                     return "Miami (OH)";
@@ -102,10 +107,14 @@ namespace SportsbookAggregation.SportsBooks
                     return "Omaha";
                 case "saint marys":
                 case "saint marys ca":
+                case "saint marys gaels":
                     return "Saint Mary's";
                 case "san josé state":
                     return "San Jose State";
+                case "se louisiana":
+                    return "Southeastern Louisiana";
                 case "se missouri state":
+                case "se missouri state redhawks":
                     return "Southeast Missouri State";
                 case "southern methodist mustangs":
                     return "SMU";
@@ -119,6 +128,9 @@ namespace SportsbookAggregation.SportsBooks
                 case "seattle redhawks":
                 case "seattle u":
                     return "SU";
+                case "st. francis (bkn)":
+                case "st francis brooklyn":
+                    return "St. Francis Brooklyn";
                 case "st. francis (pa)":
                 case "st francis (pa)":
                     return "Saint Francis";
@@ -150,6 +162,8 @@ namespace SportsbookAggregation.SportsBooks
                 case "ut san antonio":
                 case "texas san antonio roadrunners":
                     return "UTSA";
+                case "virginia commonwealth rams":
+                    return "VCU";
                 case "virginia military keydets":
                     return "VMI";
                 default:

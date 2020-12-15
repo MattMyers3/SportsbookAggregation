@@ -70,7 +70,7 @@ namespace SportsbookAggregation
                     var awayTeamId = GetTeamIdFromTeamName(gameOffering.AwayTeam, gameOffering.Sport);
                     var siteId = GetSiteId(gameOffering.Site);
 
-                    var gameId = GetGameId(gameOffering.DateTime, homeTeamId, awayTeamId, sportGuid) ??
+                    var gameId = GetGameId(gameOffering.DateTime, homeTeamId, awayTeamId) ??
                                     CreateGame(gameOffering.DateTime, homeTeamId, awayTeamId, sportGuid);
 
                     var gameLine = GetGameLine(gameId, siteId);
@@ -81,8 +81,7 @@ namespace SportsbookAggregation
                 }
                 catch(TeamNotFoundException e)
                 {
-                  Console.WriteLine(e.Message);
-                    // Program.SendAlerts(e.Message);
+                   Program.SendAlerts(e.Message);
                 }
             }
         }
@@ -162,18 +161,11 @@ namespace SportsbookAggregation
             return game.GameId;
         }
 
-        private Guid? GetGameId(DateTime gameTime, Guid homeTeamId, Guid awayTeamId, Guid sportsGuid)
+        private Guid? GetGameId(DateTime gameTime, Guid homeTeamId, Guid awayTeamId)
         {
             var matchingGames = dbContext.GameRepository.Read()
                 .Where(g => g.HomeTeamId == homeTeamId && g.AwayTeamId == awayTeamId && g.TimeStamp.Date == gameTime.Date);
-            var match = matchingGames.FirstOrDefault(g => Math.Abs(g.TimeStamp.Hour - gameTime.Hour) <= 1);
-            if(match != null && match.SportId == Constants.unknownGuid)
-            {
-                match.SportId = sportsGuid;
-                dbContext.Update(match);
-            }
-
-            return match?.GameId;
+            return matchingGames.FirstOrDefault(g => Math.Abs(g.TimeStamp.Hour - gameTime.Hour) <= 1)?.GameId;
         }
 
         private Guid GetTeamIdFromTeamName(string teamName, string sport)
