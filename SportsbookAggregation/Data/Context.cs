@@ -16,7 +16,7 @@ namespace SportsbookAggregation.Data
     public class Context : DbContext
     {
         private readonly DbConnection connection;
-
+        
         public Context() : this(GetDbConnection())
         {
         }
@@ -54,9 +54,8 @@ namespace SportsbookAggregation.Data
             var ncaabGuid = new Guid("d455e82d-31d6-48ad-b119-c4059d9f273a");
             var mlbGuid = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8");
             var mlsGuid = new Guid("c50f0844-6549-47e7-9409-921ad9bf160b");
-            var unknownGuid = new Guid("d6904dda-e7e7-43b1-b25d-0353f2029ab6");
 
-            modelBuilder.Entity<Sport>().HasData(new Sport { SportId = ncaabGuid, Name = "NCAAB" },new Sport { SportId = ncaafGuid, Name = "NCAAF" }, new Sport { SportId = unknownGuid, Name = "Unknown" }, new Sport { SportId = mlbGuid, Name = "MLB" }, new Sport { SportId = nbaGuid, Name = "NBA" }, new Sport { Name = "NFL", SportId = nflGuid }, new Sport { Name = "MLS", SportId = mlsGuid });
+            modelBuilder.Entity<Sport>().HasData(new Sport { SportId = ncaabGuid, Name = "NCAAB" },new Sport { SportId = ncaafGuid, Name = "NCAAF" }, new Sport { SportId = Constants.unknownGuid, Name = "Unknown" }, new Sport { SportId = mlbGuid, Name = "MLB" }, new Sport { SportId = nbaGuid, Name = "NBA" }, new Sport { Name = "NFL", SportId = nflGuid }, new Sport { Name = "MLS", SportId = mlsGuid });
             modelBuilder.Entity<Team>().HasData(
                 new Team { TeamId = new Guid("327fa1ce-ebd2-42b5-8ae3-af4e1f85c31b"), Location = "Atlanta", Mascot = "Hawks" },
                 new Team { TeamId = new Guid("f4646032-8ce2-4115-aa17-6a3f829c48c6"), Location = "Boston", Mascot = "Celtics" },

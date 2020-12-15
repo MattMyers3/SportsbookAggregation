@@ -70,7 +70,7 @@ namespace SportsbookAggregation
                     var awayTeamId = GetTeamIdFromTeamName(gameOffering.AwayTeam, gameOffering.Sport);
                     var siteId = GetSiteId(gameOffering.Site);
 
-                    var gameId = GetGameId(gameOffering.DateTime, homeTeamId, awayTeamId) ??
+                    var gameId = GetGameId(gameOffering.DateTime, homeTeamId, awayTeamId, sportGuid) ??
                                     CreateGame(gameOffering.DateTime, homeTeamId, awayTeamId, sportGuid);
 
                     var gameLine = GetGameLine(gameId, siteId);
@@ -162,11 +162,18 @@ namespace SportsbookAggregation
             return game.GameId;
         }
 
-        private Guid? GetGameId(DateTime gameTime, Guid homeTeamId, Guid awayTeamId)
+        private Guid? GetGameId(DateTime gameTime, Guid homeTeamId, Guid awayTeamId, Guid sportsGuid)
         {
             var matchingGames = dbContext.GameRepository.Read()
                 .Where(g => g.HomeTeamId == homeTeamId && g.AwayTeamId == awayTeamId && g.TimeStamp.Date == gameTime.Date);
-            return matchingGames.FirstOrDefault(g => Math.Abs(g.TimeStamp.Hour - gameTime.Hour) <= 1)?.GameId;
+            var match = matchingGames.FirstOrDefault(g => Math.Abs(g.TimeStamp.Hour - gameTime.Hour) <= 1);
+            if(match != null && match.SportId == Constants.unknownGuid)
+            {
+                match.SportId = sportsGuid;
+                dbContext.Update(match);
+            }
+
+            return match?.GameId;
         }
 
         private Guid GetTeamIdFromTeamName(string teamName, string sport)
