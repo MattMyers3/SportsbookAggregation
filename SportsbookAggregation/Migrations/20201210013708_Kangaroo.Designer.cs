@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SportsbookAggregation.Data;
 
 namespace SportsbookAggregation.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20201210013708_Kangaroo")]
+    partial class Kangaroo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -4008,12 +4010,6 @@ namespace SportsbookAggregation.Migrations
                             TeamId = new Guid("a26364b1-c1a4-4cad-b2fe-3065f85966e3"),
                             Location = "UMKC",
                             Mascot = "Kangaroos"
-                        },
-                        new
-                        {
-                            TeamId = new Guid("ec0dc24e-f546-442a-9b2a-ab0803a31170"),
-                            Location = "Dixie State",
-                            Mascot = "Trailblazers"
                         });
                 });
 

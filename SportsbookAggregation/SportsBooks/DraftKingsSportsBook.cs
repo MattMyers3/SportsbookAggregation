@@ -41,7 +41,7 @@ namespace SportsbookAggregation.SportsBooks
                 var eventId = eventObject.id;
                 var url = $"https://sportsbook.draftkings.com//sites/US-SB/api/v1/eventgroup/{eventId}/full?includePromotions=true&format=json";
 
-                var betOfferResponse = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(url).Result).ToString();//needed because event is a C# key word
+                var betOfferResponse = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(url).Result).ToString();
                 var betOfferList = ((IEnumerable)JsonConvert.DeserializeObject<dynamic>(betOfferResponse).eventGroup.offerCategories[0].offerSubcategoryDescriptors[0].offerSubcategory.offers).Cast<dynamic>();
                 foreach (var betOffer in betOfferList)
                 {
