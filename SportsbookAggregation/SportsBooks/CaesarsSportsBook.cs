@@ -94,8 +94,8 @@ namespace SportsbookAggregation.SportsBooks
 
             if (pointSpreadJson != null && pointSpreadJson.status != "SUSPENDED")
             {
-                var homeSelection = ((IEnumerable)pointSpreadJson.outcomes).Cast<dynamic>().FirstOrDefault(g => g.name == gameOffering.HomeTeam);
-                var awaySelection = ((IEnumerable)pointSpreadJson.outcomes).Cast<dynamic>().FirstOrDefault(g => g.name == gameOffering.AwayTeam);
+                var homeSelection = ((IEnumerable)pointSpreadJson.outcomes).Cast<dynamic>().FirstOrDefault(g => g.subType == "H");
+                var awaySelection = ((IEnumerable)pointSpreadJson.outcomes).Cast<dynamic>().FirstOrDefault(g => g.subType == "A");
                 gameOffering.CurrentSpread = pointSpreadJson.handicapValue;
                 gameOffering.HomeSpreadPayout = Convert.ToInt32(CalculateOdds(homeSelection.prices[0].denominator.Value, homeSelection.prices[0].numerator.Value));
                 gameOffering.AwaySpreadPayout = Convert.ToInt32(CalculateOdds(awaySelection.prices[0].denominator.Value, awaySelection.prices[0].numerator.Value));
@@ -103,8 +103,8 @@ namespace SportsbookAggregation.SportsBooks
 
             if (moneylineJson != null && moneylineJson.status != "SUSPENDED")
             {
-                var homeSelection = ((IEnumerable)moneylineJson.outcomes).Cast<dynamic>().FirstOrDefault(g => g.name == gameOffering.HomeTeam);
-                var awaySelection = ((IEnumerable)moneylineJson.outcomes).Cast<dynamic>().FirstOrDefault(g => g.name == gameOffering.AwayTeam);
+                var homeSelection = ((IEnumerable)moneylineJson.outcomes).Cast<dynamic>().FirstOrDefault(g => g.subType == "H");
+                var awaySelection = ((IEnumerable)moneylineJson.outcomes).Cast<dynamic>().FirstOrDefault(g => g.subType == "A");
                 if(homeSelection.status != "SUSPENDED")
                     gameOffering.HomeMoneyLinePayout = Convert.ToInt32(CalculateOdds(homeSelection.prices[0].denominator.Value, homeSelection.prices[0].numerator.Value));
                 if (awaySelection.status != "SUSPENDED")
