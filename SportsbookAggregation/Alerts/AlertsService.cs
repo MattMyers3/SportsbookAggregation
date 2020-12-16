@@ -132,8 +132,14 @@ namespace SportsbookAggregation.Alerts
             message.Subject = "Free Money";
             message.Body = content;
 
-           
-            client.Send(message);
+            try
+            {
+                client.Send(message);
+            }
+            catch
+            {
+                //We sent to many alerts :(
+            }
         }
 
         public static BestAvailableGameLine GetBestAvailableGameLine(Guid id, Context context)

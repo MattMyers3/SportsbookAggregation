@@ -108,8 +108,14 @@ namespace SportsbookAggregation
             message.Subject = "PROD ALERT";
             message.Body = content;
 
-
-            client.Send(message);
+            try
+            {
+                client.Send(message);
+            }
+            catch
+            {
+                //Sent too many alerts :(
+            }
         }
     }
 }

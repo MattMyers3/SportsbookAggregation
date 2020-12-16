@@ -61,11 +61,15 @@ namespace SportsbookAggregation.SportsBooks
                     return "Green Bay";
                 case "hawaii warriors":
                     return "Hawaii";
+                case "liu":
+                    return "LIU[d]";
                 case "long beach state 49ers":
                     return "Long Beach State";
                 case "la lafayette":
+                case "la-lafayette":
                 case "louisiana-lafayette":
                 case "louisiana lafayette ragin cajuns":
+                case "ul lafayette ragin cajuns":
                 case "ul lafayette":
                 case "louisiana lafayette":
                     return "Louisiana";
@@ -116,7 +120,10 @@ namespace SportsbookAggregation.SportsBooks
                 case "se missouri state":
                 case "se missouri state redhawks":
                     return "Southeast Missouri State";
+                case "southern university":
+                    return "Southern";
                 case "southern methodist mustangs":
+                case "southern methodist":
                     return "SMU";
                 case "southern mississippi":
                 case "southern mississippi golden eagles":
@@ -135,6 +142,7 @@ namespace SportsbookAggregation.SportsBooks
                 case "st francis (pa)":
                     return "Saint Francis";
                 case "usc upstate":
+                case "sc upstate spartans":
                     return "South Carolina Upstate";
                 case "st bonaventure":
                     return "St. Bonaventure";
@@ -145,17 +153,24 @@ namespace SportsbookAggregation.SportsBooks
                     return "Utah Valley";
                 case "t a&m corpus christi":
                 case "texas a&m-corpus christi": //took me forever to figure out that's a different dash
+                case "texas a&m-cc":
                     return "Texas A&M–Corpus Christi";
                 case "california riverside highlanders":
                     return "UC Riverside";
                 case "ucsb":
                     return "UC Santa Barbara";
+                case "massachusetts":
+                case "massachusetts minutemen":
+                    return "UMass";
                 case "uncw":
                     return "UNC Wilmington";
                 case "missouri kansas city kangaroos":
                     return "UMKC";
                 case "north carolina greensboro":
                     return "UNC Greensboro";
+                case "texas el paso miners":
+                case "texas el paso":
+                    return "UTEP";
                 case "ut rio grande valley":
                 case "texas rio grande":
                     return "UTRGV";
