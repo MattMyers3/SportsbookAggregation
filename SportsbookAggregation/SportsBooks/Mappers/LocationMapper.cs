@@ -54,6 +54,7 @@ namespace SportsbookAggregation.SportsBooks
                 case "florida intl":
                 case "florida international":
                 case "florida international panthers":
+                case "florida intl panthers":
                     return "FIU";
                 case "gardner webb":
                     return "Gardner-Webb";
@@ -105,6 +106,8 @@ namespace SportsbookAggregation.SportsBooks
                 case "north carolina st wolfpack":
                 case "north carolina state":
                     return "NC State";
+                case "northwestern state uni demons":
+                    return "Northwestern State";
                 case "nebraska-omaha":
                 case "nebraska omaha":
                 case "nebraska omaha mavericks":
@@ -149,16 +152,27 @@ namespace SportsbookAggregation.SportsBooks
                 case "st. peter's":
                 case "saint peters peacocks":
                     return "Saint Peter's";
-                case "utah valley state":
-                    return "Utah Valley";
+                case "st johns":
+                    return "St. John's";
+                case "st. joseph's":
+                case "st josephs":
+                case "st. josephs":
+                    return "Saint Joseph's";
                 case "t a&m corpus christi":
                 case "texas a&m-corpus christi": //took me forever to figure out that's a different dash
                 case "texas a&m-cc":
                     return "Texas A&M–Corpus Christi";
+                case "connecticut":
+                    return "UConn";
                 case "california riverside highlanders":
                     return "UC Riverside";
                 case "ucsb":
+                case "cal santa barbara":
+                case "cal santa barbara gauchos":
                     return "UC Santa Barbara";
+                case "illinois chicago":
+                case "illinois chicago flames":
+                    return "UIC";
                 case "massachusetts":
                 case "massachusetts minutemen":
                     return "UMass";
@@ -168,6 +182,10 @@ namespace SportsbookAggregation.SportsBooks
                     return "UMKC";
                 case "north carolina greensboro":
                     return "UNC Greensboro";
+                case "tennessee martin":
+                    return "UT Martin";
+                case "utah valley state":
+                    return "Utah Valley";
                 case "texas el paso miners":
                 case "texas el paso":
                     return "UTEP";

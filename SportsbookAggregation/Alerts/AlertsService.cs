@@ -22,7 +22,7 @@ namespace SportsbookAggregation.Alerts
             var futureGames = dbContext.GameRepository.Read().Where(g => g.TimeStamp > now).ToList();
             foreach (var game in futureGames)
             {
-                var gameLine = GetBestAvailableGameLine(game.GameId, dbContext);
+                var gameLine = GetBestAvailableGameLine(game.GameId, null, dbContext);
                 var homeTeam = dbContext.TeamRepository.Read().Single(g => g.TeamId == game.HomeTeamId).Mascot;
                 var awayTeam = dbContext.TeamRepository.Read().Single(g => g.TeamId == game.AwayTeamId).Mascot;
 
@@ -38,8 +38,17 @@ namespace SportsbookAggregation.Alerts
                 if (isMoneyLineOpportunity(gameLine))
                 {
                     if (!AlertAlreadySent(dbContext, game.GameId, "MoneyLine"))
-                    {
-                        SendAlerts(client, $"Money Line Opportunity - {homeTeam} vs {awayTeam} - Home MoneyLine: {gameLine.CurrentHomeMoneyLine} at {gameLine.HomeMoneyLineSite}. Away Money Line: {gameLine.CurrentAwayMoneyLine} at {gameLine.AwayMoneyLineSite}");
+                    { 
+                        var bookWithWrongLine = GetBookWithWrongLineMoneyLine(dbContext, game.GameId, gameLine);
+                        var betPercentOnHomeTeam = GetBetPercentForHomeTeam(gameLine.CurrentHomeMoneyLine.Value, gameLine.CurrentAwayMoneyLine.Value);
+                        var ROI = GetBetROI(betPercentOnHomeTeam, 1, gameLine.CurrentHomeMoneyLine.Value);
+                        SendAlerts(client, $"Money Line Opportunity: {Environment.NewLine}" +
+                            $"{homeTeam} vs {awayTeam} {game.Sport} {Environment.NewLine}" +
+                            $"Home Odds: {gameLine.CurrentHomeMoneyLine} at {gameLine.HomeMoneyLineSite} {Environment.NewLine}" +
+                            $"Away Money Line: {gameLine.CurrentAwayMoneyLine} at {gameLine.AwayMoneyLineSite} {Environment.NewLine}" +
+                            $"Place your bet at {bookWithWrongLine} first {Environment.NewLine}" +
+                            $"Amount: {betPercentOnHomeTeam}x on home team. X on away team." +
+                            $"ROI: {ROI}");
                         DocumentAlert(dbContext, gameLine, game.GameId, "MoneyLine");
                     }
                 }
@@ -53,6 +62,37 @@ namespace SportsbookAggregation.Alerts
                 }
             }
             client.ServicePoint.CloseConnectionGroup(client.ServicePoint.ConnectionName);
+        }
+
+        private static double GetBetROI(double betPercentOnHomeTeam, double betPercentOnAwayTeam, int homeOdds)
+        {
+            return 100 * ((betPercentOnHomeTeam * (GetDecimalOdds(homeOdds) - 1) - betPercentOnAwayTeam) / (betPercentOnHomeTeam + betPercentOnAwayTeam)); 
+        }
+
+        private static double GetBetPercentForHomeTeam(double homeLine, double awayLine)
+        {
+            var decimalHome = GetDecimalOdds(homeLine);
+            var decimalAway = GetDecimalOdds(awayLine);
+
+            return decimalAway / decimalHome;
+        }
+
+        private static double GetDecimalOdds(double line)
+        {
+            return line >= 100 ? (line / 100) + 1 : (100 / Math.Abs(line)) + 1;
+        }
+
+        private static string GetBookWithWrongLineMoneyLine(Context context, Guid gameId, BestAvailableGameLine gameline)
+        {
+            var allBooks = context.GamblingSiteRepository.Read();
+            var bestLineWithoutHomeBook = GetBestAvailableGameLine(gameId, string.Join(",",allBooks.Where(b => b.Name != gameline.HomeMoneyLineSite).Select(b => b.Name)), context);
+            var bestLineWithoutAwayBook = GetBestAvailableGameLine(gameId, string.Join(",", allBooks.Where(b => b.Name != gameline.AwayMoneyLineSite).Select(b => b.Name)), context);
+            if (bestLineWithoutAwayBook.CurrentHomeMoneyLine == null || bestLineWithoutHomeBook == null)
+                return "Inconclusive";
+            
+            return Math.Abs(gameline.CurrentHomeMoneyLine.Value) - Math.Abs(bestLineWithoutHomeBook.CurrentHomeMoneyLine.Value) > Math.Abs(gameline.CurrentAwayMoneyLine.Value) - Math.Abs(bestLineWithoutAwayBook.CurrentAwayMoneyLine.Value) ?
+                gameline.HomeMoneyLineSite:
+                gameline.AwayMoneyLineSite;
         }
 
         public static bool AlertAlreadySent(Context context, Guid gameId, string type)
@@ -142,18 +182,22 @@ namespace SportsbookAggregation.Alerts
             }
         }
 
-        public static BestAvailableGameLine GetBestAvailableGameLine(Guid id, Context context)
+        public static BestAvailableGameLine GetBestAvailableGameLine(Guid id, string sportsbooks, Context context)
         {
             var bestAvailableGameLine = new BestAvailableGameLine();
-
-            var availableGameLines = context.GameLineRepository.Read().Where(r => r.GameId == id).ToList();
-            if (!availableGameLines.Any())
-                return null;
+            string[] sportsbooksArray = null;
+            if (sportsbooks == null)
+                sportsbooksArray = context.GamblingSiteRepository.Read().Select(g => g.Name).ToArray();
+            else
+                sportsbooksArray = sportsbooks?.Split(',');
+            var availableGameLines = context.GameLineRepository.Read().Where(r => r.GameId == id && r.IsAvailable);
 
             var gamblingSites = context.GamblingSiteRepository.Read().ToList();
             foreach (var availableGameLine in availableGameLines)
             {
                 var gamblingSiteName = gamblingSites.First(s => s.GamblingSiteId == availableGameLine.GamblingSiteId).Name;
+                if (sportsbooksArray != null && !sportsbooksArray.Contains(gamblingSiteName))
+                    continue;
                 if (bestAvailableGameLine.CurrentHomeSpread == availableGameLine.CurrentSpread &&
                     bestAvailableGameLine.CurrentHomeSpreadPayout < availableGameLine.HomeSpreadPayout)
                 {
