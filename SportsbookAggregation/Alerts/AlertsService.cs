@@ -45,7 +45,7 @@ namespace SportsbookAggregation.Alerts
                         SendAlerts(client, $"Money Line Opportunity: {Environment.NewLine}" +
                             $"{homeTeam} vs {awayTeam} {game.Sport} {Environment.NewLine}" +
                             $"Home Odds: {gameLine.CurrentHomeMoneyLine} at {gameLine.HomeMoneyLineSite} {Environment.NewLine}" +
-                            $"Away Money Line: {gameLine.CurrentAwayMoneyLine} at {gameLine.AwayMoneyLineSite} {Environment.NewLine}" +
+                            $"Away Odds: {gameLine.CurrentAwayMoneyLine} at {gameLine.AwayMoneyLineSite} {Environment.NewLine}" +
                             $"Place your bet at {bookWithWrongLine} first {Environment.NewLine}" +
                             $"Amount: {betPercentOnHomeTeam}x on home team. X on away team." +
                             $"ROI: {ROI}");
