@@ -68,6 +68,8 @@ namespace SportsbookAggregation.SportsBooks
                     return "Green Bay";
                 case "hawaii warriors":
                     return "Hawaii";
+                case "arkansas little rock":
+                    return "Little Rock";
                 case "liu":
                     return "LIU[d]";
                 case "long beach state 49ers":
@@ -101,6 +103,8 @@ namespace SportsbookAggregation.SportsBooks
                 case "wisc milwaukee":
                 case "wisconsin milwaukee panthers":
                     return "Milwaukee";
+                case "miss valley state":
+                    return "Mississippi Valley State";
                 case "mississippi rebels":
                 case "mississippi":
                     return "Ole Miss";

@@ -1,6 +1,7 @@
 ﻿using SportsbookAggregation.Alerts.Models;
 using SportsbookAggregation.Data;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Text;
@@ -42,13 +43,14 @@ namespace SportsbookAggregation.Alerts
                         var bookWithWrongLine = GetBookWithWrongLineMoneyLine(dbContext, game.GameId, gameLine);
                         var betPercentOnHomeTeam = GetBetPercentForHomeTeam(gameLine.CurrentHomeMoneyLine.Value, gameLine.CurrentAwayMoneyLine.Value);
                         var ROI = GetBetROI(betPercentOnHomeTeam, 1, gameLine.CurrentHomeMoneyLine.Value);
-                        SendAlerts(client, $"Money Line Opportunity: {Environment.NewLine}" +
-                            $"{homeTeam} vs {awayTeam} {game.Sport} {Environment.NewLine}" +
-                            $"Home Odds: {gameLine.CurrentHomeMoneyLine} at {gameLine.HomeMoneyLineSite} {Environment.NewLine}" +
-                            $"Away Odds: {gameLine.CurrentAwayMoneyLine} at {gameLine.AwayMoneyLineSite} {Environment.NewLine}" +
-                            $"Place your bet at {bookWithWrongLine} first {Environment.NewLine}" +
-                            $"Amount: {betPercentOnHomeTeam}x on home team. X on away team." +
-                            $"ROI: {ROI}");
+                        var sportName = dbContext.SportRepository.Read().Single(s => s.SportId == game.SportId).Name;
+                        SendAlerts(client, $"ML: {Environment.NewLine}" +
+                            $"{homeTeam} vs {awayTeam} {game.Sport.Name} {Environment.NewLine}" +
+                            $"{homeTeam} Odds: {gameLine.CurrentHomeMoneyLine} at {gameLine.HomeMoneyLineSite} {Environment.NewLine}" +
+                            $"{awayTeam} Odds: {gameLine.CurrentAwayMoneyLine} at {gameLine.AwayMoneyLineSite} {Environment.NewLine}" +
+                            $"First bet at {bookWithWrongLine} {Environment.NewLine}" +
+                            $"Amount: {Math.Round(betPercentOnHomeTeam,2)}x on {homeTeam}. x on {awayTeam} {Environment.NewLine}" +
+                            $"ROI: {Math.Round(ROI,2)}%");
                         DocumentAlert(dbContext, gameLine, game.GameId, "MoneyLine");
                     }
                 }
@@ -161,24 +163,35 @@ namespace SportsbookAggregation.Alerts
 
         public static void SendAlerts(SmtpClient client, string content)
         {
-            var message = new MailMessage();
-            message.From = new MailAddress("SportsAggregation@gmail.com");
-
-            message.To.Add(new MailAddress("4102927305@vtext.com")); //Nick
-            message.To.Add(new MailAddress("3015025056@vtext.com")); //Myers
-            message.To.Add(new MailAddress("4842134124@messaging.sprintpcs.com")); //Murph
-            message.To.Add(new MailAddress("7179798657@txt.att.net")); //Jordan
-
-            message.Subject = "Free Money";
-            message.Body = content;
-
-            try
+            List<string> contentList = new List<string>();
+            int maxLength = 130;
+            int i = 0;
+            for(; i < content.Length - maxLength; i+=maxLength)
             {
-                client.Send(message);
+                contentList.Add(content.Substring(i, maxLength));
             }
-            catch
+
+            contentList.Add(content.Substring(i));
+
+            foreach (string messageBody in contentList)
             {
-                //We sent to many alerts :(
+                var message = new MailMessage();
+                message.From = new MailAddress("SportsAggregation@gmail.com");
+
+                message.To.Add(new MailAddress("4102927305@vtext.com")); //Nick
+                message.To.Add(new MailAddress("3015025056@vtext.com")); //Myers
+                message.To.Add(new MailAddress("4842134124@messaging.sprintpcs.com")); //Murph
+                message.To.Add(new MailAddress("7179798657@txt.att.net")); //Jordan
+                message.Body = messageBody;
+
+                try
+                {
+                    client.Send(message);
+                }
+                catch
+                {
+                    //We sent to many alerts :(
+                }
             }
         }
 
