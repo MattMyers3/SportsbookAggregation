@@ -57,11 +57,21 @@ namespace SportsbookAggregation
         {
             foreach (var playerPropOffering in playerPropOfferings)
             {
-                var boostExists = dbContext.PlayerPropRepository.Read().Any(o => o.Description == oddsBoostOffering.Description);
-                if (boostExists)
-                    UpdateBoost(oddsBoostOffering);
-                else
-                    CreateBoost(oddsBoostOffering);
+                if (playerPropOffering.DateTime < DateTime.UtcNow)
+                    continue;
+
+                var homeTeamId = GetTeamIdFromFullTeamName(playerPropOffering.HomeTeam);
+                var awayTeamId = GetTeamIdFromFullTeamName(playerPropOffering.AwayTeam);
+                var siteId = GetSiteId(playerPropOffering.Site);
+                var gameId = GetGameId(playerPropOffering.DateTime, homeTeamId, awayTeamId);
+                if (gameId != null) //Need to check if logging should be done for this scenario
+                    continue;
+
+                var playerId = GetPlayerId(playerPropOffering.FirstName, playerPropOffering.LastName);
+                if (playerId != null)
+                    throw new Exception($"Player {playerPropOffering.FirstName} {playerPropOffering.LastName} does not exist in the db");
+
+                var playerPropId = GetPlayerPropId(siteId, gameId, playerId);
             }
         }
 
@@ -213,6 +223,16 @@ namespace SportsbookAggregation
                 return dbContext.SportRepository.Read().Single(s => s.Name == "Unknown").SportId;
 
             return sport.SportId;
+        }
+
+        private Guid? GetPlayerId(string firstName, string lastName)
+        {
+            return dbContext.PlayerRepository.Read().FirstOrDefault(p => p.LastName == lastName && p.FirstName == firstName)?.PlayerId;
+        }
+
+        private Guid? GetPlayerPropId(Guid siteId, Guid? gameId, Guid? playerId)
+        {
+            throw new NotImplementedException();
         }
     }
 }
