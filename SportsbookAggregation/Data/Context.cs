@@ -680,8 +680,7 @@ namespace SportsbookAggregation.Data
                 new GamblingSite { GamblingSiteId = new Guid("89f19651-c30c-4846-8197-8f10e43b4ae6"), Name = "BetAmerica" },
                 new GamblingSite { GamblingSiteId = new Guid("ee7f8f4c-23a7-4c35-a450-fed7cc90a6dd"), Name = "Caesars" },
                 new GamblingSite { GamblingSiteId = new Guid("730346f5-e563-47bf-9230-148d25c424e9"), Name = "SugarHouse" },
-                new GamblingSite { GamblingSiteId = new Guid("eda5febb-1381-411a-88e8-5db158589212"), Name = "Barstool" },
-                new GamblingSite { GamblingSiteId = new Guid("153a8d43-3c06-4cb2-ba83-219001b133aa"), Name = "BetMGM" }
+                new GamblingSite { GamblingSiteId = new Guid("eda5febb-1381-411a-88e8-5db158589212"), Name = "Barstool" }
             );
         }
 
@@ -692,17 +691,7 @@ namespace SportsbookAggregation.Data
 
         private static DbConnection GetDbConnection()
         {
-            var connectionString = Environment.GetEnvironmentVariable("ConnectionString", EnvironmentVariableTarget.User);
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                var builder = new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile("appsettings.json");
-                var configuration = builder.Build();
-                connectionString = configuration.GetConnectionString("SportsbookDatabase");
-            }
-            Console.WriteLine($"Connection String: {connectionString}");
-            return new MySqlConnection(connectionString);
+            return new MySqlConnection(Program.Configuration.GetConnectionString("SportsbookDatabase"));
         }
     }
 }
