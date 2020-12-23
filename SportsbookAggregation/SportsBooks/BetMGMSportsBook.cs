@@ -26,10 +26,10 @@ namespace SportsbookAggregation.SportsBooks
         public IEnumerable<GameOffering> AggregateFutureOfferings()
         {
             SetTokenAndBaseUrl();
-            var nbaOfferings = GetGameOfferings(basketballSportsId, "NBA", "NBA", null, null, null);
-            var nflOfferings = GetGameOfferings(nflSportsId, "NFL", "NFL",null, null, null);
-            var ncaafOfferings = GetGameOfferings(nflSportsId, "College Football ", "NCAAF", null, null, null); //The space is not a typo.
-            var ncaabOfferings = GetGameOfferings(basketballSportsId, "NCAA ", "NCAAB", null, null, null); // The space is not a typo.
+            var nbaOfferings = GetGameOfferings(basketballSportsId, "NBA", "NBA");
+            var nflOfferings = GetGameOfferings(nflSportsId, "NFL", "NFL");
+            var ncaafOfferings = GetGameOfferings(nflSportsId, "College Football ", "NCAAF"); //The space is not a typo.
+            var ncaabOfferings = GetGameOfferings(basketballSportsId, "NCAA ", "NCAAB"); // The space is not a typo.
             return nbaOfferings.Concat(nflOfferings.Concat(ncaafOfferings.Concat(ncaabOfferings)));
         }
 
@@ -46,20 +46,20 @@ namespace SportsbookAggregation.SportsBooks
             return JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(url).Result).fixtures;
         }
 
-        private IEnumerable<GameOffering> GetGameOfferings(int sportsId, string betMGMSportsName, string ourSportsName, string spreadLabel, string moneyLineLabel, string totalLabel)
+        private IEnumerable<GameOffering> GetGameOfferings(int sportsId, string betMGMSportsName, string ourSportsName)
         {
             var gamesJson = GetGamesJson(sportsId);
             var gamesInfo = ((IEnumerable)gamesJson).Cast<dynamic>().Where(g => g.competition.name.value == betMGMSportsName && Convert.ToBoolean(g.isOpenForBetting) && g.games.Count != 0);
             var gameOfferings = new List<GameOffering>();
             foreach (var gameInfoJson in gamesInfo)
             {
-                gameOfferings.Add(ParseGameOffering(gameInfoJson, ourSportsName, spreadLabel, moneyLineLabel, totalLabel));
+                gameOfferings.Add(ParseGameOffering(gameInfoJson, ourSportsName));
             }
 
             return gameOfferings;
         }
 
-        private GameOffering ParseGameOffering(dynamic gameInfoJson, string ourSportsName, string spreadLabel, string moneyLineLabel, string totalLabel)
+        private GameOffering ParseGameOffering(dynamic gameInfoJson, string ourSportsName)
         {
             string awayTeam = gameInfoJson.participants[0].name.value;
             string homeTeam = gameInfoJson.participants[1].name.value;
