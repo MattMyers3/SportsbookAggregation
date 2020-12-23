@@ -25,5 +25,6 @@ namespace SportsbookAggregation.Data.Models
 
         public DateTime LastRefresh { get; set; }
 
+        public bool IsAvailable { get; set; }
     }
 }

@@ -16,7 +16,6 @@ namespace SportsbookAggregation
             this.dbContext = dbContext;
         }
 
-
         public void WriteOddsBoosts(IEnumerable<OddsBoostOffering> oddsBoostOfferings)
         {
             foreach(var oddsBoostOffering in oddsBoostOfferings)
@@ -52,6 +51,18 @@ namespace SportsbookAggregation
                 LastRefresh = DateTime.UtcNow,
                 IsAvailable = true
             });
+        }
+
+        public void WritePlayerProps(IEnumerable<PlayerPropOffering> playerPropOfferings)
+        {
+            foreach (var playerPropOffering in playerPropOfferings)
+            {
+                var boostExists = dbContext.PlayerPropRepository.Read().Any(o => o.Description == oddsBoostOffering.Description);
+                if (boostExists)
+                    UpdateBoost(oddsBoostOffering);
+                else
+                    CreateBoost(oddsBoostOffering);
+            }
         }
 
         public void WriteGameOfferings(IEnumerable<GameOffering> gameOfferings)
@@ -103,6 +114,13 @@ namespace SportsbookAggregation
 
 
             dbContext.OddsBoostRepository.UpdateRange(allBoosts);
+
+            var allProps = dbContext.PlayerPropRepository.Read();
+            foreach (var prop in allProps)
+                prop.IsAvailable = false;
+
+
+            dbContext.PlayerPropRepository.UpdateRange(allProps);
         }
 
         private void UpdateGameLine(GameLine gameLine, GameOffering gameOffering)
