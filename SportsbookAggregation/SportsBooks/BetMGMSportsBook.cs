@@ -12,7 +12,7 @@ namespace SportsbookAggregation.SportsBooks
 {
     public class BetMGMSportsBook : ISportsBook
     {
-        private const string urlToRetrieveAccessToken = "https://sports.pa.betmgm.com/en/api/clientconfig";
+        private const string urlToRetrieveAccessToken = "https://sports.nj.betmgm.com/en/api/clientconfig";
         private const int nflSportsId = 11;
         private const int basketballSportsId = 7;
         private string token; 
@@ -36,7 +36,7 @@ namespace SportsbookAggregation.SportsBooks
         private void SetTokenAndBaseUrl()
         {
             var msConnection = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(urlToRetrieveAccessToken).Result).msConnection;
-            token = msConnection.publicAccessId;
+            token = msConnection.pushAccessId;
             baseUrl = msConnection.cdsUrlBase;
         }
 
