@@ -43,6 +43,7 @@ namespace SportsbookAggregation.SportsBooks
                     return "Central Connecticut";
                 case "csu bakersfield":
                 case "california state bakersfield roadrunners":
+                case "cs bakersfield":
                     return "Cal State Bakersfield";
                 case "csu fullerton":
                 case "csu fullerton titans":
@@ -54,6 +55,8 @@ namespace SportsbookAggregation.SportsBooks
                     return "UCF";
                 case "college of charleston":
                     return "Charleston";
+                case "cincinnati u":
+                    return "Cincinnati";
                 case "delaware blue hens":
                     return "Delaware";
                 case "depaul":
@@ -79,6 +82,8 @@ namespace SportsbookAggregation.SportsBooks
                     return "Hawaii";
                 case "houston u":
                     return "Houston";
+                case "indiana u.":
+                    return "Indiana";
                 case "arkansas little rock":
                     return "Little Rock";
                 case "liu":
@@ -132,6 +137,8 @@ namespace SportsbookAggregation.SportsBooks
                 case "northwestern state uni demons":
                 case "northwestern st":
                     return "Northwestern State";
+                case "ohio st.":
+                    return "Ohio State";
                 case "nebraska-omaha":
                 case "nebraska omaha":
                 case "nebraska omaha mavericks":
@@ -167,6 +174,8 @@ namespace SportsbookAggregation.SportsBooks
                     return "SU";
                 case "st. francis (bkn)":
                 case "st francis brooklyn":
+                case "st. francis ny":
+                case "st. francis (ny)":
                     return "St. Francis Brooklyn";
                 case "st. francis (pa)":
                 case "st francis (pa)":
@@ -213,6 +222,7 @@ namespace SportsbookAggregation.SportsBooks
                 case "north carolina greensboro":
                     return "UNC Greensboro";
                 case "uncw":
+                case "nc wilmington":
                     return "UNC Wilmington";
                 case "tennessee martin":
                 case "tennessee-martin":
