@@ -35,7 +35,7 @@ namespace SportsbookAggregation.SportsBooks
 
         private void SetTokenAndBaseUrl()
         {
-            Program.HttpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (X11; Linux x86_64) ");
+            Program.HttpClient.DefaultRequestHeaders.Add("sec-ch-ua", "\"Google Chrome\";v=\"87\", \" Not; A Brand\";v=\"99\", \"Chromium\";v=\"87\"");
             var msConnection = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(urlToRetrieveAccessToken).Result).msConnection;
             token = msConnection.publicAccessId;
             baseUrl = msConnection.cdsUrlBase;
