@@ -12,7 +12,7 @@ namespace SportsbookAggregation.SportsBooks
 {
     public class BetMGMSportsBook : ISportsBook
     {
-        private const string urlToRetrieveAccessToken = "https://sports.nj.betmgm.com/en/api/clientconfig";
+        private const string urlToRetrieveAccessToken = "https://sports.pa.betmgm.com/en/api/clientconfig";
         private const int nflSportsId = 11;
         private const int basketballSportsId = 7;
         private string token; 
@@ -35,8 +35,9 @@ namespace SportsbookAggregation.SportsBooks
 
         private void SetTokenAndBaseUrl()
         {
+            Program.HttpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (X11; Linux x86_64) ");
             var msConnection = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(urlToRetrieveAccessToken).Result).msConnection;
-            token = msConnection.pushAccessId;
+            token = msConnection.publicAccessId;
             baseUrl = msConnection.cdsUrlBase;
         }
 
@@ -115,12 +116,15 @@ namespace SportsbookAggregation.SportsBooks
             var urlForLionsBoost = $"{baseUrl}/bettingoffer/fixture-view?x-bwin-accessid={token}&lang=en-us&country=US&userCountry=US&offerMapping=All&scoreboardMode=Full&fixtureIds={lionsBoostFixtureId}&state=Latest&includePrecreatedBetBuilder=true&supportVirtual=false";
             var lionsBoostJson = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(urlForLionsBoost).Result).fixture;
 
+            if (lionsBoostJson == null)
+                return new List<OddsBoostOffering>();
+
             var lionsBoost = new OddsBoostOffering();
             lionsBoost.BoostedOdds = lionsBoostJson.games[0].results[0].americanOdds;
             lionsBoost.Date = lionsBoostJson.startDate;
             lionsBoost.Description = lionsBoostJson.games[0].results[0].name.value;
             lionsBoost.Site = GetSportsBookName();
-
+            
             return new List<OddsBoostOffering>() { lionsBoost };
         }
     }
