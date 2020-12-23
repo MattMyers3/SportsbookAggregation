@@ -74,6 +74,8 @@ namespace SportsbookAggregation.SportsBooks
                     return "Gardner-Webb";
                 case "gonzaga bulldogs":
                     return "Gonzaga";
+                case "grambling st":
+                    return "Grambling State";
                 case "uw green bay":
                 case "wisconsin green bay phoenix":
                 case "wisc green bay":
@@ -125,6 +127,8 @@ namespace SportsbookAggregation.SportsBooks
                 case "mississippi rebels":
                 case "mississippi":
                     return "Ole Miss";
+                case "new jersey tech highlanders":
+                    return "NJIT";
                 case "north alabama":
                     return "UNA";
                 case "n carolina central":
@@ -134,6 +138,8 @@ namespace SportsbookAggregation.SportsBooks
                 case "north carolina state":
                 case "north carolina state wolfpack":
                     return "NC State";
+                case "no. colorado":
+                    return "Northern Colorado";
                 case "northwestern state uni demons":
                 case "northwestern st":
                     return "Northwestern State";
