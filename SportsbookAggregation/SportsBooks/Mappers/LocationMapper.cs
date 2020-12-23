@@ -42,6 +42,7 @@ namespace SportsbookAggregation.SportsBooks
                 case "central conn. state":
                     return "Central Connecticut";
                 case "csu bakersfield":
+                case "california state bakersfield roadrunners":
                     return "Cal State Bakersfield";
                 case "csu fullerton":
                 case "csu fullerton titans":
@@ -55,8 +56,12 @@ namespace SportsbookAggregation.SportsBooks
                     return "Charleston";
                 case "delaware blue hens":
                     return "Delaware";
+                case "depaul":
+                    return "DePaul";
                 case "detroit":
                     return "Detroit Mercy";
+                case "east tenn state":
+                    return "East Tennessee State";
                 case "florida intl":
                 case "florida international":
                 case "florida international panthers":
@@ -64,6 +69,8 @@ namespace SportsbookAggregation.SportsBooks
                     return "FIU";
                 case "gardner webb":
                     return "Gardner-Webb";
+                case "gonzaga bulldogs":
+                    return "Gonzaga";
                 case "uw green bay":
                 case "wisconsin green bay phoenix":
                 case "wisc green bay":
@@ -88,6 +95,7 @@ namespace SportsbookAggregation.SportsBooks
                     return "Louisiana";
                 case "louisiana monroe warhawks":
                 case "ul monroe":
+                case "ul - monroe":
                 case "louisiana monroe":
                 case "louisiana - monroe":
                     return "Louisiana-Monroe";
@@ -119,6 +127,7 @@ namespace SportsbookAggregation.SportsBooks
                     return "North Carolina Central";
                 case "north carolina st wolfpack":
                 case "north carolina state":
+                case "north carolina state wolfpack":
                     return "NC State";
                 case "northwestern state uni demons":
                 case "northwestern st":
