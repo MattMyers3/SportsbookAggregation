@@ -240,24 +240,25 @@ namespace SportsbookAggregation.SportsBooks
         public IEnumerable<PlayerPropOffering> AggregatePlayerProps()
         {
             var initialJson = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(InitialRequest).Result);
-            var sportsTabJson = ((IEnumerable)initialJson.bonavigationnodes).Cast<dynamic>()
-                .First(g => g.name == "Sports home tab container");
 
-            IEnumerable<PlayerPropOffering> nflOfferings = GetNFLPlayerProps(sportsTabJson);
+            IEnumerable<PlayerPropOffering> nflOfferings = GetNFLPlayerProps(initialJson);
             return nflOfferings;
 
         }
 
-        private IEnumerable<PlayerPropOffering> GetNFLPlayerProps(dynamic sportsTabJson)
+        private IEnumerable<PlayerPropOffering> GetNFLPlayerProps(dynamic initialJson)
         {
-            var gamesMarketGroups = ((IEnumerable)sportsTabJson.bonavigationnodes).Cast<dynamic>().First(g => g.name == "NFL").marketgroups;
+            var footballJson = ((IEnumerable)initialJson.bonavigationnodes).Cast<dynamic>()
+                .First(g => g.name == "Football");
+            var nflJson = ((IEnumerable)footballJson.bonavigationnodes).Cast<dynamic>().First(g => g.name == "NFL");
+            var tabCouponJson = ((IEnumerable)nflJson.bonavigationnodes).Cast<dynamic>()
+                .First(g => g.name == "Season Coupon");
+            var gamesMarketGroups = ((IEnumerable)tabCouponJson.bonavigationnodes).Cast<dynamic>()
+                .First(g => g.name.Value.ToString().Contains("Games")).marketgroups;
             if (gamesMarketGroups.Count == 0)
                 return Enumerable.Empty<PlayerPropOffering>();
 
-            var nflMarketGroup = ((IEnumerable)gamesMarketGroups).Cast<dynamic>()
-                .First(g => g.name.Value.ToString() == "NFL Games");
-
-            var idfwmarketgroup = nflMarketGroup.idfwmarketgroup;
+            var idfwmarketgroup = gamesMarketGroups[0].idfwmarketgroup;
             var gamesUrl = $"https://sportsbook.fanduel.com/cache/psmg/UK/{idfwmarketgroup}.json";
 
             var sportsGamesJson = JsonConvert

@@ -71,8 +71,38 @@ namespace SportsbookAggregation
                 if (playerId != null)
                     throw new Exception($"Player {playerPropOffering.FirstName} {playerPropOffering.LastName} does not exist in the db");
 
-                var playerPropId = GetPlayerPropId(siteId, gameId, playerId);
+                var playerProp = GetPlayerProp(siteId, gameId.Value, playerId.Value); //Will need to add prop type in the future
+                if (playerProp == null)
+                    CreatePlayerProp(gameId.Value, siteId, playerId.Value, playerPropOffering);
+                else
+                    UpdatePlayerProp(playerProp, playerPropOffering);
             }
+        }
+
+        private void UpdatePlayerProp(PlayerProp playerProp, PlayerPropOffering playerPropOffering)
+        {
+            //Will need to add prop type in the future
+            playerProp.Payout = playerPropOffering.Payout;
+            playerProp.IsAvailable = true;
+            playerProp.LastRefresh = DateTime.UtcNow;
+            playerProp.PropValue = playerPropOffering.PropValue;
+            dbContext.PlayerPropRepository.Update(playerProp);
+        }
+
+        private void CreatePlayerProp(Guid gameId, Guid siteId, Guid playerId, PlayerPropOffering playerPropOffering)
+        {
+            //Will need to add prop type in the future
+            dbContext.PlayerPropRepository.Create(new PlayerProp
+            {
+                IsAvailable = true,
+                Payout = playerPropOffering.Payout,
+                GameId = gameId,
+                GamblingSiteId = siteId,
+                LastRefresh = DateTime.UtcNow,
+                Description = playerPropOffering.Description,
+                PlayerId = playerId,
+                PropValue = playerPropOffering.PropValue
+            });
         }
 
         public void WriteGameOfferings(IEnumerable<GameOffering> gameOfferings)
@@ -230,9 +260,9 @@ namespace SportsbookAggregation
             return dbContext.PlayerRepository.Read().FirstOrDefault(p => p.LastName == lastName && p.FirstName == firstName)?.PlayerId;
         }
 
-        private Guid? GetPlayerPropId(Guid siteId, Guid? gameId, Guid? playerId)
+        private PlayerProp GetPlayerProp(Guid siteId, Guid gameId, Guid playerId)
         {
-            throw new NotImplementedException();
+            return dbContext.PlayerPropRepository.Read().SingleOrDefault(p => p.GamblingSiteId == siteId && p.GameId == gameId && p.PlayerId == playerId);
         }
     }
 }
