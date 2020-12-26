@@ -15,11 +15,9 @@ namespace SportsbookAggregation
     internal static class Program
     {
         public static HttpClient HttpClient = new HttpClient();
-        public static IConfigurationRoot Configuration;
 
         private static void Main(string[] args)
         {
-            ReadConfig();
             var dbContext = new Context();
             List<ISportsBook> sportsbooks = new List<ISportsBook> { new DraftKingsSportsBook(), new FanDuelSportsBook(), new FoxBetSportsBook(), new BarstoolSportsBook(), new BetAmericaSportsBook(), new CaesarsSportBook(), new BetRiversSportsBook(), new ParxSportsBook(), new UnibetSportsBook(), new SugarHouseSportsBook() };
             var gameOfferings = new List<GameOffering>();
@@ -70,15 +68,6 @@ namespace SportsbookAggregation
             AlertsService.Run(dbContext);
         }
 
-        private static void ReadConfig()
-        {
-            string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile($"appsettings.{environment}.json");
-            Configuration = builder.Build();
-        }
-
         public static void LogError(Exception ex)
         {
             string filePath = "ErrorLog.txt";
@@ -101,40 +90,31 @@ namespace SportsbookAggregation
             }
         }
 
-        public static void WriteToConsole(string content)
-        {
-            if(Convert.ToBoolean(Configuration["OutputToConsole"]))
-                Console.WriteLine(content);
-        }
-
         public static void SendAlerts(string content)
         {
-            if (Convert.ToBoolean(Configuration["SendAlerts"]))
+            var client = new SmtpClient("smtp.gmail.com", 587);
+            client.EnableSsl = true;
+            client.UseDefaultCredentials = false;
+            System.Net.NetworkCredential basicAuthenticationInfo = new
+                System.Net.NetworkCredential("SportsAggregation@gmail.com", "MattNick69");
+            client.Credentials = basicAuthenticationInfo;
+
+            var message = new MailMessage();
+            message.From = new MailAddress("SportsAggregation@gmail.com");
+
+            message.To.Add(new MailAddress("4102927305@vtext.com")); //Nick
+            message.To.Add(new MailAddress("3015025056@vtext.com")); //Myers
+
+            message.Subject = "PROD ALERT";
+            message.Body = content;
+
+            try
             {
-                var client = new SmtpClient("smtp.gmail.com", 587);
-                client.EnableSsl = true;
-                client.UseDefaultCredentials = false;
-                System.Net.NetworkCredential basicAuthenticationInfo = new
-                   System.Net.NetworkCredential("SportsAggregation@gmail.com", "MattNick69");
-                client.Credentials = basicAuthenticationInfo;
-
-                var message = new MailMessage();
-                message.From = new MailAddress("SportsAggregation@gmail.com");
-
-                message.To.Add(new MailAddress("4102927305@vtext.com")); //Nick
-                message.To.Add(new MailAddress("3015025056@vtext.com")); //Myers
-
-                message.Subject = "PROD ALERT";
-                message.Body = content;
-
-                try
-                {
-                    client.Send(message);
-                }
-                catch
-                {
-                    //Sent too many alerts :(
-                }
+                client.Send(message);
+            }
+            catch
+            {
+                //Sent too many alerts :(
             }
         }
     }

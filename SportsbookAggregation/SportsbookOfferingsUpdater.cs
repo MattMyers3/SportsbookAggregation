@@ -81,7 +81,6 @@ namespace SportsbookAggregation
                 }
                 catch(TeamNotFoundException e)
                 {
-                    Program.WriteToConsole(e.Message);
                     Program.SendAlerts(e.Message);
                 }
             }
