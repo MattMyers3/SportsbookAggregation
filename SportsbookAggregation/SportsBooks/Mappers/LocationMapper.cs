@@ -132,6 +132,8 @@ namespace SportsbookAggregation.SportsBooks
                     return "NJIT";
                 case "nicholls state":
                     return "Nicholls";
+                case "nicholls state colonels":
+                    return "Nicholls";
                 case "north alabama":
                     return "UNA";
                 case "n carolina central":
