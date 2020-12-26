@@ -692,17 +692,7 @@ namespace SportsbookAggregation.Data
 
         private static DbConnection GetDbConnection()
         {
-            var connectionString = Environment.GetEnvironmentVariable("ConnectionString", EnvironmentVariableTarget.User);
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                var builder = new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile("appsettings.json");
-                var configuration = builder.Build();
-                connectionString = configuration.GetConnectionString("SportsbookDatabase");
-            }
-            Console.WriteLine($"Connection String: {connectionString}");
-            return new MySqlConnection(connectionString);
+            return new MySqlConnection(Program.Configuration.GetConnectionString("SportsbookDatabase"));
         }
     }
 }

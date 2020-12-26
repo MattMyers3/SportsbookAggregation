@@ -75,6 +75,7 @@ namespace SportsbookAggregation.SportsBooks
                 case "gonzaga bulldogs":
                     return "Gonzaga";
                 case "grambling st":
+                case "grambling":
                     return "Grambling State";
                 case "uw green bay":
                 case "wisconsin green bay phoenix":
