@@ -129,6 +129,8 @@ namespace SportsbookAggregation.SportsBooks
                     return "Ole Miss";
                 case "new jersey tech highlanders":
                     return "NJIT";
+                case "nicholls state":
+                    return "Nicholls";
                 case "north alabama":
                     return "UNA";
                 case "n carolina central":
