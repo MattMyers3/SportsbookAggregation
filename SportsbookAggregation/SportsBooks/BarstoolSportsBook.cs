@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace SportsbookAggregation.SportsBooks
 {
@@ -41,10 +42,10 @@ namespace SportsbookAggregation.SportsBooks
         public OddsBoostOffering GetOddsBoost(dynamic betOffer)
         {
             string description = betOffer.criterion.englishLabel.ToString();
-            var split = description.Split(new[] { " (Was", " (was" }, StringSplitOptions.None);
+            var split = description.Split(new[] { " (Was", " (was", " (WAS" }, StringSplitOptions.None);
             var prevOdds = 0;
-            if(split[1] != null)
-                prevOdds = Convert.ToInt32(split[1].TrimStart().Trim(')'));
+            if( split.Length > 1 && split[1] != null)
+                prevOdds = Convert.ToInt32(Regex.Replace(split[1].Trim(')'), @"\s+", ""));//regex removes all spaces from string. Hit a situation where it was  (+ 125)
             description = split[0];
             return new OddsBoostOffering()
             {

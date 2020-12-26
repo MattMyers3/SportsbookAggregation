@@ -14,6 +14,7 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
         private readonly string NflRequestUrl;
         private readonly string MlbRequestUrl;
         private readonly string NcaafRequestUrl;
+        private readonly string NcaabRequestUrl;
         private readonly string OddsBoostUrl;
         private readonly string BaseUrl;
 
@@ -27,6 +28,7 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
             NflRequestUrl = BaseUrl + $"/listView/american_football/nfl.json?lang=en_US&market=US&useCombined=true";
             MlbRequestUrl = BaseUrl + $"/listView/baseball/mlb.json?lang=en_US&market=US&useCombined=true";
             NcaafRequestUrl = BaseUrl + $"/listView/american_football/ncaaf.json?lang=en_US&market=US&useCombined=true";
+            NcaabRequestUrl = BaseUrl + $"/listView/basketball/ncaab.json?lang=en_US&market=US&useCombined=true";
             OddsBoostUrl =  BaseUrl + $"/listView/{siteSpecialsName}.json?lang=en_US&market=US&&useCombined=true";
         }
 
@@ -36,8 +38,8 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
             var nflOfferings = GetNFLOfferings();
             var baseballOfferings = GetBaseballOfferings();
             var ncaafOfferings = GetNCAAFOfferings();
-
-            return ncaafOfferings.Concat(baseballOfferings.Concat(basketballOfferings.Concat(nflOfferings)));
+            var ncaabOfferings = GetNCAABOfferings();
+            return ncaabOfferings.Concat(ncaafOfferings.Concat(baseballOfferings.Concat(basketballOfferings.Concat(nflOfferings))));
         }
 
         public IEnumerable<OddsBoostOffering> AggregateOddsBoost()
@@ -97,6 +99,10 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
             return GetGameOfferings(NcaafRequestUrl, "Point Spread", "Moneyline", "Total Points");
         }
 
+        private IEnumerable<GameOffering> GetNCAABOfferings()
+        {
+            return GetGameOfferings(NcaabRequestUrl, "Point Spread", "Moneyline", "Total Points");
+        }
 
         private IEnumerable<GameOffering> GetGameOfferings(string sportRequestUrl, string spreadLabel, string moneyLineLabel, string totalLabel)
         {

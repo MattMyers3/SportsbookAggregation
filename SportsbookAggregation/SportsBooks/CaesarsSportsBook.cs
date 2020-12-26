@@ -12,19 +12,22 @@ namespace SportsbookAggregation.SportsBooks
         private const string NbaCode = "77";
         private const string NflCode = "55";
         private const string NcaafCode = "58";
+        private const string NcaabCode = "76";
+
 
         public string GetSportsBookName()
         {
             return "Caesars";
         }
 
-        public IEnumerable<GameOffering> AggregateFutureOfferings()
+        public IEnumerable<GameOffering> AggregateFutureOfferings() //make sure you are on pa.caesarsonline.com
         {
             var basketballOfferings = GetBasketballOfferings();
             var footballOfferings = GetFootballOfferings();
-            var ncaafOfferings = GetNCAFFOfferings();
+            var ncaafOfferings = GetNCAAFOfferings();
+            var ncaabOfferings = GetNCAABOfferings();
 
-            return ncaafOfferings.Concat(basketballOfferings.Concat(footballOfferings));
+            return ncaabOfferings.Concat(ncaafOfferings.Concat(basketballOfferings.Concat(footballOfferings)));
         }
 
         private IEnumerable<GameOffering> GetBasketballOfferings()
@@ -37,16 +40,14 @@ namespace SportsbookAggregation.SportsBooks
             return GetGameOfferings(NflCode, "NFL");
         }
 
-        private IEnumerable<GameOffering> GetNCAFFOfferings()
+        private IEnumerable<GameOffering> GetNCAAFOfferings()
         {
-            var games = GetGameOfferings(NcaafCode, "NCAAF");
-            foreach (var offering in games)
-            {
-                offering.AwayTeam = LocationMapper.GetFullTeamName(offering.AwayTeam, offering.Sport);
-                offering.HomeTeam = LocationMapper.GetFullTeamName(offering.HomeTeam, offering.Sport);
-            }
+            return GetGameOfferings(NcaafCode, "NCAAF");
+        }
 
-            return games;
+        private IEnumerable<GameOffering> GetNCAABOfferings()
+        {
+            return GetGameOfferings(NcaabCode, "NCAAB");
         }
 
         private string GetSportsUrl(string sportsCode)
@@ -94,8 +95,8 @@ namespace SportsbookAggregation.SportsBooks
 
             if (pointSpreadJson != null && pointSpreadJson.status != "SUSPENDED")
             {
-                var homeSelection = ((IEnumerable)pointSpreadJson.outcomes).Cast<dynamic>().FirstOrDefault(g => g.name == gameOffering.HomeTeam);
-                var awaySelection = ((IEnumerable)pointSpreadJson.outcomes).Cast<dynamic>().FirstOrDefault(g => g.name == gameOffering.AwayTeam);
+                var homeSelection = ((IEnumerable)pointSpreadJson.outcomes).Cast<dynamic>().FirstOrDefault(g => g.subType == "H");
+                var awaySelection = ((IEnumerable)pointSpreadJson.outcomes).Cast<dynamic>().FirstOrDefault(g => g.subType == "A");
                 gameOffering.CurrentSpread = pointSpreadJson.handicapValue;
                 gameOffering.HomeSpreadPayout = Convert.ToInt32(CalculateOdds(homeSelection.prices[0].denominator.Value, homeSelection.prices[0].numerator.Value));
                 gameOffering.AwaySpreadPayout = Convert.ToInt32(CalculateOdds(awaySelection.prices[0].denominator.Value, awaySelection.prices[0].numerator.Value));
@@ -103,10 +104,12 @@ namespace SportsbookAggregation.SportsBooks
 
             if (moneylineJson != null && moneylineJson.status != "SUSPENDED")
             {
-                var homeSelection = ((IEnumerable)moneylineJson.outcomes).Cast<dynamic>().FirstOrDefault(g => g.name == gameOffering.HomeTeam);
-                var awaySelection = ((IEnumerable)moneylineJson.outcomes).Cast<dynamic>().FirstOrDefault(g => g.name == gameOffering.AwayTeam);
-                gameOffering.HomeMoneyLinePayout = Convert.ToInt32(CalculateOdds(homeSelection.prices[0].denominator.Value, homeSelection.prices[0].numerator.Value));
-                gameOffering.AwayMoneyLinePayout = Convert.ToInt32(CalculateOdds(awaySelection.prices[0].denominator.Value, awaySelection.prices[0].numerator.Value));
+                var homeSelection = ((IEnumerable)moneylineJson.outcomes).Cast<dynamic>().FirstOrDefault(g => g.subType == "H");
+                var awaySelection = ((IEnumerable)moneylineJson.outcomes).Cast<dynamic>().FirstOrDefault(g => g.subType == "A");
+                if(homeSelection.status != "SUSPENDED")
+                    gameOffering.HomeMoneyLinePayout = Convert.ToInt32(CalculateOdds(homeSelection.prices[0].denominator.Value, homeSelection.prices[0].numerator.Value));
+                if (awaySelection.status != "SUSPENDED")
+                    gameOffering.AwayMoneyLinePayout = Convert.ToInt32(CalculateOdds(awaySelection.prices[0].denominator.Value, awaySelection.prices[0].numerator.Value));
             }
 
             if (totalPointsJson != null && totalPointsJson.status != "SUSPENDED")

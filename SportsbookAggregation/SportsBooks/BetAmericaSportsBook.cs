@@ -31,8 +31,9 @@ namespace SportsbookAggregation.SportsBooks
             var nflOfferings = GetNFLOfferings(token);
             var baseballOfferings = GetBaseballOfferings(token);
             var ncaafOfferings = GetNCAAFOfferings(token);
+            var ncaabOfferings = GetNCAABOfferings(token);
             Program.HttpClient = new HttpClient(); //Clear out state from parsing
-            return ncaafOfferings.Concat(baseballOfferings.Concat(basketballOfferings.Concat(nflOfferings)));
+            return ncaabOfferings.Concat(ncaafOfferings.Concat(baseballOfferings.Concat(basketballOfferings.Concat(nflOfferings))));
         }
 
         private string GetBearerToken()
@@ -43,19 +44,25 @@ namespace SportsbookAggregation.SportsBooks
         private IEnumerable<GameOffering> GetBasketballOfferings(string token)
         {
             var requestJson = new StringContent("{\"eventState\":\"Mixed\",\"eventTypes\":[\"Fixture\",\"AggregateFixture\"],\"ids\":[\"42648\"],\"regionIds\":[\"227\"],\"marketTypeRequests\":[{\"sportIds\":[\"2\"],\"marketTypeIds\":[\"2_39\",\"1_39\",\"3_39\",\"2_0\",\"1_0\",\"3_0\"],\"statement\":\"Include\"}]}", Encoding.UTF8, "application/json-patch+json");
-            return GetGameOfferings(token, requestJson, "FT Spread", "FT Moneyline", "FT O/U");
+            return GetGameOfferings(token, requestJson, "Spread FT", "FT", "O/U FT");
         }
 
         private IEnumerable<GameOffering> GetNFLOfferings(string token)
         {
             var requestJson = new StringContent("{\"eventState\":\"Mixed\",\"eventTypes\":[\"Fixture\",\"AggregateFixture\"],\"ids\":[\"88808\"],\"regionIds\":[\"227\"],\"marketTypeRequests\":[{\"sportIds\":[\"3\"],\"marketTypeIds\":[\"2_39\",\"1_39\",\"3_39\",\"2_0\",\"1_0\",\"3_0\"],\"statement\":\"Include\"}]}", Encoding.UTF8, "application/json-patch+json");
-            return GetGameOfferings(token, requestJson, "FT Spread", "FT Winner", "FT O/U");
+            return GetGameOfferings(token, requestJson, "Spread FT", "Winner FT", "O/U FT");
         }
 
         private IEnumerable<GameOffering> GetNCAAFOfferings(string token)
         {
             var requestJson = new StringContent("{\"eventState\":\"Mixed\",\"eventTypes\":[\"Fixture\",\"AggregateFixture\"],\"ids\":[\"87637\"],\"regionIds\":[\"227\"],\"marketTypeRequests\":[{\"sportIds\":[\"3\"],\"marketTypeIds\":[\"2_39\",\"1_39\",\"3_39\",\"2_0\",\"1_0\",\"3_0\"],\"statement\":\"Include\"}]}", Encoding.UTF8, "application/json-patch+json");
-            return GetGameOfferings(token, requestJson, "FT Spread", "FT Winner", "FT O/U");
+            return GetGameOfferings(token, requestJson, "Spread FT", "Winner FT", "O/U FT");
+        }
+
+        private IEnumerable<GameOffering> GetNCAABOfferings(string token)
+        {
+            var requestJson = new StringContent("{\"eventState\":\"Mixed\",\"eventTypes\":[\"Fixture\",\"AggregateFixture\"],\"ids\":[\"92483\"],\"regionIds\":[\"227\"],\"marketTypeRequests\":[{\"sportIds\":[\"2\"],\"marketTypeIds\":[\"2_39\",\"1_39\",\"3_39\",\"2_0\",\"1_0\",\"3_0\"],\"statement\":\"Include\"}]}", Encoding.UTF8, "application/json-patch+json");
+            return GetGameOfferings(token, requestJson, "Spread FT", "Moneyline FT", "O/U FT");
         }
 
         private IEnumerable<GameOffering> GetBaseballOfferings(string token)

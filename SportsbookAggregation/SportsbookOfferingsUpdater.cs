@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using SportsbookAggregation.Data;
 using SportsbookAggregation.Data.Models;
+using SportsbookAggregation.SportsBooks;
+using SportsbookAggregation.SportsBooks.Mappers;
 using SportsbookAggregation.SportsBooks.Models;
 
 namespace SportsbookAggregation
@@ -60,8 +62,8 @@ namespace SportsbookAggregation
                 if (playerPropOffering.DateTime < DateTime.UtcNow)
                     continue;
 
-                var homeTeamId = GetTeamIdFromFullTeamName(playerPropOffering.HomeTeam);
-                var awayTeamId = GetTeamIdFromFullTeamName(playerPropOffering.AwayTeam);
+                var homeTeamId = GetTeamIdFromTeamName(playerPropOffering.HomeTeam, playerPropOffering.Sport);
+                var awayTeamId = GetTeamIdFromTeamName(playerPropOffering.AwayTeam, playerPropOffering.Sport);
                 var siteId = GetSiteId(playerPropOffering.Site);
                 var gameId = GetGameId(playerPropOffering.DateTime, homeTeamId, awayTeamId);
                 if (gameId != null) //Need to check if logging should be done for this scenario
@@ -115,12 +117,12 @@ namespace SportsbookAggregation
                         continue;
 
                     var sportGuid = GetSportId(gameOffering.Sport);
-                    var homeTeamId = isCollegeSport(gameOffering.Sport) ? GetTeamIdForCollege(gameOffering.HomeTeam, sportGuid) : GetTeamIdFromFullTeamName(gameOffering.HomeTeam);
-                    var awayTeamId = isCollegeSport(gameOffering.Sport) ? GetTeamIdForCollege(gameOffering.AwayTeam, sportGuid) : GetTeamIdFromFullTeamName(gameOffering.AwayTeam);
+                    var homeTeamId = GetTeamIdFromTeamName(gameOffering.HomeTeam, gameOffering.Sport);
+                    var awayTeamId = GetTeamIdFromTeamName(gameOffering.AwayTeam, gameOffering.Sport);
                     var siteId = GetSiteId(gameOffering.Site);
 
                     var gameId = GetGameId(gameOffering.DateTime, homeTeamId, awayTeamId) ??
-                                    CreateGame(gameOffering.DateTime, homeTeamId, awayTeamId);
+                                    CreateGame(gameOffering.DateTime, homeTeamId, awayTeamId, sportGuid);
 
                     var gameLine = GetGameLine(gameId, siteId);
                     if (gameLine == null)
@@ -128,17 +130,19 @@ namespace SportsbookAggregation
                     else
                         UpdateGameLine(gameLine, gameOffering);
                 }
-                catch(Exception e)
+                catch(TeamNotFoundException e)
                 {
-                    Program.SendAlerts("Need to add a mapping for one or both of the following teams: " + gameOffering.AwayTeam + " - " + gameOffering.HomeTeam);
+                    Program.WriteToConsole(e.Message);
+                    Program.SendAlerts(e.Message);
                 }
             }
         }
 
-        private bool isCollegeSport(string sport)
+        private bool IsCollegeSport(string sport)
         {
-            return sport == "NCAAF";
+            return sport == "NCAAF" || sport == "NCAAB";
         }
+
         public void SetOfferingsToNotAvailable()
         {
             var allLines = dbContext.GameLineRepository.Read();
@@ -209,9 +213,9 @@ namespace SportsbookAggregation
                 .SingleOrDefault(gl => gl.GameId == gameId && gl.GamblingSiteId == siteId);
         }
 
-        private Guid CreateGame(DateTime gameOfferingDateTime, Guid homeTeamId, Guid awayTeamId)
+        private Guid CreateGame(DateTime gameOfferingDateTime, Guid homeTeamId, Guid awayTeamId, Guid sportId)
         {
-            var game = new Game {AwayTeamId = awayTeamId, HomeTeamId = homeTeamId, TimeStamp = gameOfferingDateTime};
+            var game = new Game {AwayTeamId = awayTeamId, HomeTeamId = homeTeamId, TimeStamp = gameOfferingDateTime, SportId = sportId};
             dbContext.GameRepository.Create(game);
             return game.GameId;
         }
@@ -223,19 +227,18 @@ namespace SportsbookAggregation
             return matchingGames.FirstOrDefault(g => Math.Abs(g.TimeStamp.Hour - gameTime.Hour) <= 1)?.GameId;
         }
 
-        private Guid GetTeamIdFromFullTeamName(string teamName)
-        {
-            var teamNameSplit = teamName.Trim().Split(' ');
-            var firstWord = teamNameSplit.First();
-            var lastWord = teamNameSplit.Last();
-            return dbContext.TeamRepository.Read()
-                .Single(t => t.Location.StartsWith(firstWord) && t.Mascot.EndsWith(lastWord)).TeamId;
-        }
+        private Guid GetTeamIdFromTeamName(string teamName, string sport)
+        {   
+            teamName = LocationMapper.GetFullTeamName(teamName, sport);
+            if(IsCollegeSport(sport))
+                teamName = MascotMapper.GetFullNameUsingCollege(teamName);
 
-        private Guid GetTeamIdForCollege(string collegeName, Guid sportGuid)
-        {
-            return dbContext.TeamRepository.Read()
-               .Single(t =>  ((t.Location + " " + t.Mascot == collegeName) || (t.Location == collegeName)) && t.Sport.SportId==sportGuid).TeamId; 
+            var team = dbContext.TeamRepository.Read().SingleOrDefault((t => (t.Location + " " + t.Mascot == teamName)));
+            if (team == null)
+                throw new TeamNotFoundException("Need to add a mapping for the following team: " + teamName);
+
+            return team.TeamId;
+           
         }
 
         private Guid GetSiteId(string site)
