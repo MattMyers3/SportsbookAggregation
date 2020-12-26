@@ -66,19 +66,28 @@ namespace SportsbookAggregation
                 var awayTeamId = GetTeamIdFromTeamName(playerPropOffering.AwayTeam, playerPropOffering.Sport);
                 var siteId = GetSiteId(playerPropOffering.Site);
                 var gameId = GetGameId(playerPropOffering.DateTime, homeTeamId, awayTeamId);
-                if (gameId != null) //Need to check if logging should be done for this scenario
+                if (gameId == null) //Need to check if logging should be done for this scenario
                     continue;
 
                 var playerId = GetPlayerId(playerPropOffering.FirstName, playerPropOffering.LastName);
-                if (playerId != null)
+                if (playerId == null)
                     throw new Exception($"Player {playerPropOffering.FirstName} {playerPropOffering.LastName} does not exist in the db");
+
+                var propBetTypeId = GetPropBetTypeId(); //Need to update this when more props are available
+                if (propBetTypeId == null)
+                    throw new Exception($"Prop Bet Type not found"); //Add specific prop bet type in future
 
                 var playerProp = GetPlayerProp(siteId, gameId.Value, playerId.Value); //Will need to add prop type in the future
                 if (playerProp == null)
-                    CreatePlayerProp(gameId.Value, siteId, playerId.Value, playerPropOffering);
+                    CreatePlayerProp(gameId.Value, siteId, playerId.Value, propBetTypeId.Value, playerPropOffering);
                 else
                     UpdatePlayerProp(playerProp, playerPropOffering);
             }
+        }
+
+        private Guid? GetPropBetTypeId()
+        {
+            return dbContext.PropBetTypeRepository.Read().SingleOrDefault(p => p.Description == "First Touchdown Scorer").PropBetTypeId;
         }
 
         private void UpdatePlayerProp(PlayerProp playerProp, PlayerPropOffering playerPropOffering)
@@ -91,7 +100,7 @@ namespace SportsbookAggregation
             dbContext.PlayerPropRepository.Update(playerProp);
         }
 
-        private void CreatePlayerProp(Guid gameId, Guid siteId, Guid playerId, PlayerPropOffering playerPropOffering)
+        private void CreatePlayerProp(Guid gameId, Guid siteId, Guid playerId, Guid propBetTypeId, PlayerPropOffering playerPropOffering)
         {
             //Will need to add prop type in the future
             dbContext.PlayerPropRepository.Create(new PlayerProp
@@ -103,7 +112,8 @@ namespace SportsbookAggregation
                 LastRefresh = DateTime.UtcNow,
                 Description = playerPropOffering.Description,
                 PlayerId = playerId,
-                PropValue = playerPropOffering.PropValue
+                PropValue = playerPropOffering.PropValue,
+                PropBetTypeId = propBetTypeId
             });
         }
 

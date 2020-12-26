@@ -187,7 +187,7 @@ namespace SportsbookAggregation.SportsBooks
 
         public IEnumerable<PlayerPropOffering> AggregatePlayerProps()
         {
-            throw new NotImplementedException();
+            return Enumerable.Empty<PlayerPropOffering>();
         }
     }
 }
