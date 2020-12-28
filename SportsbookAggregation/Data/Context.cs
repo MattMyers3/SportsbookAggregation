@@ -18,6 +18,7 @@ namespace SportsbookAggregation.Data
 
         public Context() : this(GetDbConnection())
         {
+            Program.ReadConfig();
         }
 
         public Context(DbConnection connection) => this.connection = connection;
