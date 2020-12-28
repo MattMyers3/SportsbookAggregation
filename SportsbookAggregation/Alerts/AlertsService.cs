@@ -165,15 +165,15 @@ namespace SportsbookAggregation.Alerts
         {
             if(Convert.ToBoolean(Program.Configuration["SendAlerts"]))
             {
-            List<string> contentList = new List<string>();
-            int maxLength = 130;
-            int i = 0;
-            for(; i < content.Length - maxLength; i+=maxLength)
-            {
-                contentList.Add(content.Substring(i, maxLength));
-            }
+                List<string> contentList = new List<string>();
+                int maxLength = 130;
+                int i = 0;
+                for(; i < content.Length - maxLength; i+=maxLength)
+                {
+                    contentList.Add(content.Substring(i, maxLength));
+                }
 
-            contentList.Add(content.Substring(i));
+                contentList.Add(content.Substring(i));
 
                 foreach (string messageBody in contentList)
                 {
