@@ -16,13 +16,13 @@ namespace SportsbookAggregation.SportsBooks
             var location = LocationMapper.MapLocation(teamNameArray[0], sport);
             return $"{location}{shortTeamName.Substring(teamNameArray[0].Length)}";
         }
-        
+
         private static string MapCollege(string college)
         {
             college = college.Replace('-', '-');
             if (college.StartsWith('#'))//#1 Villanova, need to strip the rank
                 college = college.Substring(college.IndexOf(' ') + 1);
-            switch(college.ToLower())
+            switch (college.ToLower())
             {
                 case "abilene christian university":
                     return "Abilene Christian";
@@ -49,6 +49,7 @@ namespace SportsbookAggregation.SportsBooks
                 case "csu fullerton titans":
                     return "Cal State Fullerton";
                 case "csu northridge":
+                case "cs northridge":
                     return "Cal State Northridge";
                 case "central florida knights":
                 case "central florida":
@@ -130,6 +131,10 @@ namespace SportsbookAggregation.SportsBooks
                     return "Ole Miss";
                 case "new jersey tech highlanders":
                     return "NJIT";
+                case "nicholls state":
+                    return "Nicholls";
+                case "nicholls state colonels":
+                    return "Nicholls";
                 case "north alabama":
                     return "UNA";
                 case "n carolina central":
@@ -210,6 +215,10 @@ namespace SportsbookAggregation.SportsBooks
                 case "connecticut":
                 case "connecticut huskies":
                     return "UConn";
+                case "california irvine":
+                case "california irvine anteaters":
+                case "cal irvine":
+                    return "UC Irvine";
                 case "california riverside highlanders":
                     return "UC Riverside";
                 case "ucsb":
@@ -231,6 +240,8 @@ namespace SportsbookAggregation.SportsBooks
                 case "uncw":
                 case "nc wilmington":
                     return "UNC Wilmington";
+                case "southern california trojans":
+                    return "USC";
                 case "tennessee martin":
                 case "tennessee-martin":
                 case "tennessee martin skyhawks":
@@ -360,7 +371,6 @@ namespace SportsbookAggregation.SportsBooks
                     return "Colorado";
                 default:
                     return abbreviation;
-
             }
         }
     }
