@@ -21,7 +21,7 @@ namespace SportsbookAggregation
 
         public void WriteOddsBoosts(IEnumerable<OddsBoostOffering> oddsBoostOfferings)
         {
-            foreach(var oddsBoostOffering in oddsBoostOfferings)
+            foreach (var oddsBoostOffering in oddsBoostOfferings)
             {
                 var boostExists = dbContext.OddsBoostRepository.Read().Any(o => o.Description == oddsBoostOffering.Description);
                 if (boostExists)
@@ -79,8 +79,9 @@ namespace SportsbookAggregation
                     else
                         UpdateGameLine(gameLine, gameOffering);
                 }
-                catch(TeamNotFoundException e)
+                catch (TeamNotFoundException e)
                 {
+                    Program.WriteToConsole(e.Message);
                     Program.SendAlerts(e.Message);
                 }
             }
@@ -96,8 +97,8 @@ namespace SportsbookAggregation
             var allLines = dbContext.GameLineRepository.Read();
             foreach (var gameLine in allLines)
                 gameLine.IsAvailable = false;
-            
-            
+
+
             dbContext.GameLineRepository.UpdateRange(allLines);
 
             var allBoosts = dbContext.OddsBoostRepository.Read();
@@ -156,7 +157,7 @@ namespace SportsbookAggregation
 
         private Guid CreateGame(DateTime gameOfferingDateTime, Guid homeTeamId, Guid awayTeamId, Guid sportId)
         {
-            var game = new Game {AwayTeamId = awayTeamId, HomeTeamId = homeTeamId, TimeStamp = gameOfferingDateTime, SportId = sportId};
+            var game = new Game { AwayTeamId = awayTeamId, HomeTeamId = homeTeamId, TimeStamp = gameOfferingDateTime, SportId = sportId };
             dbContext.GameRepository.Create(game);
             return game.GameId;
         }
@@ -169,9 +170,9 @@ namespace SportsbookAggregation
         }
 
         private Guid GetTeamIdFromTeamName(string teamName, string sport)
-        {   
+        {
             teamName = LocationMapper.GetFullTeamName(teamName, sport);
-            if(IsCollegeSport(sport))
+            if (IsCollegeSport(sport))
                 teamName = MascotMapper.GetFullNameUsingCollege(teamName);
 
             var team = dbContext.TeamRepository.Read().SingleOrDefault((t => (t.Location + " " + t.Mascot == teamName)));
@@ -179,7 +180,7 @@ namespace SportsbookAggregation
                 throw new TeamNotFoundException("Need to add a mapping for the following team: " + teamName);
 
             return team.TeamId;
-           
+
         }
 
         private Guid GetSiteId(string site)
@@ -189,11 +190,11 @@ namespace SportsbookAggregation
 
         private Guid GetSportId(string name)
         {
-            if (name == null) 
+            if (name == null)
                 return dbContext.SportRepository.Read().Single(s => s.Name == "Unknown").SportId;
 
             var sport = dbContext.SportRepository.Read().FirstOrDefault(s => s.Name == name);
-            if(sport == null)
+            if (sport == null)
                 return dbContext.SportRepository.Read().Single(s => s.Name == "Unknown").SportId;
 
             return sport.SportId;
