@@ -18,7 +18,6 @@ namespace SportsbookAggregation.Data
 
         public Context() : this(GetDbConnection())
         {
-            Program.ReadConfig();
         }
 
         public Context(DbConnection connection) => this.connection = connection;
@@ -692,6 +691,7 @@ namespace SportsbookAggregation.Data
 
         private static DbConnection GetDbConnection()
         {
+            Program.ReadConfig();
             return new MySqlConnection(Program.Configuration.GetConnectionString("SportsbookDatabase"));
         }
     }
