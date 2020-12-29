@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using System.Data.Common;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +15,7 @@ namespace SportsbookAggregation.Data
     public class Context : DbContext
     {
         private readonly DbConnection connection;
-        
+
         public Context() : this(GetDbConnection())
         {
         }
@@ -61,7 +60,7 @@ namespace SportsbookAggregation.Data
             var mlbGuid = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8");
             var mlsGuid = new Guid("c50f0844-6549-47e7-9409-921ad9bf160b");
 
-            modelBuilder.Entity<Sport>().HasData(new Sport { SportId = ncaabGuid, Name = "NCAAB" },new Sport { SportId = ncaafGuid, Name = "NCAAF" }, new Sport { SportId = Constants.unknownGuid, Name = "Unknown" }, new Sport { SportId = mlbGuid, Name = "MLB" }, new Sport { SportId = nbaGuid, Name = "NBA" }, new Sport { Name = "NFL", SportId = nflGuid }, new Sport { Name = "MLS", SportId = mlsGuid });
+            modelBuilder.Entity<Sport>().HasData(new Sport { SportId = ncaabGuid, Name = "NCAAB" }, new Sport { SportId = ncaafGuid, Name = "NCAAF" }, new Sport { SportId = Constants.unknownGuid, Name = "Unknown" }, new Sport { SportId = mlbGuid, Name = "MLB" }, new Sport { SportId = nbaGuid, Name = "NBA" }, new Sport { Name = "NFL", SportId = nflGuid }, new Sport { Name = "MLS", SportId = mlsGuid });
             modelBuilder.Entity<Team>().HasData(
                 new Team { TeamId = new Guid("327fa1ce-ebd2-42b5-8ae3-af4e1f85c31b"), Location = "Atlanta", Mascot = "Hawks" },
                 new Team { TeamId = new Guid("f4646032-8ce2-4115-aa17-6a3f829c48c6"), Location = "Boston", Mascot = "Celtics" },
@@ -442,8 +441,8 @@ namespace SportsbookAggregation.Data
                 new Team { TeamId = new Guid("69c75371-6742-443f-afb7-6be32f112709"), Location = "West Virginia State University", Mascot = "Yellow Jackets" },
                 new Team { TeamId = new Guid("4c2f2c9f-16f9-4332-b9ff-e941599e6b1e"), Location = "West Virginia Wesleyan College", Mascot = "Bobcats" },
                 new Team { TeamId = new Guid("2de7360f-2dc1-43ee-a62f-431527e86e45"), Location = "Western Colorado University", Mascot = "Mountaineers" },
-                new Team { TeamId = new Guid("f6d7280a-9cd2-46d8-9958-17c8ff434e86"), Location = "Western New Mexico University", Mascot="Mustangs" },
-                new Team { TeamId = new Guid("a9358fc5-9386-4ec0-b2c2-2fc556f8c3d2"), Location = "Western Oregon University", Mascot="Wolves" },
+                new Team { TeamId = new Guid("f6d7280a-9cd2-46d8-9958-17c8ff434e86"), Location = "Western New Mexico University", Mascot = "Mustangs" },
+                new Team { TeamId = new Guid("a9358fc5-9386-4ec0-b2c2-2fc556f8c3d2"), Location = "Western Oregon University", Mascot = "Wolves" },
                 new Team { TeamId = new Guid("43378c29-ad7c-488b-9163-6a091573b83a"), Location = "Wheeling University", Mascot = "Cardinals" },
                 new Team { TeamId = new Guid("9273dbff-16c6-47a8-853f-32adad9e2c55"), Location = "William Jewell College", Mascot = "Cardinals" },
                 new Team { TeamId = new Guid("b41b883a-df82-452f-871b-69a2cbbac46b"), Location = "Wingate University", Mascot = "Bulldogs" },
@@ -3224,6 +3223,7 @@ namespace SportsbookAggregation.Data
 
         private static DbConnection GetDbConnection()
         {
+            Program.ReadConfig();
             return new MySqlConnection(Program.Configuration.GetConnectionString("SportsbookDatabase"));
         }
     }

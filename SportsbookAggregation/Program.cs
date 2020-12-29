@@ -85,13 +85,16 @@ namespace SportsbookAggregation
             AlertsService.Run(dbContext);
         }
 
-        private static void ReadConfig()
+        public static void ReadConfig()
         {
-            string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile($"appsettings.{environment}.json");
-            Configuration = builder.Build();
+            if (Configuration == null)
+            {
+                string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
+                var builder = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile($"appsettings.{environment}.json");
+                Configuration = builder.Build();
+            }
         }
 
         public static void LogError(Exception ex)
@@ -118,7 +121,7 @@ namespace SportsbookAggregation
 
         public static void WriteToConsole(string content)
         {
-            if(Convert.ToBoolean(Configuration["OutputToConsole"]))
+            if (Convert.ToBoolean(Configuration["OutputToConsole"]))
                 Console.WriteLine(content);
         }
 

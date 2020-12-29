@@ -163,34 +163,37 @@ namespace SportsbookAggregation.Alerts
 
         public static void SendAlerts(SmtpClient client, string content)
         {
-            List<string> contentList = new List<string>();
-            int maxLength = 130;
-            int i = 0;
-            for(; i < content.Length - maxLength; i+=maxLength)
+            if(Convert.ToBoolean(Program.Configuration["SendAlerts"]))
             {
-                contentList.Add(content.Substring(i, maxLength));
-            }
-
-            contentList.Add(content.Substring(i));
-
-            foreach (string messageBody in contentList)
-            {
-                var message = new MailMessage();
-                message.From = new MailAddress("SportsAggregation@gmail.com");
-
-                message.To.Add(new MailAddress("4102927305@vtext.com")); //Nick
-                message.To.Add(new MailAddress("3015025056@vtext.com")); //Myers
-                message.To.Add(new MailAddress("4842134124@messaging.sprintpcs.com")); //Murph
-                message.To.Add(new MailAddress("7179798657@txt.att.net")); //Jordan
-                message.Body = messageBody;
-
-                try
+                List<string> contentList = new List<string>();
+                int maxLength = 130;
+                int i = 0;
+                for(; i < content.Length - maxLength; i+=maxLength)
                 {
-                    client.Send(message);
+                    contentList.Add(content.Substring(i, maxLength));
                 }
-                catch
+
+                contentList.Add(content.Substring(i));
+
+                foreach (string messageBody in contentList)
                 {
-                    //We sent to many alerts :(
+                    var message = new MailMessage();
+                    message.From = new MailAddress("SportsAggregation@gmail.com");
+
+                    message.To.Add(new MailAddress("4102927305@vtext.com")); //Nick
+                    message.To.Add(new MailAddress("3015025056@vtext.com")); //Myers
+                    message.To.Add(new MailAddress("4842134124@messaging.sprintpcs.com")); //Murph
+                    message.To.Add(new MailAddress("7179798657@txt.att.net")); //Jordan
+                    message.Body = messageBody;
+
+                    try
+                    {
+                        client.Send(message);
+                    }
+                    catch
+                    {
+                        //We sent to many alerts :(
+                    }
                 }
             }
         }

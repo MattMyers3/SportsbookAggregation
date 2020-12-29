@@ -1,12 +1,10 @@
 {
-    "profiles": {
-        "SportsbookAggregation": {
-            "commandName": "Project",
-            "environmentVariables": {
-                "Key": "Value",
-                "ASPNETCORE_ENVIRONMENT": "Development"
-            }
-        }
+  "profiles": {
+    "SportsbookAggregation": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
     }
-
+  }
 }
