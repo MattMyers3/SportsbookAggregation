@@ -250,5 +250,112 @@ namespace SportsbookAggregation.SportsBooks
                 Site = GetSportsBookName()
             };
         }
+
+        public IEnumerable<PlayerPropOffering> AggregatePlayerProps()
+        {
+            var nflPlayerProps = GetNFLPlayerProps().ToList();
+
+            return nflPlayerProps;
+        }
+
+        private IEnumerable<PlayerPropOffering> GetNFLPlayerProps()
+        {
+            var initialJson =
+                JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(InitialFootballRequest).Result);
+
+            var usaCategoryJson = ((IEnumerable)initialJson.categories).Cast<dynamic>()
+                .FirstOrDefault(g => g.name == "USA");
+
+            if (usaCategoryJson == null)
+                return Enumerable.Empty<PlayerPropOffering>();
+
+            var nflCompetitionJson =
+                ((IEnumerable)usaCategoryJson.competition).Cast<dynamic>().FirstOrDefault(g => g.name.Value.Contains("NFL"));
+            if (nflCompetitionJson == null)
+            {
+                return Enumerable.Empty<PlayerPropOffering>();
+            }
+            var nflGamesUrl =
+                $"https://sports.mtairycasino.foxbet.com/sportsbook/v1/api/getCompetitionEvents?competitionId={nflCompetitionJson.id}&includeOutrights=false&channelId=15&locale=en-us&siteId=134217728";
+            var nflGamesJson =
+                JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(nflGamesUrl).Result).ToString()
+                    .Replace("event", "events");
+
+            var games = JsonConvert.DeserializeObject<dynamic>(nflGamesJson).events;
+            var playerProps = new List<PlayerPropOffering>();
+            foreach (var game in games)
+            {
+                var gamePlayerProps = ParsePlayerProps(game);
+                playerProps.AddRange(gamePlayerProps);
+            }
+
+            return playerProps;
+        }
+
+        private IEnumerable<PlayerPropOffering> ParsePlayerProps(dynamic game)
+        {
+            var participantList = ((IEnumerable)game.participants.participant).Cast<dynamic>().ToList();
+            var homeTeam = participantList.Single(p => p.type == "HOME").names.longName;
+            var awayTeam = participantList.Single(p => p.type == "AWAY").names.longName;
+
+            if (homeTeam == "Washington")
+                homeTeam = "Washington Football Team";
+            else if (awayTeam == "Washington")
+                awayTeam = "Washington Football Team";
+
+            var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                    .AddMilliseconds(Convert.ToDouble(game.eventsTime.Value));
+
+            var gameId = game.id.Value.ToString();
+            var playerPropUrl = $"https://sports.mtairycasino.foxbet.com/sportsbook/v1/api/getEvent?eventId={gameId}&channelId=15&locale=en-us&siteId=134217728";
+
+            var playerPropJson =
+                JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(playerPropUrl).Result).ToString();
+
+            var betOfferList = ((IEnumerable)JsonConvert.DeserializeObject<dynamic>(playerPropJson).markets).Cast<dynamic>();
+            var touchdownScorerList = betOfferList.FirstOrDefault(b => b.name == "1st Touchdown Scorer (Incl. OT)");
+
+            if (touchdownScorerList == null)
+                return Enumerable.Empty<PlayerPropOffering>();
+
+            var touchdownScorerProps = touchdownScorerList.selection;
+
+            var playerProps = new List<PlayerPropOffering>();
+            foreach (var touchdownScorerProp in touchdownScorerProps)
+            {
+                if (touchdownScorerProp.odds.frac.Value == "-")
+                    continue;
+
+                var playerProp = new PlayerPropOffering
+                {
+                    Site = GetSportsBookName(),
+                    HomeTeam = homeTeam,
+                    AwayTeam = awayTeam,
+                    Sport = "NFL",
+                    DateTime = dateTime,
+                    Description = "First Touchdown Scorer",
+                    Payout = CalculateOdds(touchdownScorerProp.odds.frac.Value),
+                    PropValue = 1
+                };
+
+                var attributes = ((IEnumerable)touchdownScorerProp.attributes.attrib).Cast<dynamic>();
+                var teamValue = attributes.First(a => a.key.Value.ToString() == "playerTeam").value;
+                playerProp.OnHomeTeam = teamValue == "HOME";
+                playerProp.FirstName = attributes.First(a => a.key.Value.ToString() == "playerFirstName").value;
+                playerProp.LastName = attributes.First(a => a.key.Value.ToString() == "playerLastName").value;
+
+                if (playerProp.LastName.ToLower() == "d/st")
+                {
+                    playerProp.FirstName = "D/ST";
+                    if (playerProp.OnHomeTeam)
+                        playerProp.LastName = homeTeam;
+                    else
+                        playerProp.LastName = awayTeam;
+                }
+
+                playerProps.Add(playerProp);
+            }
+            return playerProps;
+        }
     }
 }

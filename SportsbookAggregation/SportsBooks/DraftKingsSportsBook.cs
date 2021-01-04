@@ -58,6 +58,10 @@ namespace SportsbookAggregation.SportsBooks
             return oddsBoostOfferings;
         }
 
-
+        public IEnumerable<PlayerPropOffering> AggregatePlayerProps()
+        {
+            var oddsProvider = new KambicdnOddsProvider(GetSportsBookName(), "dkuspa", "draftkings");
+            return oddsProvider.AggregatePlayerProps();
+        }
     }
 }

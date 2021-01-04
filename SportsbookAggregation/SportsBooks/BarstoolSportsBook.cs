@@ -75,5 +75,11 @@ namespace SportsbookAggregation.SportsBooks
             }
             throw new Exception("Can't find Odds Boost ID");
         }
+
+        public IEnumerable<PlayerPropOffering> AggregatePlayerProps()
+        {
+            var oddsProvider = new KambicdnOddsProvider(GetSportsBookName(), "pivuspa", "barstool");
+            return oddsProvider.AggregatePlayerProps();
+        }
     }
 }
