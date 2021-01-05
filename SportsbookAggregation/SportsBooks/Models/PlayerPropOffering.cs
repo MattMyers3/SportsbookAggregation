@@ -4,8 +4,7 @@ namespace SportsbookAggregation.SportsBooks.Models
 {
     public class PlayerPropOffering
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string PlayerName { get; set; }
         public string HomeTeam { get; set; }
         public string AwayTeam { get; set; }
         public DateTime DateTime { get; set; }
@@ -14,6 +13,5 @@ namespace SportsbookAggregation.SportsBooks.Models
         public double? PropValue { get; set; }
         public string Description { get; set; }
         public string Sport { get; set; }
-        public bool OnHomeTeam { get; set; }
     }
 }

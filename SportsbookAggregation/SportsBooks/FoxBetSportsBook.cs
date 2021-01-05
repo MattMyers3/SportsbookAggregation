@@ -253,15 +253,16 @@ namespace SportsbookAggregation.SportsBooks
 
         public IEnumerable<PlayerPropOffering> AggregatePlayerProps()
         {
-            var nflPlayerProps = GetNFLPlayerProps().ToList();
+            var nflPlayerProps = GetPlayerProps(InitialFootballRequest, "NFL", "1st Touchdown Scorer(Incl.OT)");
+            var nbaPlayerProps = GetPlayerProps(InitialBasketballRequest, "NBA","?????");
 
-            return nflPlayerProps;
+            return nbaPlayerProps.Concat(nflPlayerProps);
         }
 
-        private IEnumerable<PlayerPropOffering> GetNFLPlayerProps()
+        private IEnumerable<PlayerPropOffering> GetPlayerProps(string requestUrl, string league, string propName)
         {
             var initialJson =
-                JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(InitialFootballRequest).Result);
+                JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(requestUrl).Result);
 
             var usaCategoryJson = ((IEnumerable)initialJson.categories).Cast<dynamic>()
                 .FirstOrDefault(g => g.name == "USA");
@@ -270,7 +271,7 @@ namespace SportsbookAggregation.SportsBooks
                 return Enumerable.Empty<PlayerPropOffering>();
 
             var nflCompetitionJson =
-                ((IEnumerable)usaCategoryJson.competition).Cast<dynamic>().FirstOrDefault(g => g.name.Value.Contains("NFL"));
+                ((IEnumerable)usaCategoryJson.competition).Cast<dynamic>().FirstOrDefault(g => g.name.Value.Contains(league));
             if (nflCompetitionJson == null)
             {
                 return Enumerable.Empty<PlayerPropOffering>();
@@ -285,14 +286,14 @@ namespace SportsbookAggregation.SportsBooks
             var playerProps = new List<PlayerPropOffering>();
             foreach (var game in games)
             {
-                var gamePlayerProps = ParsePlayerProps(game);
+                var gamePlayerProps = ParsePlayerProps(game, league, propName);
                 playerProps.AddRange(gamePlayerProps);
             }
 
             return playerProps;
         }
 
-        private IEnumerable<PlayerPropOffering> ParsePlayerProps(dynamic game)
+        private IEnumerable<PlayerPropOffering> ParsePlayerProps(dynamic game, string league, string propName)
         {
             var participantList = ((IEnumerable)game.participants.participant).Cast<dynamic>().ToList();
             var homeTeam = participantList.Single(p => p.type == "HOME").names.longName;
@@ -313,7 +314,7 @@ namespace SportsbookAggregation.SportsBooks
                 JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(playerPropUrl).Result).ToString();
 
             var betOfferList = ((IEnumerable)JsonConvert.DeserializeObject<dynamic>(playerPropJson).markets).Cast<dynamic>();
-            var touchdownScorerList = betOfferList.FirstOrDefault(b => b.name == "1st Touchdown Scorer (Incl. OT)");
+            var touchdownScorerList = betOfferList.FirstOrDefault(b => b.name == propName);
 
             if (touchdownScorerList == null)
                 return Enumerable.Empty<PlayerPropOffering>();
@@ -331,27 +332,16 @@ namespace SportsbookAggregation.SportsBooks
                     Site = GetSportsBookName(),
                     HomeTeam = homeTeam,
                     AwayTeam = awayTeam,
-                    Sport = "NFL",
+                    Sport = league,
                     DateTime = dateTime,
-                    Description = "First Touchdown Scorer",
+                    Description = "First Scorer",
                     Payout = CalculateOdds(touchdownScorerProp.odds.frac.Value),
                     PropValue = 1
                 };
 
                 var attributes = ((IEnumerable)touchdownScorerProp.attributes.attrib).Cast<dynamic>();
                 var teamValue = attributes.First(a => a.key.Value.ToString() == "playerTeam").value;
-                playerProp.OnHomeTeam = teamValue == "HOME";
-                playerProp.FirstName = attributes.First(a => a.key.Value.ToString() == "playerFirstName").value;
-                playerProp.LastName = attributes.First(a => a.key.Value.ToString() == "playerLastName").value;
-
-                if (playerProp.LastName.ToLower() == "d/st")
-                {
-                    playerProp.FirstName = "D/ST";
-                    if (playerProp.OnHomeTeam)
-                        playerProp.LastName = homeTeam;
-                    else
-                        playerProp.LastName = awayTeam;
-                }
+                playerProp.PlayerName = attributes.First(a => a.key.Value.ToString() == "playerFirstName").value + " " + attributes.First(a => a.key.Value.ToString() == "playerLastName").value;
 
                 playerProps.Add(playerProp);
             }

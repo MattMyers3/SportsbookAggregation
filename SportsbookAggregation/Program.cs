@@ -21,34 +21,36 @@ namespace SportsbookAggregation
         {
             ReadConfig();
             var dbContext = new Context();
-            List<ISportsBook> sportsbooks = new List<ISportsBook> { new DraftKingsSportsBook(), new FanDuelSportsBook(), new FoxBetSportsBook(), new BarstoolSportsBook(), new BetAmericaSportsBook(), new CaesarsSportBook(), new BetRiversSportsBook(), new ParxSportsBook(), new UnibetSportsBook(), new SugarHouseSportsBook() };
+            //List<ISportsBook> sportsbooks = new List<ISportsBook> { new DraftKingsSportsBook(), new FanDuelSportsBook(), new FoxBetSportsBook(), new BarstoolSportsBook(), new BetAmericaSportsBook(), new CaesarsSportBook(), new BetRiversSportsBook(), new ParxSportsBook(), new UnibetSportsBook(), new SugarHouseSportsBook() };
+            
+            List<ISportsBook> sportsbooks = new List<ISportsBook> { new DraftKingsSportsBook(), new BarstoolSportsBook(), new BetRiversSportsBook(), new ParxSportsBook(), new SugarHouseSportsBook(), new UnibetSportsBook(), new FanDuelSportsBook() };
             var gameOfferings = new List<GameOffering>();
             var oddsBoosts = new List<OddsBoostOffering>();
             var playerProps = new List<PlayerPropOffering>();
 
             foreach (var sportsbook in sportsbooks)
             {
-                try
-                {
-                    gameOfferings.AddRange(sportsbook.AggregateFutureOfferings().ToList());
-                }
-                catch (Exception ex)
-                {
-                    LogError(ex);
-                    SendAlerts("Failed to parse games lines for: " + sportsbook.GetSportsBookName());
-                    Console.WriteLine("Failed to parse games lines for:  " + sportsbook.GetSportsBookName());
-                }
+                //try
+                //{
+                //    gameOfferings.AddRange(sportsbook.AggregateFutureOfferings().ToList());
+                //}
+                //catch (Exception ex)
+                //{
+                //    LogError(ex);
+                //    SendAlerts("Failed to parse games lines for: " + sportsbook.GetSportsBookName());
+                //    Console.WriteLine("Failed to parse games lines for:  " + sportsbook.GetSportsBookName());
+                //}
 
-                try
-                {
-                    oddsBoosts.AddRange(sportsbook.AggregateOddsBoost().ToList());
-                }
-                catch (Exception ex)
-                {
-                    LogError(ex);
-                    SendAlerts("Failed to parse odds boost for: " + sportsbook.GetSportsBookName());
-                    Console.WriteLine("Failed to parse odds boost for: " + sportsbook.GetSportsBookName());
-                }
+                //try
+                //{
+                //    oddsBoosts.AddRange(sportsbook.AggregateOddsBoost().ToList());
+                //}
+                //catch (Exception ex)
+                //{
+                //    LogError(ex);
+                //    SendAlerts("Failed to parse odds boost for: " + sportsbook.GetSportsBookName());
+                //    Console.WriteLine("Failed to parse odds boost for: " + sportsbook.GetSportsBookName());
+                //}
                 try
                 {
                     playerProps.AddRange(sportsbook.AggregatePlayerProps().ToList());
@@ -60,7 +62,7 @@ namespace SportsbookAggregation
                     Console.WriteLine("Failed to parse player props for: " + sportsbook.GetSportsBookName());
                 }
             }
-
+            PropAnalyzer(playerProps);
             try
             {
                 var databaseUpdater = new SportsbookOfferingsUpdater(dbContext);
@@ -79,6 +81,54 @@ namespace SportsbookAggregation
                 throw ex;
             }
             AlertsService.Run(dbContext);
+        }
+
+        public static void PropAnalyzer(List<PlayerPropOffering> props)
+        {
+            var dbProps = new List<PlayerPropOffering>();
+            var nameMatches = new Dictionary<string, List<string>>(); // for viewing purposes
+            foreach(var prop in props)
+            {
+                //Does it already exist???
+                //Get our specific game and prop type
+                var propsInGame = dbProps.Where(p => p.HomeTeam == prop.HomeTeam && prop.Description == p.Description);
+                if (propsInGame.Count() == 0)
+                {
+                    dbProps.Add(prop); //If no props of the same type exist add it.
+                    nameMatches.Add($"{prop.PlayerName}", new List<string>());//Viewing code
+                }
+                else //See if we have an existing prop for the same player
+                {
+                    var matches = propsInGame.Where(p => FuzzySharp.Fuzz.Ratio($"{p.PlayerName}", $"{prop.PlayerName}") > 75);
+                    if(matches.Count() == 0)
+                    {
+                        dbProps.Add(prop); //If no props of the same type exist add it.
+                        nameMatches.Add($"{prop.PlayerName}", new List<string>());//Viewing code
+                    }
+                    if(matches.Count() == 1) //found a match
+                    {
+                        var match = matches.First();
+                        if (FuzzySharp.Fuzz.Ratio($"{match.PlayerName}", $"{prop.PlayerName}") != 100)
+                        {
+                            var score = FuzzySharp.Fuzz.Ratio($"{match.PlayerName}", $"{prop.PlayerName}");
+                            Console.WriteLine($"Fuzzy matched ({score}): {match.PlayerName} and {prop.PlayerName}");
+
+                        }
+                        nameMatches[$"{match.PlayerName}"].Add($"{ prop.PlayerName}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Algorithm too generous. multiple matches for: { prop.PlayerName}");
+                    }
+                }
+            }
+            foreach(var kvp in nameMatches)
+            {
+                Console.Write($"{ kvp.Key } ");
+                kvp.Value.ForEach(s => Console.Write(s + " "));
+                Console.WriteLine();
+            }
+            Console.Read();
         }
 
         public static void ReadConfig()

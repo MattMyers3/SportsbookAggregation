@@ -253,18 +253,20 @@ namespace SportsbookAggregation.SportsBooks
         {
             var initialJson = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(InitialRequest).Result);
 
-            IEnumerable<PlayerPropOffering> nflOfferings = GetNFLPlayerProps(initialJson);
-            return nflOfferings;
+            var nflOfferings = GetPlayerProps(initialJson, "Football", "NFL", "Season Coupon", "First Touchdown Scorer");
+            var nbaOfferings = GetPlayerProps(initialJson, "Basketball", "NBA", "NBA Tab Coupon", "First Basket");
+
+            return nflOfferings.Concat(nbaOfferings);
 
         }
 
-        private IEnumerable<PlayerPropOffering> GetNFLPlayerProps(dynamic initialJson)
+        private IEnumerable<PlayerPropOffering> GetPlayerProps(dynamic initialJson, string sport, string league, string coupon, string propName)
         {
             var footballJson = ((IEnumerable)initialJson.bonavigationnodes).Cast<dynamic>()
-                .First(g => g.name == "Football");
-            var nflJson = ((IEnumerable)footballJson.bonavigationnodes).Cast<dynamic>().First(g => g.name == "NFL");
+                .First(g => g.name == sport);
+            var nflJson = ((IEnumerable)footballJson.bonavigationnodes).Cast<dynamic>().First(g => g.name == league);
             var tabCouponJson = ((IEnumerable)nflJson.bonavigationnodes).Cast<dynamic>()
-                .First(g => g.name == "Season Coupon");
+                .First(g => g.name == coupon);
             var gamesMarketGroups = ((IEnumerable)tabCouponJson.bonavigationnodes).Cast<dynamic>()
                 .First(g => g.name.Value.ToString().Contains("Games")).marketgroups;
             if (gamesMarketGroups.Count == 0)
@@ -288,13 +290,13 @@ namespace SportsbookAggregation.SportsBooks
                 var gameJson =
                     JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(gameUrl).Result);
 
-                playerProps.AddRange(ParsePlayerProps(gameJson, "NFL", gameJson.participantname_home.ToString(), gameJson.participantname_away.ToString(), gameJson.tsstart));
+                playerProps.AddRange(ParsePlayerProps(gameJson, league, gameJson.participantname_home.ToString(), gameJson.participantname_away.ToString(), gameJson.tsstart, propName));
             }
 
             return playerProps;
         }
 
-        private IEnumerable<PlayerPropOffering> ParsePlayerProps(dynamic gameJson, string sport, string homeTeam, string awayTeam, dynamic gameTime)
+        private IEnumerable<PlayerPropOffering> ParsePlayerProps(dynamic gameJson, string sport, string homeTeam, string awayTeam, dynamic gameTime, string propName)
         {
             if (gameJson.eventmarketgroups == null)
                 return Enumerable.Empty<PlayerPropOffering>();
@@ -303,7 +305,7 @@ namespace SportsbookAggregation.SportsBooks
             if (playerPropsJson == null)
                 return Enumerable.Empty<PlayerPropOffering>();
 
-            var firstTouchdownJson = ((IEnumerable)playerPropsJson.markets).Cast<dynamic>().FirstOrDefault(g => g.name.Value.ToString() == "First Touchdown Scorer");
+            var firstTouchdownJson = ((IEnumerable)playerPropsJson.markets).Cast<dynamic>().FirstOrDefault(g => g.name.Value.ToString() == propName);
             if (firstTouchdownJson == null)
                 return Enumerable.Empty<PlayerPropOffering>();
 
@@ -319,41 +321,15 @@ namespace SportsbookAggregation.SportsBooks
                     AwayTeam = awayTeam,
                     HomeTeam = homeTeam,
                     DateTime = gameTime,
-                    Description = "First Touchdown Scorer",//This needs to be parsed in the future
+                    Description = "First Score",//This needs to be parsed in the future
                     Payout = CalculateOdds(selection.currentpricedown.Value, selection.currentpriceup.Value),
                     PropValue = 1 //Need to discuss this again
                 };
 
                 var playerName = selection.name.ToString();
                 var playerNameAsArray = playerName.Split(" ");
-                if (playerName.ToLower() == "no touchdown scored")
-                {
-                    playerProp.FirstName = playerName;
-                }
-                else if (playerName.ToLower().StartsWith("any other")) //Good way to store this?
-                {
-                    playerProp.OnHomeTeam = selection.hadvalue.Value.ToString() == "H";
-                    playerProp.FirstName = "Any Other";
-                    if (playerProp.OnHomeTeam)
-                        playerProp.LastName = homeTeam;
-                    else
-                        playerProp.LastName = awayTeam;
-                }
-                else if (playerName.ToLower().EndsWith("d/st"))
-                {
-                    playerProp.OnHomeTeam = selection.hadvalue.Value.ToString() == "H";
-                    playerProp.FirstName = "D/ST";
-                    if (playerProp.OnHomeTeam)
-                        playerProp.LastName = homeTeam;
-                    else
-                        playerProp.LastName = awayTeam;
-                }
-                else
-                {
-                    playerProp.OnHomeTeam = selection.hadvalue.Value.ToString() == "H";
-                    playerProp.FirstName = playerNameAsArray[playerNameAsArray.Length - 2];
-                    playerProp.LastName = playerNameAsArray[playerNameAsArray.Length - 1];
-                }
+
+                playerProp.PlayerName = playerName;
 
                 playerProps.Add(playerProp);
             }
