@@ -323,7 +323,7 @@ namespace SportsbookAggregation.SportsBooks
                     HomeTeam = homeTeam,
                     DateTime = gameTime,
                     Payout = CalculateOdds(selection.currentpricedown.Value, selection.currentpriceup.Value),
-                    PropValue = 1 //Need to discuss this again
+                    PropValue = null //Need to discuss this again
                 };
 
                 if (propName == PlayerPropConstants.FanduelFirstTouchdown)

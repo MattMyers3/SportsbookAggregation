@@ -211,7 +211,7 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
                     HomeTeam = homeTeam,
                     DateTime = eventInfo.start.Value,
                     Payout = Convert.ToInt32(prop.oddsAmerican.Value),
-                    PropValue = 1 //Need to discuss this again. 20 rushing yards.
+                    PropValue = null //Need to discuss this again. 20 rushing yards.
                 };
 
                 if(propName == PlayerPropConstants.KambiTouchdownScorer)

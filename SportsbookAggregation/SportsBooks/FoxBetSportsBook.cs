@@ -336,7 +336,7 @@ namespace SportsbookAggregation.SportsBooks
                     Sport = league,
                     DateTime = dateTime,
                     Payout = CalculateOdds(touchdownScorerProp.odds.frac.Value),
-                    PropValue = 1
+                    PropValue = null
                 };
 
                 if (propName == PlayerPropConstants.FoxBetFirstTouchdown)
