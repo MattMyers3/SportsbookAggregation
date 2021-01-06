@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SportsbookAggregation.Constants;
 using SportsbookAggregation.SportsBooks.Models;
 using System;
 using System.Collections;
@@ -158,8 +159,8 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
 
         public IEnumerable<PlayerPropOffering> AggregatePlayerProps()
         {
-            var nflPlayerProps = GetPlayerProps(NflRequestUrl, "Touchdown Scorer");
-            var nbaPlayerProps = GetPlayerProps(NbaRequestUrl, "Player to Score the First Field Goal of the Game");
+            var nflPlayerProps = GetPlayerProps(NflRequestUrl, PlayerPropConstants.KambiTouchdownScorer);
+            var nbaPlayerProps = GetPlayerProps(NbaRequestUrl, PlayerPropConstants.KambiFirstFieldGoal);
 
             return nflPlayerProps.Concat(nbaPlayerProps);
         }
@@ -209,10 +210,20 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
                     AwayTeam = awayTeam,
                     HomeTeam = homeTeam,
                     DateTime = eventInfo.start.Value,
-                    Description = "First Score", //This needs to be parsed in the future
                     Payout = Convert.ToInt32(prop.oddsAmerican.Value),
                     PropValue = 1 //Need to discuss this again. 20 rushing yards.
                 };
+
+                if(propName == PlayerPropConstants.KambiTouchdownScorer)
+                {
+                    playerProp.Description = PlayerPropConstants.TouchdownScorer;
+                    playerProp.OutcomeDescription = PlayerPropConstants.First;
+                }
+                else if(propName == PlayerPropConstants.KambiFirstFieldGoal)
+                {
+                    playerProp.Description = PlayerPropConstants.BasketScorer;
+                    playerProp.OutcomeDescription = PlayerPropConstants.First;
+                }                    
 
                 var playerName = prop.label.ToString();
                 var playerNameAsArray = playerName.Split(", ");

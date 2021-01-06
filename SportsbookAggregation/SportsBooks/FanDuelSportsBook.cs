@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using SportsbookAggregation.Constants;
 using SportsbookAggregation.SportsBooks.Models;
 
 namespace SportsbookAggregation.SportsBooks
@@ -253,8 +254,8 @@ namespace SportsbookAggregation.SportsBooks
         {
             var initialJson = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(InitialRequest).Result);
 
-            var nflOfferings = GetPlayerProps(initialJson, "Football", "NFL", "Season Coupon", "First Touchdown Scorer");
-            var nbaOfferings = GetPlayerProps(initialJson, "Basketball", "NBA", "NBA Tab Coupon", "First Basket");
+            IEnumerable<PlayerPropOffering> nflOfferings = GetPlayerProps(initialJson, "Football", "NFL", "Season Coupon", PlayerPropConstants.FanduelFirstTouchdown);
+            IEnumerable<PlayerPropOffering> nbaOfferings = GetPlayerProps(initialJson, "Basketball", "NBA", "NBA Tab Coupon", PlayerPropConstants.FanduelFirstBasket);
 
             return nflOfferings.Concat(nbaOfferings);
 
@@ -321,10 +322,20 @@ namespace SportsbookAggregation.SportsBooks
                     AwayTeam = awayTeam,
                     HomeTeam = homeTeam,
                     DateTime = gameTime,
-                    Description = "First Score",//This needs to be parsed in the future
                     Payout = CalculateOdds(selection.currentpricedown.Value, selection.currentpriceup.Value),
                     PropValue = 1 //Need to discuss this again
                 };
+
+                if (propName == PlayerPropConstants.FanduelFirstTouchdown)
+                {
+                    playerProp.Description = PlayerPropConstants.TouchdownScorer;
+                    playerProp.OutcomeDescription = PlayerPropConstants.First;
+                }
+                else if (propName == PlayerPropConstants.FanduelFirstBasket)
+                {
+                    playerProp.Description = PlayerPropConstants.BasketScorer;
+                    playerProp.OutcomeDescription = PlayerPropConstants.First;
+                }
 
                 var playerName = selection.name.ToString();
                 var playerNameAsArray = playerName.Split(" ");

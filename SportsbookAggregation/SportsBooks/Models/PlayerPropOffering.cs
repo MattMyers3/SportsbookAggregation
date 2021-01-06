@@ -2,6 +2,7 @@
 
 namespace SportsbookAggregation.SportsBooks.Models
 {
+    [Serializable]
     public class PlayerPropOffering
     {
         public string PlayerName { get; set; }
@@ -12,6 +13,7 @@ namespace SportsbookAggregation.SportsBooks.Models
         public int? Payout { get; set; }
         public double? PropValue { get; set; }
         public string Description { get; set; }
+        public string OutcomeDescription { get; set; }
         public string Sport { get; set; }
     }
 }

@@ -87,6 +87,77 @@ namespace SportsbookAggregation
             }
         }
 
+        public void WritePlayerProps(List<PlayerPropOffering> playerProps)
+        {
+            foreach (var playerProp in playerProps)
+            {
+                var playerPropInDatabase = TryGetPlayerProp(playerProp);
+                if (playerPropInDatabase == null)
+                    CreatePlayerProp(playerProp);
+                else
+                    UpdatePlayerProp(playerPropInDatabase, playerProp);
+            }
+        }
+
+        private void CreatePlayerProp(PlayerPropOffering playerProp)
+        {
+            var sportGuid = GetSportId(playerProp.Sport);
+            var homeTeamId = GetTeamIdFromTeamName(playerProp.HomeTeam, playerProp.Sport);
+            var awayTeamId = GetTeamIdFromTeamName(playerProp.AwayTeam, playerProp.Sport);
+            var gameId = GetGameId(playerProp.DateTime, homeTeamId, awayTeamId) ??
+                            CreateGame(playerProp.DateTime, homeTeamId, awayTeamId, sportGuid);
+
+            var propBetTypeId = GetPropBetTypeId(playerProp.Description);
+
+            var gamblingSiteId = GetSiteId(playerProp.Site);
+
+            dbContext.PlayerPropRepository.Create(new PlayerProp
+            {
+                IsAvailable = true,
+                LastRefresh = DateTime.UtcNow,
+                Payout = playerProp.Payout,
+                PlayerName = playerProp.PlayerName,
+                Description = playerProp.OutcomeDescription,
+                PropValue = playerProp.PropValue,
+                PropBetTypeId = propBetTypeId.Value,
+                GamblingSiteId = gamblingSiteId,
+                GameId = gameId
+            });
+        }
+
+        private void UpdatePlayerProp(PlayerProp playerPropInDatabase, PlayerPropOffering playerPropOffering)
+        {
+            playerPropInDatabase.IsAvailable = true;
+            playerPropInDatabase.LastRefresh = DateTime.UtcNow;
+            playerPropInDatabase.Payout = playerPropOffering.Payout;
+            playerPropInDatabase.PropValue = playerPropOffering.PropValue;
+            dbContext.PlayerPropRepository.Update(playerPropInDatabase);
+        }
+
+        private PlayerProp TryGetPlayerProp(PlayerPropOffering playerProp)
+        {
+            var homeTeamId = GetTeamIdFromTeamName(playerProp.HomeTeam, playerProp.Sport);
+            var awayTeamId = GetTeamIdFromTeamName(playerProp.AwayTeam, playerProp.Sport);
+            var gameId = GetGameId(playerProp.DateTime, homeTeamId, awayTeamId);
+            if (gameId == null)
+                return null;
+
+            var propBetTypeId = GetPropBetTypeId(playerProp.Description);
+
+            var gamblingSiteId = GetSiteId(playerProp.Site);
+
+            var test = dbContext.PlayerPropRepository.Read().Where(p => p.GameId == gameId);
+
+            return dbContext.PlayerPropRepository.Read().FirstOrDefault(p => p.GameId == gameId 
+                    && p.PropBetTypeId == propBetTypeId && p.Description == playerProp.OutcomeDescription 
+                    && p.PlayerName == playerProp.PlayerName && p.GamblingSiteId == gamblingSiteId);
+        }
+
+        private Guid? GetPropBetTypeId(string description)
+        {
+            return dbContext.PropBetTypeRepository.Read().FirstOrDefault(r => r.Description == description)?.PropBetTypeId;
+        }
+
         private bool IsCollegeSport(string sport)
         {
             return sport == "NCAAF" || sport == "NCAAB";
@@ -97,16 +168,17 @@ namespace SportsbookAggregation
             var allLines = dbContext.GameLineRepository.Read();
             foreach (var gameLine in allLines)
                 gameLine.IsAvailable = false;
-
-
             dbContext.GameLineRepository.UpdateRange(allLines);
 
             var allBoosts = dbContext.OddsBoostRepository.Read();
             foreach (var boost in allBoosts)
                 boost.IsAvailable = false;
-
-
             dbContext.OddsBoostRepository.UpdateRange(allBoosts);
+
+            var allPlayerProps = dbContext.PlayerPropRepository.Read();
+            foreach (var prop in allPlayerProps)
+                prop.IsAvailable = false;
+            dbContext.PlayerPropRepository.UpdateRange(allPlayerProps);
         }
 
         private void UpdateGameLine(GameLine gameLine, GameOffering gameOffering)

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using SportsbookAggregation.Constants;
 using SportsbookAggregation.Data.Models;
 using SportsbookAggregation.SportsBooks.Models;
 
@@ -253,8 +254,8 @@ namespace SportsbookAggregation.SportsBooks
 
         public IEnumerable<PlayerPropOffering> AggregatePlayerProps()
         {
-            var nflPlayerProps = GetPlayerProps(InitialFootballRequest, "NFL", "1st Touchdown Scorer(Incl.OT)");
-            var nbaPlayerProps = GetPlayerProps(InitialBasketballRequest, "NBA","?????");
+            var nflPlayerProps = GetPlayerProps(InitialFootballRequest, "NFL", PlayerPropConstants.FoxBetFirstTouchdown);
+            var nbaPlayerProps = GetPlayerProps(InitialBasketballRequest, "NBA", PlayerPropConstants.FoxBetFirstBasket);
 
             return nbaPlayerProps.Concat(nflPlayerProps);
         }
@@ -334,10 +335,20 @@ namespace SportsbookAggregation.SportsBooks
                     AwayTeam = awayTeam,
                     Sport = league,
                     DateTime = dateTime,
-                    Description = "First Scorer",
                     Payout = CalculateOdds(touchdownScorerProp.odds.frac.Value),
                     PropValue = 1
                 };
+
+                if (propName == PlayerPropConstants.FoxBetFirstTouchdown)
+                {
+                    playerProp.Description = PlayerPropConstants.TouchdownScorer;
+                    playerProp.OutcomeDescription = PlayerPropConstants.First;
+                }
+                else if (propName == PlayerPropConstants.FoxBetFirstBasket)
+                {
+                    playerProp.Description = PlayerPropConstants.BasketScorer;
+                    playerProp.OutcomeDescription = PlayerPropConstants.First;
+                }
 
                 var attributes = ((IEnumerable)touchdownScorerProp.attributes.attrib).Cast<dynamic>();
                 var teamValue = attributes.First(a => a.key.Value.ToString() == "playerTeam").value;

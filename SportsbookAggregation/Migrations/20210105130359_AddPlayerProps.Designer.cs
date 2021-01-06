@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SportsbookAggregation.Data;
 
 namespace SportsbookAggregation.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20210105130359_AddPlayerProps")]
+    partial class AddPlayerProps
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -336,18 +338,6 @@ namespace SportsbookAggregation.Migrations
                     b.HasKey("PropBetTypeId");
 
                     b.ToTable("PropBetType");
-
-                    b.HasData(
-                        new
-                        {
-                            PropBetTypeId = new Guid("70dc1a52-243a-4097-8263-7b45da56d77f"),
-                            Description = "Touchdown Scorer"
-                        },
-                        new
-                        {
-                            PropBetTypeId = new Guid("324bd1c0-28a7-478c-8e10-b89ee0ad54eb"),
-                            Description = "Basket Scorer"
-                        });
                 });
 
             modelBuilder.Entity("SportsbookAggregation.Data.Models.Sport", b =>
