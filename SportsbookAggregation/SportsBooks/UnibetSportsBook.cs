@@ -23,5 +23,11 @@ namespace SportsbookAggregation.SportsBooks
             var oddsProvider = new KambicdnOddsProvider(GetSportsBookName(), "ubuspa", "unibet_featured");
             return oddsProvider.AggregateOddsBoost();
         }
+
+        public IEnumerable<PlayerPropOffering> AggregatePlayerProps()
+        {
+            var oddsProvider = new KambicdnOddsProvider(GetSportsBookName(), "ubuspa", "unibet");
+            return oddsProvider.AggregatePlayerProps();
+        }
     }
 }

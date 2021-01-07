@@ -184,5 +184,10 @@ namespace SportsbookAggregation.SportsBooks
             Program.HttpClient = new HttpClient(); //Clear out state from parsing
             return oddsBoosts;
         }
+
+        public IEnumerable<PlayerPropOffering> AggregatePlayerProps()
+        {
+            return Enumerable.Empty<PlayerPropOffering>();
+        }
     }
 }

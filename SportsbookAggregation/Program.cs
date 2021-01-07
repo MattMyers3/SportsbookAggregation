@@ -22,8 +22,10 @@ namespace SportsbookAggregation
             ReadConfig();
             var dbContext = new Context();
             List<ISportsBook> sportsbooks = new List<ISportsBook> { new DraftKingsSportsBook(), new FanDuelSportsBook(), new FoxBetSportsBook(), new BarstoolSportsBook(), new BetAmericaSportsBook(), new CaesarsSportBook(), new BetRiversSportsBook(), new ParxSportsBook(), new UnibetSportsBook(), new SugarHouseSportsBook() };
+            
             var gameOfferings = new List<GameOffering>();
             var oddsBoosts = new List<OddsBoostOffering>();
+            var playerProps = new List<PlayerPropOffering>();
 
             foreach (var sportsbook in sportsbooks)
             {
@@ -48,8 +50,17 @@ namespace SportsbookAggregation
                     SendAlerts("Failed to parse odds boost for: " + sportsbook.GetSportsBookName());
                     Console.WriteLine("Failed to parse odds boost for: " + sportsbook.GetSportsBookName());
                 }
+                try
+                {
+                    playerProps.AddRange(sportsbook.AggregatePlayerProps().ToList());
+                }
+                catch (Exception ex)
+                {
+                    LogError(ex);
+                    SendAlerts("Failed to parse player props for: " + sportsbook.GetSportsBookName());
+                    Console.WriteLine("Failed to parse player props for: " + sportsbook.GetSportsBookName());
+                }
             }
-
             try
             {
                 var databaseUpdater = new SportsbookOfferingsUpdater(dbContext);
@@ -58,6 +69,7 @@ namespace SportsbookAggregation
                     databaseUpdater.SetOfferingsToNotAvailable();
                     databaseUpdater.WriteGameOfferings(gameOfferings);
                     databaseUpdater.WriteOddsBoosts(oddsBoosts);
+                    databaseUpdater.WritePlayerProps(playerProps);
                     dbContextTransaction.Commit();
                 }
             }

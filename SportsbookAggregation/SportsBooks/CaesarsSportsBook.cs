@@ -135,5 +135,10 @@ namespace SportsbookAggregation.SportsBooks
         {
             return new List<OddsBoostOffering>();
         }
+
+        public IEnumerable<PlayerPropOffering> AggregatePlayerProps()
+        {
+            return Enumerable.Empty<PlayerPropOffering>();
+        }
     }
 }

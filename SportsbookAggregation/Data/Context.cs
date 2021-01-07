@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Data.Common;
-using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
 using SportsbookAggregation.Alerts.Models;
+using SportsbookAggregation.Constants;
 using SportsbookAggregation.Data.Configuration;
 using SportsbookAggregation.Data.Models;
 using SportsbookAggregation.UserSettingsInfo.Configuration;
@@ -31,6 +31,8 @@ namespace SportsbookAggregation.Data
         public IRepository<Alert> AlertRepository => new SqlServerRepository<Alert>(this);
         public IRepository<OddsBoost> OddsBoostRepository => new SqlServerRepository<OddsBoost>(this);
         public IRepository<UserSettings> UserSettingsRepository => new SqlServerRepository<UserSettings>(this);
+        public IRepository<PlayerProp> PlayerPropRepository => new SqlServerRepository<PlayerProp>(this);
+        public IRepository<PropBetType> PropBetTypeRepository => new SqlServerRepository<PropBetType>(this);
 
 
 
@@ -45,6 +47,8 @@ namespace SportsbookAggregation.Data
             modelBuilder.ApplyConfiguration(new AlertConfiguration());
             modelBuilder.ApplyConfiguration(new OddsBoostConfiguration());
             modelBuilder.ApplyConfiguration(new UserSettingsConfiguration());
+            modelBuilder.ApplyConfiguration(new PlayerPropConfiguration());
+            modelBuilder.ApplyConfiguration(new PropBetTypeConfiguration());
 
 
             var nbaGuid = new Guid("2cbbd293-8627-447d-8b20-2c5a4fdaa024");
@@ -681,6 +685,11 @@ namespace SportsbookAggregation.Data
                 new GamblingSite { GamblingSiteId = new Guid("730346f5-e563-47bf-9230-148d25c424e9"), Name = "SugarHouse" },
                 new GamblingSite { GamblingSiteId = new Guid("eda5febb-1381-411a-88e8-5db158589212"), Name = "Barstool" },
                 new GamblingSite { GamblingSiteId = new Guid("153a8d43-3c06-4cb2-ba83-219001b133aa"), Name = "BetMGM" }
+            );
+
+            modelBuilder.Entity<PropBetType>().HasData(
+                new PropBetType { Description = PlayerPropConstants.TouchdownScorer, PropBetTypeId = new Guid("70dc1a52-243a-4097-8263-7b45da56d77f") },
+                new PropBetType { Description = PlayerPropConstants.BasketScorer, PropBetTypeId = new Guid("324bd1c0-28a7-478c-8e10-b89ee0ad54eb") }
             );
         }
 

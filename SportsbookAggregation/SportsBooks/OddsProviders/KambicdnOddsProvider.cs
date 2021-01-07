@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using SportsbookAggregation.Data.Models;
+using SportsbookAggregation.Constants;
 using SportsbookAggregation.SportsBooks.Models;
 using System;
 using System.Collections;
@@ -155,6 +155,89 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
             }
 
             return gameOffering;
+        }
+
+        public IEnumerable<PlayerPropOffering> AggregatePlayerProps()
+        {
+            var nflPlayerProps = GetPlayerProps(NflRequestUrl, PlayerPropConstants.KambiTouchdownScorer);
+            var nbaPlayerProps = GetPlayerProps(NbaRequestUrl, PlayerPropConstants.KambiFirstFieldGoal);
+
+            return nflPlayerProps.Concat(nbaPlayerProps);
+        }
+
+        private IEnumerable<PlayerPropOffering> GetPlayerProps(string sportRequestUrl, string propName)
+        {
+            var requestString =
+                JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(sportRequestUrl).Result).ToString().Replace("event", "Event");
+
+            var games = ((IEnumerable)JsonConvert.DeserializeObject<dynamic>(requestString).Events).Cast<dynamic>();
+            var playerProps = new List<PlayerPropOffering>();
+            foreach (var game in games)
+            {
+                var eventInfo = game.Event;
+                var eventId = game.Event.id;
+
+                if (eventInfo.awayName != null && eventInfo.homeName != null)
+                    playerProps.AddRange(ParsePlayerProps(eventInfo, eventId, propName));
+            }
+            return playerProps;
+        }
+
+        private IEnumerable<PlayerPropOffering> ParsePlayerProps(dynamic eventInfo, dynamic eventId, string propName)
+        {
+            var url = BaseUrl + $"/betoffer/event/{eventId}.json?lang=en_US&market=US&includeParticipants=true";
+
+            var playerPropResponse = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(url).Result).ToString();
+            var betOfferList = ((IEnumerable)JsonConvert.DeserializeObject<dynamic>(playerPropResponse).betOffers).Cast<dynamic>();
+
+            var touchdownScorerList = betOfferList.FirstOrDefault(b => b.criterion.label == propName);
+            if (touchdownScorerList == null)
+                return Enumerable.Empty<PlayerPropOffering>();
+
+            var touchdownScorerProps = ((IEnumerable)touchdownScorerList.outcomes).Cast<dynamic>();
+            if(touchdownScorerProps.Any(t => t.criterion != null))
+                touchdownScorerProps = touchdownScorerProps.Where(t => t.criterion.name == "First");
+
+            var playerProps = new List<PlayerPropOffering>();
+            foreach (dynamic prop in touchdownScorerProps)
+            {
+                var homeTeam = LocationMapper.GetFullTeamName(eventInfo.homeName.Value, eventInfo.group.Value);
+                var awayTeam = LocationMapper.GetFullTeamName(eventInfo.awayName.Value, eventInfo.group.Value);
+                var playerProp = new PlayerPropOffering
+                {
+                    Site = site,
+                    Sport = eventInfo.group,
+                    AwayTeam = awayTeam,
+                    HomeTeam = homeTeam,
+                    DateTime = eventInfo.start.Value,
+                    Payout = Convert.ToInt32(prop.oddsAmerican.Value),
+                    PropValue = null //Need to discuss this again. 20 rushing yards.
+                };
+
+                if(propName == PlayerPropConstants.KambiTouchdownScorer)
+                {
+                    playerProp.Description = PlayerPropConstants.TouchdownScorer;
+                    playerProp.OutcomeDescription = PlayerPropConstants.First;
+                }
+                else if(propName == PlayerPropConstants.KambiFirstFieldGoal)
+                {
+                    playerProp.Description = PlayerPropConstants.BasketScorer;
+                    playerProp.OutcomeDescription = PlayerPropConstants.First;
+                }                    
+
+                var playerName = prop.label.ToString();
+                var playerNameAsArray = playerName.Split(", ");
+                if (playerName.ToLower().StartsWith("any other"))
+                {
+                    playerProp.PlayerName = playerName;
+                }
+                else
+                {
+                    playerProp.PlayerName = playerNameAsArray[playerNameAsArray.Length - 1] + " " + playerNameAsArray[playerNameAsArray.Length - 2];
+                }
+                playerProps.Add(playerProp);
+            }
+            return playerProps;
         }
     }
 }
