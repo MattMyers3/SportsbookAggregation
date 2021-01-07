@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using SportsbookAggregation.Constants;
-using SportsbookAggregation.Data.Models;
 using SportsbookAggregation.SportsBooks.Models;
 
 namespace SportsbookAggregation.SportsBooks
@@ -255,9 +254,9 @@ namespace SportsbookAggregation.SportsBooks
         public IEnumerable<PlayerPropOffering> AggregatePlayerProps()
         {
             var nflPlayerProps = GetPlayerProps(InitialFootballRequest, "NFL", PlayerPropConstants.FoxBetFirstTouchdown);
-            var nbaPlayerProps = GetPlayerProps(InitialBasketballRequest, "NBA", PlayerPropConstants.FoxBetFirstBasket);
+            //var nbaPlayerProps = GetPlayerProps(InitialBasketballRequest, "NBA", PlayerPropConstants.FoxBetFirstBasket);
 
-            return nbaPlayerProps.Concat(nflPlayerProps);
+            return nflPlayerProps;
         }
 
         private IEnumerable<PlayerPropOffering> GetPlayerProps(string requestUrl, string league, string propName)
