@@ -116,7 +116,7 @@ namespace SportsbookAggregation.SportsBooks
                 DateTime = gameJson.tsstart
             };
 
-            gameOffering.DateTime = TimeZoneInfo.ConvertTimeToUtc(gameOffering.DateTime);
+            gameOffering.DateTime = gameOffering.DateTime.AddHours(5);
             if (gameJson.eventmarketgroups == null)
                 return gameOffering;
 
@@ -321,7 +321,7 @@ namespace SportsbookAggregation.SportsBooks
                     Sport = sport,
                     AwayTeam = awayTeam,
                     HomeTeam = homeTeam,
-                    DateTime = TimeZoneInfo.ConvertTimeToUtc(gameTime.Value),
+                    DateTime = gameTime.Value.AddHours(5),
                     Payout = CalculateOdds(selection.currentpricedown.Value, selection.currentpriceup.Value),
                     PropValue = null //Need to discuss this again
                 };
