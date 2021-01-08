@@ -5,10 +5,12 @@ using SportsbookAggregation.SportsBooks;
 using SportsbookAggregation.SportsBooks.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Mail;
+using System.Timers;
 
 namespace SportsbookAggregation
 {
@@ -19,6 +21,8 @@ namespace SportsbookAggregation
 
         private static void Main(string[] args)
         {
+            var timer = new Stopwatch();
+            timer.Start();
             ReadConfig();
             var dbContext = new Context();
             List<ISportsBook> sportsbooks = new List<ISportsBook> { new DraftKingsSportsBook(), new FanDuelSportsBook(), new FoxBetSportsBook(), new BarstoolSportsBook(), new BetAmericaSportsBook(), new CaesarsSportBook(), new BetRiversSportsBook(), new ParxSportsBook(), new UnibetSportsBook(), new SugarHouseSportsBook() };
@@ -60,6 +64,7 @@ namespace SportsbookAggregation
                     SendAlerts("Failed to parse player props for: " + sportsbook.GetSportsBookName());
                     Console.WriteLine("Failed to parse player props for: " + sportsbook.GetSportsBookName());
                 }
+                Console.WriteLine(sportsbook.GetSportsBookName() + " " + timer.ElapsedMilliseconds / 1000);
             }
             try
             {
@@ -79,7 +84,10 @@ namespace SportsbookAggregation
                 SendAlerts("Failed writing games to DB");
                 throw ex;
             }
+
             AlertsService.Run(dbContext);
+            timer.Stop();
+            Console.WriteLine(timer.ElapsedMilliseconds / 1000);
         }
 
         public static void ReadConfig()

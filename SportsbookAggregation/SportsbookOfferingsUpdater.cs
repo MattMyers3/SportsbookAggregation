@@ -89,27 +89,31 @@ namespace SportsbookAggregation
 
         public void WritePlayerProps(List<PlayerPropOffering> playerProps)
         {
+            var propTypes = dbContext.PropBetTypeRepository.Read();
+            var sports = dbContext.SportRepository.Read();
+            var sites = dbContext.GamblingSiteRepository.Read();
+            var props = dbContext.PlayerPropRepository.Read();
             foreach (var playerProp in playerProps)
             {
-                var playerPropInDatabase = TryGetPlayerProp(playerProp);
+                var playerPropInDatabase = TryGetPlayerProp(playerProp, propTypes, sites, props);
                 if (playerPropInDatabase == null)
-                    CreatePlayerProp(playerProp);
+                    CreatePlayerProp(playerProp, sports, sites, propTypes);
                 else
                     UpdatePlayerProp(playerPropInDatabase, playerProp);
             }
         }
 
-        private void CreatePlayerProp(PlayerPropOffering playerProp)
+        private void CreatePlayerProp(PlayerPropOffering playerProp, IEnumerable<Sport> sports, IEnumerable<GamblingSite> sites, IEnumerable<PropBetType> propTypes)
         {
-            var sportGuid = GetSportId(playerProp.Sport);
+            var sportGuid = GetSportId(playerProp.Sport, sports);
             var homeTeamId = GetTeamIdFromTeamName(playerProp.HomeTeam, playerProp.Sport);
             var awayTeamId = GetTeamIdFromTeamName(playerProp.AwayTeam, playerProp.Sport);
             var gameId = GetGameId(playerProp.DateTime, homeTeamId, awayTeamId) ??
                             CreateGame(playerProp.DateTime, homeTeamId, awayTeamId, sportGuid);
 
-            var propBetTypeId = GetPropBetTypeId(playerProp.Description);
+            var propBetTypeId = GetPropBetTypeId(playerProp.Description, propTypes);
 
-            var gamblingSiteId = GetSiteId(playerProp.Site);
+            var gamblingSiteId = GetSiteId(playerProp.Site, sites);
 
             dbContext.PlayerPropRepository.Create(new PlayerProp
             {
@@ -134,7 +138,7 @@ namespace SportsbookAggregation
             dbContext.PlayerPropRepository.Update(playerPropInDatabase);
         }
 
-        private PlayerProp TryGetPlayerProp(PlayerPropOffering playerProp)
+        private PlayerProp TryGetPlayerProp(PlayerPropOffering playerProp, IEnumerable<PropBetType> propTypes, IEnumerable<GamblingSite> sites, IEnumerable<PlayerProp> props)
         {
             var homeTeamId = GetTeamIdFromTeamName(playerProp.HomeTeam, playerProp.Sport);
             var awayTeamId = GetTeamIdFromTeamName(playerProp.AwayTeam, playerProp.Sport);
@@ -142,20 +146,19 @@ namespace SportsbookAggregation
             if (gameId == null)
                 return null;
 
-            var propBetTypeId = GetPropBetTypeId(playerProp.Description);
+            var propBetTypeId = GetPropBetTypeId(playerProp.Description, propTypes);
 
-            var gamblingSiteId = GetSiteId(playerProp.Site);
+            var gamblingSiteId = GetSiteId(playerProp.Site, sites);
 
-            var test = dbContext.PlayerPropRepository.Read().Where(p => p.GameId == gameId);
-
-            return dbContext.PlayerPropRepository.Read().FirstOrDefault(p => p.GameId == gameId 
+            return props.FirstOrDefault(p => p.GameId == gameId 
                     && p.PropBetTypeId == propBetTypeId && p.Description == playerProp.OutcomeDescription 
                     && p.PlayerName == playerProp.PlayerName && p.GamblingSiteId == gamblingSiteId);
         }
 
-        private Guid? GetPropBetTypeId(string description)
+        private Guid? GetPropBetTypeId(string description, IEnumerable<PropBetType> propTypes = null)
         {
-            return dbContext.PropBetTypeRepository.Read().FirstOrDefault(r => r.Description == description)?.PropBetTypeId;
+            var propList = propTypes ?? dbContext.PropBetTypeRepository.Read();
+            return propList.FirstOrDefault(r => r.Description == description)?.PropBetTypeId;
         }
 
         private bool IsCollegeSport(string sport)
@@ -255,19 +258,29 @@ namespace SportsbookAggregation
 
         }
 
-        private Guid GetSiteId(string site)
+        private Guid GetSiteId(string site, IEnumerable<GamblingSite> sites = null)
         {
-            return dbContext.GamblingSiteRepository.Read().Single(s => s.Name == site).GamblingSiteId;
+            var siteList = sites ?? dbContext.GamblingSiteRepository.Read();
+            try
+            {
+                return siteList.Single(s => s.Name == site).GamblingSiteId;
+            }
+            catch(Exception e)
+            {
+
+            }
+            return new Guid();
         }
 
-        private Guid GetSportId(string name)
+        private Guid GetSportId(string name, IEnumerable<Sport> sports = null)
         {
+            var sportList = sports ?? dbContext.SportRepository.Read();
             if (name == null)
-                return dbContext.SportRepository.Read().Single(s => s.Name == "Unknown").SportId;
+                return sportList.Single(s => s.Name == "Unknown").SportId;
 
-            var sport = dbContext.SportRepository.Read().FirstOrDefault(s => s.Name == name);
+            var sport = sportList.FirstOrDefault(s => s.Name == name);
             if (sport == null)
-                return dbContext.SportRepository.Read().Single(s => s.Name == "Unknown").SportId;
+                return sportList.Single(s => s.Name == "Unknown").SportId;
 
             return sport.SportId;
         }
