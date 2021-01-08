@@ -89,6 +89,7 @@ namespace SportsbookAggregation.SportsBooks
                 case "indiana u.":
                     return "Indiana";
                 case "arkansas little rock":
+                case "arkansas little rock trojans":
                     return "Little Rock";
                 case "liu":
                     return "LIU[d]";
@@ -248,6 +249,10 @@ namespace SportsbookAggregation.SportsBooks
                     return "UT Martin";
                 case "utah valley state":
                     return "Utah Valley";
+                case "ut arlington":
+                case "texas-arlington":
+                case "texas-arlington mavericks":
+                    return "Texas–Arlington";
                 case "texas el paso miners":
                 case "texas el paso":
                     return "UTEP";

@@ -124,7 +124,7 @@ namespace SportsbookAggregation
 
         public static void SendAlerts(string content)
         {
-            if (Convert.ToBoolean(Configuration["SendAlerts"]))
+            if (Convert.ToBoolean(Configuration["SendTexts"]))
             {
                 var client = new SmtpClient("smtp.gmail.com", 587);
                 client.EnableSsl = true;
