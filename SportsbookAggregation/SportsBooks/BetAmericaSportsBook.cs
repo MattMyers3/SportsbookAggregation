@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using SportsbookAggregation.Data.Models;
 using SportsbookAggregation.SportsBooks.Models;
 using System;
 using System.Collections;
@@ -33,7 +32,7 @@ namespace SportsbookAggregation.SportsBooks
             var ncaafOfferings = GetNCAAFOfferings(token);
             var ncaabOfferings = GetNCAABOfferings(token);
             Program.HttpClient = new HttpClient(); //Clear out state from parsing
-            return ncaabOfferings.Concat(ncaafOfferings.Concat(baseballOfferings.Concat(basketballOfferings.Concat(nflOfferings))));
+            return ncaabOfferings.Concat(ncaafOfferings.Concat(baseballOfferings.Concat(nflOfferings)));
         }
 
         private string GetBearerToken()
@@ -187,7 +186,31 @@ namespace SportsbookAggregation.SportsBooks
 
         public IEnumerable<PlayerPropOffering> AggregatePlayerProps()
         {
-            return Enumerable.Empty<PlayerPropOffering>();
+            var token = GetBearerToken();
+            var nflPlayerProps = GetNFLPlayerProps(token);
+            //var nbaPlayerProps = GetNBAPlayerProps(token);
+            return nflPlayerProps;
+        }
+
+        private IEnumerable<PlayerPropOffering> GetNFLPlayerProps(string token)
+        {
+            var requestJson = new StringContent("{\"eventState\":\"Mixed\",\"eventTypes\":[\"Fixture\",\"AggregateFixture\"],\"ids\":[\"88808\"],\"regionIds\":[\"227\"],\"marketTypeRequests\":[{\"sportIds\":[\"3\"],\"marketTypeIds\":[\"2_39\",\"1_39\",\"3_39\",\"2_0\",\"1_0\",\"3_0\"],\"statement\":\"Include\"}]}", Encoding.UTF8, "application/json-patch+json");
+            var gamesJson = GetGamesJson(GamesUrl, token, requestJson);
+
+            var eventInfo = ((IEnumerable)gamesJson.events).Cast<dynamic>();
+            var playerPropOfferings = new List<PlayerPropOffering>();
+            Program.HttpClient = new HttpClient();
+            Program.HttpClient.DefaultRequestHeaders.Add("requesttarget", "AJAXService");
+            foreach (var gameInfoJson in eventInfo)
+            {
+                var formContext = new FormUrlEncodedContent(new[]
+                {
+                    new KeyValuePair<string, string>("mastereventid", gameInfoJson.Id.ToString()),
+                    new KeyValuePair<string, string>("isLive", "false")
+                });
+                var responseJson = Program.HttpClient.PostAsync("https://pa.betamerica.com/pagemethods_ros.aspx/GetEventInfoForBreadcrumb", formContext).Result.Content.ReadAsStringAsync();
+            }
+            return playerPropOfferings;
         }
     }
 }
