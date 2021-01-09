@@ -4089,7 +4089,7 @@ namespace SportsbookAggregation.Migrations
                             TeamId = new Guid("ec0dc24e-f546-442a-9b2a-ab0803a31170"),
                             Location = "Dixie State",
                             Mascot = "Trailblazers"
-                        }
+                        });
                 });
 
             modelBuilder.Entity("SportsbookAggregation.UserSettingsInfo.Models.UserSettings", b =>
