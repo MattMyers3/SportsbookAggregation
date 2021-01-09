@@ -353,6 +353,15 @@ namespace SportsbookAggregation.SportsBooks
                 var teamValue = attributes.First(a => a.key.Value.ToString() == "playerTeam").value;
                 playerProp.PlayerName = attributes.First(a => a.key.Value.ToString() == "playerFirstName").value + " " + attributes.First(a => a.key.Value.ToString() == "playerLastName").value;
 
+                if (playerProp.PlayerName.ToLower().EndsWith("d/st"))
+                {
+                    var onHomeTeam = teamValue == "HOME";
+                    if (onHomeTeam)
+                        playerProp.PlayerName = $"{homeTeam} D/ST";
+                    else
+                        playerProp.PlayerName = $"{awayTeam} D/ST";
+                }
+
                 playerProps.Add(playerProp);
             }
             return playerProps;
