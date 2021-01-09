@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SportsbookAggregation.SportsBooks
+﻿namespace SportsbookAggregation.SportsBooks
 {
     public class LocationMapper
     {
@@ -222,6 +218,8 @@ namespace SportsbookAggregation.SportsBooks
                 case "st josephs":
                 case "st. josephs":
                     return "Saint Joseph's";
+                case "tarleton st":
+                    return "Tarleton st";
                 case "texas arlington":
                 case "ut arlington":
                 case "texas-arlington mavericks":
@@ -270,10 +268,6 @@ namespace SportsbookAggregation.SportsBooks
                     return "UT Martin";
                 case "utah valley state":
                     return "Utah Valley";
-                case "ut arlington":
-                case "texas-arlington":
-                case "texas-arlington mavericks":
-                    return "Texas–Arlington";
                 case "texas el paso miners":
                 case "texas el paso":
                     return "UTEP";
