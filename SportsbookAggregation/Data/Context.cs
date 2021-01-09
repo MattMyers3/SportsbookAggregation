@@ -671,7 +671,8 @@ namespace SportsbookAggregation.Data
                 new Team { TeamId = new Guid("05b00303-9ef9-4b2d-8fcd-64c111447536"), Location = "UNA", Mascot = "Lions" },
                 new Team { TeamId = new Guid("e0c9bc0e-2b51-44dc-93e9-7fb1126927c1"), Location = "Coppin State", Mascot = "Eagles" },
                 new Team { TeamId = new Guid("a26364b1-c1a4-4cad-b2fe-3065f85966e3"), Location = "UMKC", Mascot = "Kangaroos" },
-                new Team { TeamId = new Guid("ec0dc24e-f546-442a-9b2a-ab0803a31170"), Location = "Dixie State", Mascot = "Trailblazers" }
+                new Team { TeamId = new Guid("ec0dc24e-f546-442a-9b2a-ab0803a31170"), Location = "Dixie State", Mascot = "Trailblazers" },
+                new Team { TeamId = new Guid("c6c64712-a63a-4def-a0e4-c709138d15d2"), Location = "Tarleton State", Mascot = "Texans" }
             );
             modelBuilder.Entity<GamblingSite>().HasData(
                 new GamblingSite { GamblingSiteId = new Guid("1fcec6f7-84b3-4033-af0f-e1f2bcb8528c"), Name = "Fanduel" },

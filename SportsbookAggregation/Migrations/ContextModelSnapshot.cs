@@ -4089,6 +4089,12 @@ namespace SportsbookAggregation.Migrations
                             TeamId = new Guid("ec0dc24e-f546-442a-9b2a-ab0803a31170"),
                             Location = "Dixie State",
                             Mascot = "Trailblazers"
+                        },
+                        new
+                        {
+                            TeamId = new Guid("c6c64712-a63a-4def-a0e4-c709138d15d2"),
+                            Location = "Tarleton State",
+                            Mascot = "Texans"
                         });
                 });
 
