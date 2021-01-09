@@ -14,7 +14,7 @@
         public const string FanduelFirstTouchdown = "First Touchdown Scorer";
         public const string FanduelFirstBasket = "First Basket";
 
-        public const string FoxBetFirstTouchdown = "1st Touchdown Scorer(Incl.OT)";
+        public const string FoxBetFirstTouchdown = "1st Touchdown Scorer (Incl. OT)";
         public const string FoxBetFirstBasket = "Nothing";
     }
 }
