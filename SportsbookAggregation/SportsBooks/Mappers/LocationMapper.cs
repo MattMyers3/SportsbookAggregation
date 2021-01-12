@@ -174,6 +174,8 @@
                     return "Saint Mary's";
                 case "san josé state":
                     return "San Jose State";
+                case "SIU Edwardsville Cougars":
+                    return "SIU Edwardsville";
                 case "se louisiana":
                     return "Southeastern Louisiana";
                 case "se missouri state":
