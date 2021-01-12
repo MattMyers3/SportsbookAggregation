@@ -208,6 +208,7 @@
                 case "sc upstate spartans":
                     return "South Carolina Upstate";
                 case "st bonaventure":
+                case "saint bonaventure bonnies":
                     return "St. Bonaventure";
                 case "st. peter's":
                 case "saint peters peacocks":
