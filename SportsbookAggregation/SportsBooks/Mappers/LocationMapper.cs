@@ -138,6 +138,8 @@
                 case "mississippi rebels":
                 case "mississippi":
                     return "Ole Miss";
+                case "mount st. marys":
+                    return "Mount Saint Mary's";
                 case "new jersey tech highlanders":
                     return "NJIT";
                 case "nicholls state":
