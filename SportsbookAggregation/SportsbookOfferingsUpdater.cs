@@ -18,6 +18,14 @@ namespace SportsbookAggregation
             this.dbContext = dbContext;
         }
 
+        public void Update(IEnumerable<GameOffering> gameOfferings, IEnumerable<OddsBoostOffering> oddsBoostOfferings, IEnumerable<PlayerPropOffering> playerPropOfferings)
+        {
+            SetOfferingsToNotAvailable();
+            WriteGameOfferings(gameOfferings);
+            WriteOddsBoosts(oddsBoostOfferings);
+            WritePlayerProps(playerPropOfferings);
+            dbContext.SaveChanges();
+        }
 
         public void WriteOddsBoosts(IEnumerable<OddsBoostOffering> oddsBoostOfferings)
         {
@@ -36,14 +44,13 @@ namespace SportsbookAggregation
             var oddsBoost = dbContext.OddsBoostRepository.Read().Single(o => o.Description == oddsBoostOffering.Description);
             oddsBoost.IsAvailable = true;
             oddsBoost.LastRefresh = DateTime.UtcNow;
-            dbContext.OddsBoostRepository.Update(oddsBoost);
         }
 
         private void CreateBoost(OddsBoostOffering oddsBoostOffering)
         {
             var siteId = GetSiteId(oddsBoostOffering.Site);
             var sportId = GetSportId(oddsBoostOffering.Sport);
-            dbContext.OddsBoostRepository.Create(new OddsBoost
+            dbContext.OddsBoostRepository.CreateWithoutSaving(new OddsBoost
             {
                 BoostedOdds = oddsBoostOffering.BoostedOdds,
                 Date = oddsBoostOffering.Date,
@@ -87,7 +94,7 @@ namespace SportsbookAggregation
             }
         }
 
-        public void WritePlayerProps(List<PlayerPropOffering> playerProps)
+        public void WritePlayerProps(IEnumerable<PlayerPropOffering> playerProps)
         {
             foreach (var playerProp in playerProps)
             {
@@ -111,7 +118,7 @@ namespace SportsbookAggregation
 
             var gamblingSiteId = GetSiteId(playerProp.Site);
 
-            dbContext.PlayerPropRepository.Create(new PlayerProp
+            dbContext.PlayerPropRepository.CreateWithoutSaving(new PlayerProp
             {
                 IsAvailable = true,
                 LastRefresh = DateTime.UtcNow,
@@ -131,7 +138,6 @@ namespace SportsbookAggregation
             playerPropInDatabase.LastRefresh = DateTime.UtcNow;
             playerPropInDatabase.Payout = playerPropOffering.Payout;
             playerPropInDatabase.PropValue = playerPropOffering.PropValue;
-            dbContext.PlayerPropRepository.Update(playerPropInDatabase);
         }
 
         private PlayerProp TryGetPlayerProp(PlayerPropOffering playerProp)
@@ -165,20 +171,17 @@ namespace SportsbookAggregation
 
         public void SetOfferingsToNotAvailable()
         {
-            var allLines = dbContext.GameLineRepository.Read();
+            var allLines = dbContext.GameLineRepository.Read().Where(l => l.IsAvailable);
             foreach (var gameLine in allLines)
                 gameLine.IsAvailable = false;
-            dbContext.GameLineRepository.UpdateRange(allLines);
 
-            var allBoosts = dbContext.OddsBoostRepository.Read();
+            var allBoosts = dbContext.OddsBoostRepository.Read().Where(b => b.IsAvailable);
             foreach (var boost in allBoosts)
                 boost.IsAvailable = false;
-            dbContext.OddsBoostRepository.UpdateRange(allBoosts);
 
-            var allPlayerProps = dbContext.PlayerPropRepository.Read();
+            var allPlayerProps = dbContext.PlayerPropRepository.Read().Where(p => p.IsAvailable);
             foreach (var prop in allPlayerProps)
                 prop.IsAvailable = false;
-            dbContext.PlayerPropRepository.UpdateRange(allPlayerProps);
         }
 
         private void UpdateGameLine(GameLine gameLine, GameOffering gameOffering)
@@ -197,12 +200,11 @@ namespace SportsbookAggregation
             gameLine.AwaySpreadPayout = gameOffering.AwaySpreadPayout;
             gameLine.LastRefresh = DateTime.UtcNow;
             gameLine.IsAvailable = true;
-            dbContext.GameLineRepository.Update(gameLine);
         }
 
         private void CreateGameLine(Guid gameId, Guid siteId, GameOffering gameOffering)
         {
-            dbContext.GameLineRepository.Create(new GameLine
+            dbContext.GameLineRepository.CreateWithoutSaving(new GameLine
             {
                 GameId = gameId,
                 GamblingSiteId = siteId,
@@ -230,7 +232,7 @@ namespace SportsbookAggregation
         private Guid CreateGame(DateTime gameOfferingDateTime, Guid homeTeamId, Guid awayTeamId, Guid sportId)
         {
             var game = new Game { AwayTeamId = awayTeamId, HomeTeamId = homeTeamId, TimeStamp = gameOfferingDateTime, SportId = sportId };
-            dbContext.GameRepository.Create(game);
+            dbContext.GameRepository.CreateWithoutSaving(game);
             return game.GameId;
         }
 

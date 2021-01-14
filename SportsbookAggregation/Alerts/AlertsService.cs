@@ -64,6 +64,7 @@ namespace SportsbookAggregation.Alerts
                 }
             }
             client.ServicePoint.CloseConnectionGroup(client.ServicePoint.ConnectionName);
+            dbContext.SaveChanges();
         }
 
         private static double GetBetROI(double betPercentOnHomeTeam, double betPercentOnAwayTeam, int homeOdds)
@@ -105,7 +106,7 @@ namespace SportsbookAggregation.Alerts
         public static void DocumentAlert(Context context, BestAvailableGameLine gameLine,Guid gameId, string type)
         {
             var alert = mapGameLineToAlert(gameLine, gameId, type);
-            context.AlertRepository.Create(alert);
+            context.AlertRepository.CreateWithoutSaving(alert);
         }
 
         public static Alert mapGameLineToAlert(BestAvailableGameLine gameLine, Guid gameId, string type)
@@ -163,7 +164,7 @@ namespace SportsbookAggregation.Alerts
 
         public static void SendAlerts(SmtpClient client, string content)
         {
-            if(Convert.ToBoolean(Program.Configuration["SendAlerts"]))
+            if(Convert.ToBoolean(Program.Configuration["SendTexts"]))
             {
                 List<string> contentList = new List<string>();
                 int maxLength = 130;

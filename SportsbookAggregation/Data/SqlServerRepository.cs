@@ -18,10 +18,9 @@ namespace SportsbookAggregation.Data
             return context.Set<T>();
         }
 
-        public void Create(T entity)
+        public void CreateWithoutSaving(T entity)
         {
             context.Add(entity);
-            context.SaveChanges();
         }
 
         public void Delete(T entity)
