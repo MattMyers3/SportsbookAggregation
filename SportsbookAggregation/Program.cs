@@ -21,8 +21,6 @@ namespace SportsbookAggregation
 
         private static void Main(string[] args)
         {
-            var timer = new Stopwatch();
-            timer.Start();
             ReadConfig();
             var dbContext = new Context();
             List<ISportsBook> sportsbooks = new List<ISportsBook> { new DraftKingsSportsBook(), new FanDuelSportsBook(), new FoxBetSportsBook(), new BarstoolSportsBook(), new BetAmericaSportsBook(), new CaesarsSportBook(), new BetRiversSportsBook(), new ParxSportsBook(), new UnibetSportsBook(), new SugarHouseSportsBook() };
@@ -43,7 +41,6 @@ namespace SportsbookAggregation
                     SendAlerts("Failed to parse games lines for: " + sportsbook.GetSportsBookName());
                     Console.WriteLine("Failed to parse games lines for:  " + sportsbook.GetSportsBookName());
                 }
-
                 try
                 {
                     oddsBoosts.AddRange(sportsbook.AggregateOddsBoost().ToList());
@@ -64,18 +61,13 @@ namespace SportsbookAggregation
                     SendAlerts("Failed to parse player props for: " + sportsbook.GetSportsBookName());
                     Console.WriteLine("Failed to parse player props for: " + sportsbook.GetSportsBookName());
                 }
-                Console.WriteLine(sportsbook.GetSportsBookName() + " " + timer.ElapsedMilliseconds / 1000);
             }
             try
             {
                 var databaseUpdater = new SportsbookOfferingsUpdater(dbContext);
                 using (var dbContextTransaction = dbContext.Database.BeginTransaction())
                 {
-                    databaseUpdater.SetOfferingsToNotAvailable();
-                    databaseUpdater.WriteGameOfferings(gameOfferings);
-                    databaseUpdater.WriteOddsBoosts(oddsBoosts);
-                    databaseUpdater.WritePlayerProps(playerProps);
-                    dbContextTransaction.Commit();
+                    databaseUpdater.Update(gameOfferings, oddsBoosts, playerProps);
                 }
             }
             catch (Exception ex)
@@ -84,10 +76,7 @@ namespace SportsbookAggregation
                 SendAlerts("Failed writing games to DB");
                 throw ex;
             }
-
             AlertsService.Run(dbContext);
-            timer.Stop();
-            Console.WriteLine(timer.ElapsedMilliseconds / 1000);
         }
 
         public static void ReadConfig()

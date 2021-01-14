@@ -18,6 +18,14 @@ namespace SportsbookAggregation
             this.dbContext = dbContext;
         }
 
+        public void Update(IEnumerable<GameOffering> gameOfferings, IEnumerable<OddsBoostOffering> oddsBoostOfferings, IEnumerable<PlayerPropOffering> playerPropOfferings)
+        {
+            SetOfferingsToNotAvailable();
+            WriteGameOfferings(gameOfferings);
+            WriteOddsBoosts(oddsBoostOfferings);
+            WritePlayerProps(playerPropOfferings);
+            dbContext.SaveChanges();
+        }
 
         public void WriteOddsBoosts(IEnumerable<OddsBoostOffering> oddsBoostOfferings)
         {
@@ -36,14 +44,13 @@ namespace SportsbookAggregation
             var oddsBoost = dbContext.OddsBoostRepository.Read().Single(o => o.Description == oddsBoostOffering.Description);
             oddsBoost.IsAvailable = true;
             oddsBoost.LastRefresh = DateTime.UtcNow;
-            dbContext.OddsBoostRepository.Update(oddsBoost);
         }
 
         private void CreateBoost(OddsBoostOffering oddsBoostOffering)
         {
             var siteId = GetSiteId(oddsBoostOffering.Site);
             var sportId = GetSportId(oddsBoostOffering.Sport);
-            dbContext.OddsBoostRepository.Create(new OddsBoost
+            dbContext.OddsBoostRepository.CreateWithoutSaving(new OddsBoost
             {
                 BoostedOdds = oddsBoostOffering.BoostedOdds,
                 Date = oddsBoostOffering.Date,
@@ -87,35 +94,31 @@ namespace SportsbookAggregation
             }
         }
 
-        public void WritePlayerProps(List<PlayerPropOffering> playerProps)
+        public void WritePlayerProps(IEnumerable<PlayerPropOffering> playerProps)
         {
-            var propTypes = dbContext.PropBetTypeRepository.Read();
-            var sports = dbContext.SportRepository.Read();
-            var sites = dbContext.GamblingSiteRepository.Read();
-            var props = dbContext.PlayerPropRepository.Read();
             foreach (var playerProp in playerProps)
             {
-                var playerPropInDatabase = TryGetPlayerProp(playerProp, propTypes, sites, props);
+                var playerPropInDatabase = TryGetPlayerProp(playerProp);
                 if (playerPropInDatabase == null)
-                    CreatePlayerProp(playerProp, sports, sites, propTypes);
+                    CreatePlayerProp(playerProp);
                 else
                     UpdatePlayerProp(playerPropInDatabase, playerProp);
             }
         }
 
-        private void CreatePlayerProp(PlayerPropOffering playerProp, IEnumerable<Sport> sports, IEnumerable<GamblingSite> sites, IEnumerable<PropBetType> propTypes)
+        private void CreatePlayerProp(PlayerPropOffering playerProp)
         {
-            var sportGuid = GetSportId(playerProp.Sport, sports);
+            var sportGuid = GetSportId(playerProp.Sport);
             var homeTeamId = GetTeamIdFromTeamName(playerProp.HomeTeam, playerProp.Sport);
             var awayTeamId = GetTeamIdFromTeamName(playerProp.AwayTeam, playerProp.Sport);
             var gameId = GetGameId(playerProp.DateTime, homeTeamId, awayTeamId) ??
                             CreateGame(playerProp.DateTime, homeTeamId, awayTeamId, sportGuid);
 
-            var propBetTypeId = GetPropBetTypeId(playerProp.Description, propTypes);
+            var propBetTypeId = GetPropBetTypeId(playerProp.Description);
 
-            var gamblingSiteId = GetSiteId(playerProp.Site, sites);
+            var gamblingSiteId = GetSiteId(playerProp.Site);
 
-            dbContext.PlayerPropRepository.Create(new PlayerProp
+            dbContext.PlayerPropRepository.CreateWithoutSaving(new PlayerProp
             {
                 IsAvailable = true,
                 LastRefresh = DateTime.UtcNow,
@@ -135,10 +138,9 @@ namespace SportsbookAggregation
             playerPropInDatabase.LastRefresh = DateTime.UtcNow;
             playerPropInDatabase.Payout = playerPropOffering.Payout;
             playerPropInDatabase.PropValue = playerPropOffering.PropValue;
-            dbContext.PlayerPropRepository.Update(playerPropInDatabase);
         }
 
-        private PlayerProp TryGetPlayerProp(PlayerPropOffering playerProp, IEnumerable<PropBetType> propTypes, IEnumerable<GamblingSite> sites, IEnumerable<PlayerProp> props)
+        private PlayerProp TryGetPlayerProp(PlayerPropOffering playerProp)
         {
             var homeTeamId = GetTeamIdFromTeamName(playerProp.HomeTeam, playerProp.Sport);
             var awayTeamId = GetTeamIdFromTeamName(playerProp.AwayTeam, playerProp.Sport);
@@ -146,19 +148,20 @@ namespace SportsbookAggregation
             if (gameId == null)
                 return null;
 
-            var propBetTypeId = GetPropBetTypeId(playerProp.Description, propTypes);
+            var propBetTypeId = GetPropBetTypeId(playerProp.Description);
 
-            var gamblingSiteId = GetSiteId(playerProp.Site, sites);
+            var gamblingSiteId = GetSiteId(playerProp.Site);
 
-            return props.FirstOrDefault(p => p.GameId == gameId 
+            var test = dbContext.PlayerPropRepository.Read().Where(p => p.GameId == gameId);
+
+            return dbContext.PlayerPropRepository.Read().FirstOrDefault(p => p.GameId == gameId 
                     && p.PropBetTypeId == propBetTypeId && p.Description == playerProp.OutcomeDescription 
                     && p.PlayerName == playerProp.PlayerName && p.GamblingSiteId == gamblingSiteId);
         }
 
-        private Guid? GetPropBetTypeId(string description, IEnumerable<PropBetType> propTypes = null)
+        private Guid? GetPropBetTypeId(string description)
         {
-            var propList = propTypes ?? dbContext.PropBetTypeRepository.Read();
-            return propList.FirstOrDefault(r => r.Description == description)?.PropBetTypeId;
+            return dbContext.PropBetTypeRepository.Read().FirstOrDefault(r => r.Description == description)?.PropBetTypeId;
         }
 
         private bool IsCollegeSport(string sport)
@@ -168,20 +171,17 @@ namespace SportsbookAggregation
 
         public void SetOfferingsToNotAvailable()
         {
-            var allLines = dbContext.GameLineRepository.Read();
+            var allLines = dbContext.GameLineRepository.Read().Where(l => l.IsAvailable);
             foreach (var gameLine in allLines)
                 gameLine.IsAvailable = false;
-            dbContext.GameLineRepository.UpdateRange(allLines);
 
-            var allBoosts = dbContext.OddsBoostRepository.Read();
+            var allBoosts = dbContext.OddsBoostRepository.Read().Where(b => b.IsAvailable);
             foreach (var boost in allBoosts)
                 boost.IsAvailable = false;
-            dbContext.OddsBoostRepository.UpdateRange(allBoosts);
 
-            var allPlayerProps = dbContext.PlayerPropRepository.Read();
+            var allPlayerProps = dbContext.PlayerPropRepository.Read().Where(p => p.IsAvailable);
             foreach (var prop in allPlayerProps)
                 prop.IsAvailable = false;
-            dbContext.PlayerPropRepository.UpdateRange(allPlayerProps);
         }
 
         private void UpdateGameLine(GameLine gameLine, GameOffering gameOffering)
@@ -200,12 +200,11 @@ namespace SportsbookAggregation
             gameLine.AwaySpreadPayout = gameOffering.AwaySpreadPayout;
             gameLine.LastRefresh = DateTime.UtcNow;
             gameLine.IsAvailable = true;
-            dbContext.GameLineRepository.Update(gameLine);
         }
 
         private void CreateGameLine(Guid gameId, Guid siteId, GameOffering gameOffering)
         {
-            dbContext.GameLineRepository.Create(new GameLine
+            dbContext.GameLineRepository.CreateWithoutSaving(new GameLine
             {
                 GameId = gameId,
                 GamblingSiteId = siteId,
@@ -233,7 +232,7 @@ namespace SportsbookAggregation
         private Guid CreateGame(DateTime gameOfferingDateTime, Guid homeTeamId, Guid awayTeamId, Guid sportId)
         {
             var game = new Game { AwayTeamId = awayTeamId, HomeTeamId = homeTeamId, TimeStamp = gameOfferingDateTime, SportId = sportId };
-            dbContext.GameRepository.Create(game);
+            dbContext.GameRepository.CreateWithoutSaving(game);
             return game.GameId;
         }
 
@@ -258,29 +257,19 @@ namespace SportsbookAggregation
 
         }
 
-        private Guid GetSiteId(string site, IEnumerable<GamblingSite> sites = null)
+        private Guid GetSiteId(string site)
         {
-            var siteList = sites ?? dbContext.GamblingSiteRepository.Read();
-            try
-            {
-                return siteList.Single(s => s.Name == site).GamblingSiteId;
-            }
-            catch(Exception e)
-            {
-
-            }
-            return new Guid();
+            return dbContext.GamblingSiteRepository.Read().Single(s => s.Name == site).GamblingSiteId;
         }
 
-        private Guid GetSportId(string name, IEnumerable<Sport> sports = null)
+        private Guid GetSportId(string name)
         {
-            var sportList = sports ?? dbContext.SportRepository.Read();
             if (name == null)
-                return sportList.Single(s => s.Name == "Unknown").SportId;
+                return dbContext.SportRepository.Read().Single(s => s.Name == "Unknown").SportId;
 
-            var sport = sportList.FirstOrDefault(s => s.Name == name);
+            var sport = dbContext.SportRepository.Read().FirstOrDefault(s => s.Name == name);
             if (sport == null)
-                return sportList.Single(s => s.Name == "Unknown").SportId;
+                return dbContext.SportRepository.Read().Single(s => s.Name == "Unknown").SportId;
 
             return sport.SportId;
         }

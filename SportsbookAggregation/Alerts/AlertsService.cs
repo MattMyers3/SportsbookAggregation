@@ -105,7 +105,7 @@ namespace SportsbookAggregation.Alerts
         public static void DocumentAlert(Context context, BestAvailableGameLine gameLine,Guid gameId, string type)
         {
             var alert = mapGameLineToAlert(gameLine, gameId, type);
-            context.AlertRepository.Create(alert);
+            context.AlertRepository.CreateWithoutSaving(alert);
         }
 
         public static Alert mapGameLineToAlert(BestAvailableGameLine gameLine, Guid gameId, string type)
