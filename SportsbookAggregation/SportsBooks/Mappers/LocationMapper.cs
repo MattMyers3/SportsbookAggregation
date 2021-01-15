@@ -230,7 +230,7 @@
                 case "st. josephs":
                     return "Saint Joseph's";
                 case "tarleton st":
-                    return "Tarleton state";
+                    return "Tarleton State";
                 case "texas arlington":
                 case "ut arlington":
                 case "texas-arlington mavericks":
