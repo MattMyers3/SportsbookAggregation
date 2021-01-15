@@ -31,19 +31,18 @@ namespace SportsbookAggregation
         {
             foreach (var oddsBoostOffering in oddsBoostOfferings)
             {
-                var boostExists = dbContext.OddsBoostRepository.Read().Any(o => o.Description == oddsBoostOffering.Description);
-                if (boostExists)
-                    UpdateBoost(oddsBoostOffering);
+                var boost = dbContext.OddsBoostRepository.Read().SingleOrDefault(o => o.Description == oddsBoostOffering.Description && o.GamblingSite.Name.Equals(oddsBoostOffering.Site, StringComparison.OrdinalIgnoreCase));
+                if (boost != null)
+                    UpdateBoost(oddsBoostOffering, boost);
                 else
                     CreateBoost(oddsBoostOffering);
             }
         }
 
-        private void UpdateBoost(OddsBoostOffering oddsBoostOffering)
+        private void UpdateBoost(OddsBoostOffering oddsBoostOffering, OddsBoost boost)
         {
-            var oddsBoost = dbContext.OddsBoostRepository.Read().Single(o => o.Description == oddsBoostOffering.Description);
-            oddsBoost.IsAvailable = true;
-            oddsBoost.LastRefresh = DateTime.UtcNow;
+            boost.IsAvailable = true;
+            boost.LastRefresh = DateTime.UtcNow;
         }
 
         private void CreateBoost(OddsBoostOffering oddsBoostOffering)

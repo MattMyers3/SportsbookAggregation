@@ -26,6 +26,8 @@ namespace SportsbookAggregation.SportsBooks
             {
                 case "abilene christian university":
                     return "Abilene Christian";
+                case "american university":
+                    return "American";
                 case "albany ny great danes":
                     return "Albany";
                 case "arkansas pine bluff":
@@ -58,6 +60,8 @@ namespace SportsbookAggregation.SportsBooks
                     return "Charleston";
                 case "cincinnati u":
                     return "Cincinnati";
+                case "citadel":
+                    return "The Citadel";
                 case "delaware blue hens":
                     return "Delaware";
                 case "depaul":
@@ -88,10 +92,14 @@ namespace SportsbookAggregation.SportsBooks
                     return "Houston";
                 case "indiana u.":
                     return "Indiana";
+                case "lafayette college":
+                    return "Lafayette";
                 case "arkansas little rock":
                 case "arkansas little rock trojans":
                     return "Little Rock";
                 case "liu":
+                case "liu sharks":
+                case "long island sharks":
                     return "LIU[d]";
                 case "long beach state 49ers":
                     return "Long Beach State";
@@ -101,6 +109,7 @@ namespace SportsbookAggregation.SportsBooks
                 case "louisiana lafayette ragin cajuns":
                 case "ul lafayette ragin cajuns":
                 case "ul lafayette":
+                case "ul - lafayette":
                 case "louisiana lafayette":
                     return "Louisiana";
                 case "louisiana monroe warhawks":
@@ -109,6 +118,8 @@ namespace SportsbookAggregation.SportsBooks
                 case "louisiana monroe":
                 case "louisiana - monroe":
                     return "Louisiana-Monroe";
+                case "loyola (md)":
+                    return "Loyola Maryland";
                 case "miami florida":
                 case "miami florida hurricanes":
                     return "Miami (FL)";
@@ -119,6 +130,7 @@ namespace SportsbookAggregation.SportsBooks
                     return "Miami (OH)";
                 case "middle tennessee state":
                 case "middle tenn state blue raiders":
+                case "middle tenn st":
                     return "Middle Tennessee";
                 case "uw milwaukee":
                 case "wisconsin milwaukee":
@@ -137,6 +149,7 @@ namespace SportsbookAggregation.SportsBooks
                 case "nicholls state colonels":
                     return "Nicholls";
                 case "north alabama":
+                case "north alabama lions":
                     return "UNA";
                 case "n carolina central":
                 case "nc central":
@@ -197,6 +210,7 @@ namespace SportsbookAggregation.SportsBooks
                 case "sc upstate spartans":
                     return "South Carolina Upstate";
                 case "st bonaventure":
+                case "saint bonaventure bonnies":
                     return "St. Bonaventure";
                 case "st. peter's":
                 case "saint peters peacocks":
@@ -221,7 +235,10 @@ namespace SportsbookAggregation.SportsBooks
                 case "cal irvine":
                     return "UC Irvine";
                 case "california riverside highlanders":
+                case "cal riverside":
                     return "UC Riverside";
+                case "san diego tritons":
+                    return "UC San Diego";
                 case "ucsb":
                 case "cal santa barbara":
                 case "cal santa barbara gauchos":
@@ -243,6 +260,8 @@ namespace SportsbookAggregation.SportsBooks
                     return "UNC Wilmington";
                 case "southern california trojans":
                     return "USC";
+                case "tarleton st":
+                    return "Tarleton State";
                 case "tennessee martin":
                 case "tennessee-martin":
                 case "tennessee martin skyhawks":
@@ -252,15 +271,19 @@ namespace SportsbookAggregation.SportsBooks
                 case "ut arlington":
                 case "texas-arlington":
                 case "texas-arlington mavericks":
+                case "texas arlington":
                     return "Texas–Arlington";
                 case "texas el paso miners":
                 case "texas el paso":
                     return "UTEP";
                 case "ut rio grande valley":
                 case "texas rio grande":
+                case "ut-rio grande valley":
+                case "texas-rio grande valley vaqueros":
                     return "UTRGV";
                 case "ut san antonio":
                 case "texas san antonio roadrunners":
+                case "texas san antonio":
                     return "UTSA";
                 case "virginia commonwealth rams":
                     return "VCU";
