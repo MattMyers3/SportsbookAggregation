@@ -22,6 +22,8 @@
             {
                 case "abilene christian university":
                     return "Abilene Christian";
+                case "american university":
+                    return "American";
                 case "albany ny great danes":
                     return "Albany";
                 case "arkansas pine bluff":
@@ -39,8 +41,6 @@
                     return "Cal Poly";
                 case "central conn. state":
                     return "Central Connecticut";
-                case "citadel":
-                    return "The Citadel";
                 case "csu bakersfield":
                 case "california state bakersfield roadrunners":
                 case "cs bakersfield":
@@ -61,6 +61,8 @@
                     return "Chattanooga";
                 case "cincinnati u":
                     return "Cincinnati";
+                case "citadel":
+                    return "The Citadel";
                 case "delaware blue hens":
                     return "Delaware";
                 case "depaul":
@@ -91,13 +93,14 @@
                     return "Houston";
                 case "indiana u.":
                     return "Indiana";
+                case "lafayette college":
+                    return "Lafayette";
                 case "arkansas little rock":
                 case "arkansas little rock trojans":
                     return "Little Rock";
-                case "lafayette college":
-                case "ul - lafayette":
-                    return "Lafayette";
                 case "liu":
+                case "liu sharks":
+                case "long island sharks":
                     return "LIU[d]";
                 case "long beach state 49ers":
                     return "Long Beach State";
@@ -107,6 +110,7 @@
                 case "louisiana lafayette ragin cajuns":
                 case "ul lafayette ragin cajuns":
                 case "ul lafayette":
+                case "ul - lafayette":
                 case "louisiana lafayette":
                     return "Louisiana";
                 case "louisiana monroe warhawks":
@@ -115,6 +119,8 @@
                 case "louisiana monroe":
                 case "louisiana - monroe":
                     return "Louisiana-Monroe";
+                case "loyola (md)":
+                    return "Loyola Maryland";
                 case "miami florida":
                 case "miami florida hurricanes":
                 case "miami hurricanes":
@@ -224,7 +230,7 @@
                 case "st. josephs":
                     return "Saint Joseph's";
                 case "tarleton st":
-                    return "Tarleton st";
+                    return "Tarleton State";
                 case "texas arlington":
                 case "ut arlington":
                 case "texas-arlington mavericks":
@@ -244,6 +250,8 @@
                 case "california riverside highlanders":
                 case "cal riverside":
                     return "UC Riverside";
+                case "san diego tritons":
+                    return "UC San Diego";
                 case "ucsb":
                 case "cal santa barbara":
                 case "cal santa barbara gauchos":
@@ -278,6 +286,8 @@
                     return "UTEP";
                 case "ut rio grande valley":
                 case "texas rio grande":
+                case "ut-rio grande valley":
+                case "texas-rio grande valley vaqueros":
                     return "UTRGV";
                 case "ut san antonio":
                 case "texas san antonio roadrunners":

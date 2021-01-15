@@ -26,14 +26,22 @@ namespace SportsbookAggregation.SportsBooks
 
         public IEnumerable<GameOffering> AggregateFutureOfferings()
         {
-            var token = GetBearerToken();
-            var basketballOfferings = GetBasketballOfferings(token);
-            var nflOfferings = GetNFLOfferings(token);
-            var baseballOfferings = GetBaseballOfferings(token);
-            var ncaafOfferings = GetNCAAFOfferings(token);
-            var ncaabOfferings = GetNCAABOfferings(token);
-            Program.HttpClient = new HttpClient(); //Clear out state from parsing
-            return ncaabOfferings.Concat(ncaafOfferings.Concat(baseballOfferings.Concat(nflOfferings.Concat(basketballOfferings))));
+            try
+            {
+                var token = GetBearerToken();
+                var basketballOfferings = GetBasketballOfferings(token);
+                var nflOfferings = GetNFLOfferings(token);
+                var baseballOfferings = GetBaseballOfferings(token);
+                var ncaafOfferings = GetNCAAFOfferings(token);
+                var ncaabOfferings = GetNCAABOfferings(token);
+                Program.HttpClient = new HttpClient(); //Clear out state from parsing
+                return ncaabOfferings.Concat(ncaafOfferings.Concat(baseballOfferings.Concat(basketballOfferings.Concat(nflOfferings))));
+            }
+            catch(Exception e)
+            {
+                Program.HttpClient = new HttpClient();
+                throw e;
+            }
         }
 
         private string GetBearerToken()
@@ -116,7 +124,7 @@ namespace SportsbookAggregation.SportsBooks
             if (gameOffering.AwayTeam.Contains("Washington [NFL]"))
                 gameOffering.AwayTeam = "Washington Football Team";
 
-            if (gameOffering.AwayTeam.Contains("[")) //Team name contains pitcher
+            if (gameOffering.AwayTeam.Contains(" [")) //Team name contains pitcher
             {
                 gameOffering.AwayTeam = LocationMapper.GetFullTeamName(gameOffering.AwayTeam.Substring(0, gameOffering.AwayTeam.IndexOf("[")), gameOffering.Sport);
                 gameOffering.HomeTeam = LocationMapper.GetFullTeamName(gameOffering.HomeTeam.Substring(0, gameOffering.HomeTeam.IndexOf("[")), gameOffering.Sport);
