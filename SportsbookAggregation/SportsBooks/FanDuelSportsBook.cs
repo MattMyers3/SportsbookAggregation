@@ -335,12 +335,21 @@ namespace SportsbookAggregation.SportsBooks
                 {
                     playerProp.Description = PlayerPropConstants.BasketScorer;
                     playerProp.OutcomeDescription = PlayerPropConstants.First;
-                }
+                }                
 
                 var playerName = selection.name.ToString();
-                var playerNameAsArray = playerName.Split(" ");
-
-                playerProp.PlayerName = playerName;
+                if (playerName.ToLower().EndsWith("d/st"))
+                {
+                    var onHomeTeam = selection.hadvalue.Value.ToString() == "H";
+                    if (onHomeTeam)
+                        playerProp.PlayerName = $"{homeTeam} D/ST";
+                    else
+                        playerProp.PlayerName = $"{awayTeam} D/ST";
+                }
+                else
+                {
+                    playerProp.PlayerName = playerName;
+                }            
 
                 playerProps.Add(playerProp);
             }

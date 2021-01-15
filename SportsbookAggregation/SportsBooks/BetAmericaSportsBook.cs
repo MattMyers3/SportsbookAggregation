@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using SportsbookAggregation.Data.Models;
+using SportsbookAggregation.Constants;
 using SportsbookAggregation.SportsBooks.Models;
 using System;
 using System.Collections;
@@ -195,7 +195,81 @@ namespace SportsbookAggregation.SportsBooks
 
         public IEnumerable<PlayerPropOffering> AggregatePlayerProps()
         {
-            return Enumerable.Empty<PlayerPropOffering>();
+            var token = GetBearerToken();
+            var nflPlayerProps = GetNFLPlayerProps(token, "First Touchdown Scorer", "118");
+            return nflPlayerProps;
+        }
+
+        private IEnumerable<PlayerPropOffering> GetNFLPlayerProps(string token, string propName, string propNumber)
+        {
+            var requestJson = new StringContent("{\"eventState\":\"Mixed\",\"eventTypes\":[\"Fixture\",\"AggregateFixture\"],\"ids\":[\"88808\"],\"regionIds\":[\"227\"],\"marketTypeRequests\":[{\"sportIds\":[\"3\"],\"marketTypeIds\":[\"2_39\",\"1_39\",\"3_39\",\"2_0\",\"1_0\",\"3_0\"],\"statement\":\"Include\"}]}", Encoding.UTF8, "application/json-patch+json");
+            var gamesJson = GetGamesJson(GamesUrl, token, requestJson);
+
+            var eventInfo = ((IEnumerable)gamesJson.events).Cast<dynamic>();
+            var playerPropOfferings = new List<PlayerPropOffering>();
+            Program.HttpClient = new HttpClient();
+            Program.HttpClient.DefaultRequestHeaders.Add("requesttarget", "AJAXService");
+            foreach (var gameInfoJson in eventInfo)
+            {
+                string awayTeam = ((IEnumerable)gameInfoJson.participants).Cast<dynamic>().FirstOrDefault(g => g.venueRole == "Away").name;
+                string homeTeam = ((IEnumerable)gameInfoJson.participants).Cast<dynamic>().FirstOrDefault(g => g.venueRole == "Home").name;
+
+                var formContext = new FormUrlEncodedContent(new[]
+                {
+                    new KeyValuePair<string, string>("mastereventid", gameInfoJson.id.ToString()),
+                    new KeyValuePair<string, string>("isLive", "false")
+                });
+                var eventInfoBreadcrumbJson = Program.HttpClient.PostAsync("https://pa.betamerica.com/pagemethods_ros.aspx/GetEventInfoForBreadcrumb", formContext).Result.Content.ReadAsStringAsync();
+
+                var pattern = @"\[(.*?)\]";
+                var matches = Regex.Matches(eventInfoBreadcrumbJson.Result.ToString(), pattern);
+                string propId = string.Empty;
+                foreach(Match m in matches)
+                {
+                    if(m.Value.Contains($",{propNumber},"))
+                    {
+                        propId = m.Value.Substring(1,8);
+                    }
+                }
+                if (propId == string.Empty)
+                    return null;
+
+                formContext = new FormUrlEncodedContent(new[]
+                {
+                    new KeyValuePair<string, string>("requestString", propId)
+                });
+                var updateEventsJson = Program.HttpClient.PostAsync("https://pa.betamerica.com/pagemethods_ros.aspx/UpdateEvents", formContext).Result.Content.ReadAsStringAsync();
+
+                matches = Regex.Matches(updateEventsJson.Result.ToString(), pattern);
+                foreach(Match m in matches)
+                {
+                    if (m.Value.Contains(propName))
+                    {
+                        var firstTdMatchByComma = m.Value.Split(',');
+                        var playerName = firstTdMatchByComma[2].Replace("\"", "");
+                        var parsedPayoutValue = Int32.TryParse(firstTdMatchByComma[1], out int payoutValue);
+                        if (parsedPayoutValue && payoutValue != 0 && !playerName.StartsWith("[["))
+                        {
+                            playerName = playerName.Replace("Defense", "D/ST");
+
+                            playerPropOfferings.Add(new PlayerPropOffering
+                            {
+                                Payout = payoutValue,
+                                PlayerName = playerName,
+                                PropValue = null,
+                                Site = GetSportsBookName(),
+                                Description = PlayerPropConstants.TouchdownScorer,
+                                OutcomeDescription = PlayerPropConstants.First,
+                                Sport = gameInfoJson.leagueName,
+                                AwayTeam = awayTeam,
+                                HomeTeam = homeTeam,
+                                DateTime = gameInfoJson.startEventDate.Value
+                            });
+                        }                        
+                    }                        
+                }
+            }
+            return playerPropOfferings;
         }
     }
 }

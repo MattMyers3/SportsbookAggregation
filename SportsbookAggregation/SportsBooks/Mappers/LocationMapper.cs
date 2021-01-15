@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SportsbookAggregation.SportsBooks
+﻿namespace SportsbookAggregation.SportsBooks
 {
     public class LocationMapper
     {
@@ -39,6 +35,8 @@ namespace SportsbookAggregation.SportsBooks
                     return "BYU";
                 case "buffalo u":
                     return "Buffalo";
+                case "cal baptist":
+                    return "California Baptist";
                 case "cal poly slo":
                     return "Cal Poly";
                 case "central conn. state":
@@ -49,6 +47,7 @@ namespace SportsbookAggregation.SportsBooks
                     return "Cal State Bakersfield";
                 case "csu fullerton":
                 case "csu fullerton titans":
+                case "cs fullerton":
                     return "Cal State Fullerton";
                 case "csu northridge":
                 case "cs northridge":
@@ -58,6 +57,8 @@ namespace SportsbookAggregation.SportsBooks
                     return "UCF";
                 case "college of charleston":
                     return "Charleston";
+                case "tennessee chattanooga mocs":
+                    return "Chattanooga";
                 case "cincinnati u":
                     return "Cincinnati";
                 case "citadel":
@@ -122,6 +123,7 @@ namespace SportsbookAggregation.SportsBooks
                     return "Loyola Maryland";
                 case "miami florida":
                 case "miami florida hurricanes":
+                case "miami hurricanes":
                     return "Miami (FL)";
                 case "miami ohio":
                 case "miami-ohio redhawks":
@@ -142,6 +144,8 @@ namespace SportsbookAggregation.SportsBooks
                 case "mississippi rebels":
                 case "mississippi":
                     return "Ole Miss";
+                case "mount st. marys":
+                    return "Mount Saint Mary's";
                 case "new jersey tech highlanders":
                     return "NJIT";
                 case "nicholls state":
@@ -178,6 +182,8 @@ namespace SportsbookAggregation.SportsBooks
                     return "Saint Mary's";
                 case "san josé state":
                     return "San Jose State";
+                case "SIU Edwardsville Cougars":
+                    return "SIU Edwardsville";
                 case "se louisiana":
                     return "Southeastern Louisiana";
                 case "se missouri state":
@@ -223,6 +229,13 @@ namespace SportsbookAggregation.SportsBooks
                 case "st josephs":
                 case "st. josephs":
                     return "Saint Joseph's";
+                case "tarleton st":
+                    return "Tarleton state";
+                case "texas arlington":
+                case "ut arlington":
+                case "texas-arlington mavericks":
+                case "texas-arlington":
+                    return "Texas–Arlington";
                 case "t a&m corpus christi":
                 case "texas a&m-corpus christi": //took me forever to figure out that's a different dash
                 case "texas a&m-cc":
@@ -258,21 +271,16 @@ namespace SportsbookAggregation.SportsBooks
                 case "uncw":
                 case "nc wilmington":
                     return "UNC Wilmington";
+                case "unlv runnin rebels":
+                    return "UNLV";
                 case "southern california trojans":
                     return "USC";
-                case "tarleton st":
-                    return "Tarleton State";
                 case "tennessee martin":
                 case "tennessee-martin":
                 case "tennessee martin skyhawks":
                     return "UT Martin";
                 case "utah valley state":
                     return "Utah Valley";
-                case "ut arlington":
-                case "texas-arlington":
-                case "texas-arlington mavericks":
-                case "texas arlington":
-                    return "Texas–Arlington";
                 case "texas el paso miners":
                 case "texas el paso":
                     return "UTEP";
