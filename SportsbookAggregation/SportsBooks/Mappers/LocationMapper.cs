@@ -23,6 +23,7 @@
                 case "abilene christian university":
                     return "Abilene Christian";
                 case "american university":
+                case "american uni eagles":
                     return "American";
                 case "albany ny great danes":
                     return "Albany";
@@ -120,6 +121,7 @@
                 case "louisiana - monroe":
                     return "Louisiana-Monroe";
                 case "loyola (md)":
+                case "loyola md":
                     return "Loyola Maryland";
                 case "miami florida":
                 case "miami florida hurricanes":
