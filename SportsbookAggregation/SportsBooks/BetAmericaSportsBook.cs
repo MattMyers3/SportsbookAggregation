@@ -37,7 +37,7 @@ namespace SportsbookAggregation.SportsBooks
                 Program.HttpClient = new HttpClient(); //Clear out state from parsing
                 return ncaabOfferings.Concat(ncaafOfferings.Concat(baseballOfferings.Concat(basketballOfferings.Concat(nflOfferings))));
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Program.HttpClient = new HttpClient();
                 throw e;
@@ -90,7 +90,7 @@ namespace SportsbookAggregation.SportsBooks
 
         private IEnumerable<GameOffering> GetGameOfferings(string token, StringContent requestJson, string spreadLabel, string moneyLineLabel, string totalLabel)
         {
-            var gamesJson = GetGamesJson(GamesUrl,token, requestJson);
+            var gamesJson = GetGamesJson(GamesUrl, token, requestJson);
 
 
             var eventInfo = ((IEnumerable)gamesJson.events).Cast<dynamic>();
@@ -100,7 +100,7 @@ namespace SportsbookAggregation.SportsBooks
             {
                 var linesJson = gameInfo.Where(g => g.eventId == gameInfoJson.id);
 
-                gameOfferings.Add(ParseGameOffering(gameInfoJson, linesJson, spreadLabel, moneyLineLabel,totalLabel));
+                gameOfferings.Add(ParseGameOffering(gameInfoJson, linesJson, spreadLabel, moneyLineLabel, totalLabel));
             }
 
             return gameOfferings;
@@ -130,7 +130,7 @@ namespace SportsbookAggregation.SportsBooks
                 gameOffering.HomeTeam = LocationMapper.GetFullTeamName(gameOffering.HomeTeam.Substring(0, gameOffering.HomeTeam.IndexOf("[")), gameOffering.Sport);
             }
             Regex gameRegex = new Regex(@"G\d.*");
-            if(gameRegex.IsMatch(gameOffering.AwayTeam))
+            if (gameRegex.IsMatch(gameOffering.AwayTeam))
             {
                 gameOffering.AwayTeam = LocationMapper.GetFullTeamName(gameOffering.AwayTeam.Substring(3), gameOffering.Sport);
                 gameOffering.HomeTeam = LocationMapper.GetFullTeamName(gameOffering.HomeTeam.Substring(3), gameOffering.Sport);
@@ -224,15 +224,15 @@ namespace SportsbookAggregation.SportsBooks
                 var pattern = @"\[(.*?)\]";
                 var matches = Regex.Matches(eventInfoBreadcrumbJson.Result.ToString(), pattern);
                 string propId = string.Empty;
-                foreach(Match m in matches)
+                foreach (Match m in matches)
                 {
-                    if(m.Value.Contains($",{propNumber},"))
+                    if (m.Value.Contains($",{propNumber},"))
                     {
-                        propId = m.Value.Substring(1,8);
+                        propId = m.Value.Substring(1, 8);
                     }
                 }
                 if (propId == string.Empty)
-                    return null;
+                    continue;
 
                 formContext = new FormUrlEncodedContent(new[]
                 {
@@ -241,10 +241,11 @@ namespace SportsbookAggregation.SportsBooks
                 var updateEventsJson = Program.HttpClient.PostAsync("https://pa.betamerica.com/pagemethods_ros.aspx/UpdateEvents", formContext).Result.Content.ReadAsStringAsync();
 
                 matches = Regex.Matches(updateEventsJson.Result.ToString(), pattern);
-                foreach(Match m in matches)
+                foreach (Match m in matches)
                 {
                     if (m.Value.Contains(propName))
                     {
+
                         var firstTdMatchByComma = m.Value.Split(',');
                         var playerName = firstTdMatchByComma[2].Replace("\"", "");
                         var parsedPayoutValue = Int32.TryParse(firstTdMatchByComma[1], out int payoutValue);
@@ -265,8 +266,8 @@ namespace SportsbookAggregation.SportsBooks
                                 HomeTeam = homeTeam,
                                 DateTime = gameInfoJson.startEventDate.Value
                             });
-                        }                        
-                    }                        
+                        }
+                    }
                 }
             }
             return playerPropOfferings;
