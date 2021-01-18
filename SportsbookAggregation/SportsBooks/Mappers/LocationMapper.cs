@@ -28,6 +28,7 @@
                 case "albany ny great danes":
                     return "Albany";
                 case "arkansas pine bluff":
+                case "arkansas pine bluff golden lions":
                     return "Arkansas-Pine Bluff";
                 case "austin peay state":
                     return "Austin Peay";
@@ -192,6 +193,7 @@
                 case "se missouri state redhawks":
                     return "Southeast Missouri State";
                 case "southern university":
+                case "southern university jaguars":
                     return "Southern";
                 case "southern methodist mustangs":
                 case "southern methodist":
@@ -269,6 +271,7 @@
                 case "missouri kansas city kangaroos":
                     return "UMKC";
                 case "north carolina greensboro":
+                case "nc greensboro":
                     return "UNC Greensboro";
                 case "uncw":
                 case "nc wilmington":
