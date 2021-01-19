@@ -79,6 +79,7 @@
                 case "florida intl panthers":
                     return "FIU";
                 case "gardner webb":
+                case "gardner webb runnin bulldogs":
                     return "Gardner-Webb";
                 case "gonzaga bulldogs":
                     return "Gonzaga";
@@ -270,6 +271,9 @@
                     return "UMBC";
                 case "missouri kansas city kangaroos":
                     return "UMKC";
+                case "north carolina asheville":
+                case "unc-asheville bulldogs":
+                    return "UNC Asheville";
                 case "north carolina greensboro":
                 case "nc greensboro":
                     return "UNC Greensboro";
