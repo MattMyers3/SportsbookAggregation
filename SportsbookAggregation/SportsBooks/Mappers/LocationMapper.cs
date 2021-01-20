@@ -244,6 +244,7 @@
                 case "t a&m corpus christi":
                 case "texas a&m-corpus christi": //took me forever to figure out that's a different dash
                 case "texas a&m-cc":
+                case "texas a&m cc islanders":
                     return "Texas A&M–Corpus Christi";
                 case "connecticut":
                 case "connecticut huskies":
@@ -303,6 +304,7 @@
                 case "texas san antonio":
                     return "UTSA";
                 case "virginia commonwealth rams":
+                case "va commonwealth":
                     return "VCU";
                 case "virginia military keydets":
                     return "VMI";
