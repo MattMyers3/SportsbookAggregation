@@ -123,6 +123,7 @@ namespace SportsbookAggregation
                 PlayerName = playerProp.PlayerName,
                 Description = playerProp.OutcomeDescription,
                 PropValue = playerProp.PropValue,
+                PropBetType = playerProp.Description,
                 GamblingSiteId = gamblingSiteId,
                 GameId = gameId
             });
@@ -149,7 +150,7 @@ namespace SportsbookAggregation
             var test = dbContext.PlayerPropRepository.Read().Where(p => p.GameId == gameId);
 
             return dbContext.PlayerPropRepository.Read().FirstOrDefault(p => p.GameId == gameId 
-                    && p.Description == playerProp.OutcomeDescription 
+                    && p.PropBetType == playerProp.Description && p.Description == playerProp.OutcomeDescription 
                     && p.PlayerName == playerProp.PlayerName && p.GamblingSiteId == gamblingSiteId);
         }
 
