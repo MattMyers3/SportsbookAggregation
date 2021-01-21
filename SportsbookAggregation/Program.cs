@@ -20,7 +20,7 @@ namespace SportsbookAggregation
         private static void Main(string[] args)
         {
             ReadConfig();
-            List<ISportsBook> sportsbooks = new List<ISportsBook> { new DraftKingsSportsBook()};
+            List<ISportsBook> sportsbooks = new List<ISportsBook> { new FoxBetSportsBook()};
 
 
             var gameOfferings = new List<GameOffering>();
