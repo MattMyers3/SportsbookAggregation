@@ -5,8 +5,7 @@ namespace SportsbookAggregation.Data.Models
     public class PlayerProp
     {
         public Guid PlayerPropId { get; set; }
-        public PropBetType PropBetType { get; set; }
-        public Guid PropBetTypeId { get; set; }
+        public string PropBetType { get; set; }
 
         public Game Game { get; set; }
         public Guid GameId { get; set; }

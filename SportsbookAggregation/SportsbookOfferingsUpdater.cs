@@ -113,8 +113,6 @@ namespace SportsbookAggregation
             var gameId = GetGameId(playerProp.DateTime, homeTeamId, awayTeamId) ??
                             CreateGame(playerProp.DateTime, homeTeamId, awayTeamId, sportGuid);
 
-            var propBetTypeId = GetPropBetTypeId(playerProp.Description);
-
             var gamblingSiteId = GetSiteId(playerProp.Site);
 
             dbContext.PlayerPropRepository.CreateWithoutSaving(new PlayerProp
@@ -125,7 +123,6 @@ namespace SportsbookAggregation
                 PlayerName = playerProp.PlayerName,
                 Description = playerProp.OutcomeDescription,
                 PropValue = playerProp.PropValue,
-                PropBetTypeId = propBetTypeId.Value,
                 GamblingSiteId = gamblingSiteId,
                 GameId = gameId
             });
@@ -147,20 +144,13 @@ namespace SportsbookAggregation
             if (gameId == null)
                 return null;
 
-            var propBetTypeId = GetPropBetTypeId(playerProp.Description);
-
             var gamblingSiteId = GetSiteId(playerProp.Site);
 
             var test = dbContext.PlayerPropRepository.Read().Where(p => p.GameId == gameId);
 
             return dbContext.PlayerPropRepository.Read().FirstOrDefault(p => p.GameId == gameId 
-                    && p.PropBetTypeId == propBetTypeId && p.Description == playerProp.OutcomeDescription 
+                    && p.Description == playerProp.OutcomeDescription 
                     && p.PlayerName == playerProp.PlayerName && p.GamblingSiteId == gamblingSiteId);
-        }
-
-        private Guid? GetPropBetTypeId(string description)
-        {
-            return dbContext.PropBetTypeRepository.Read().FirstOrDefault(r => r.Description == description)?.PropBetTypeId;
         }
 
         private bool IsCollegeSport(string sport)
