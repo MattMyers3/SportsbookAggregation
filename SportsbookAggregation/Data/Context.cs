@@ -508,6 +508,7 @@ namespace SportsbookAggregation.Data
                 new Team { TeamId = new Guid("c7b7908d-4cac-41d4-a8b3-d5a76f3d6227"), Location = "Marist", Mascot = "Red Foxes" },
                 new Team { TeamId = new Guid("366250fa-8de8-442f-af30-3a509df77319"), Location = "McNeese State", Mascot = "Cowboys" },
                 new Team { TeamId = new Guid("6adf5680-85b4-428e-b213-0f63445cb5c0"), Location = "Mercer", Mascot = "Bears" },
+                new Team { TeamId = new Guid("0a3568ad-970a-4deb-a5ec-c9386327e078"), Location = "Merrimack", Mascot = "Warriors" },
                 new Team { TeamId = new Guid("e80b82fe-ca15-4bde-92b7-0c9af8125f90"), Location = "Mississippi Valley State", Mascot = "Delta Devils" },
                 new Team { TeamId = new Guid("444edfe0-4dc5-410a-9a1a-653fd80a517b"), Location = "Missouri State", Mascot = "Bears" },
                 new Team { TeamId = new Guid("78cb29e4-7cef-4c1e-89af-06998c3ad4da"), Location = "Monmouth", Mascot = "Hawks" },
