@@ -68,6 +68,7 @@ namespace SportsbookAggregation.SportsBooks.Mappers
             { "Louisiana Tech", "Bulldogs" },
             { "Louisville", "Cardinals" },
             { "LSU", "Tigers" },
+            { "Merrimack", "Warriors" },
             { "Marshall", "Thundering Herd" },
             { "Maryland", "Terrapins" },
             { "Memphis", "Tigers" },

@@ -149,6 +149,7 @@
                 case "mississippi":
                     return "Ole Miss";
                 case "mount st. marys":
+                case "mt st mary's":
                     return "Mount Saint Mary's";
                 case "new jersey tech highlanders":
                     return "NJIT";
@@ -186,7 +187,7 @@
                     return "Saint Mary's";
                 case "san josé state":
                     return "San Jose State";
-                case "SIU Edwardsville Cougars":
+                case "siu-edwardsville cougars":
                     return "SIU Edwardsville";
                 case "se louisiana":
                     return "Southeastern Louisiana";
