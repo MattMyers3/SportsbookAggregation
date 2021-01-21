@@ -42,6 +42,8 @@
                 case "cal poly slo":
                     return "Cal Poly";
                 case "central conn. state":
+                case "central connecticut state":
+                case "central connecticut state blue devils":
                     return "Central Connecticut";
                 case "csu bakersfield":
                 case "california state bakersfield roadrunners":
@@ -150,6 +152,8 @@
                     return "Ole Miss";
                 case "mount st. marys":
                 case "mt st mary's":
+                case "mt. st. mary's":
+                case "mount st. marys mountaineers":
                     return "Mount Saint Mary's";
                 case "new jersey tech highlanders":
                     return "NJIT";
@@ -217,6 +221,7 @@
                     return "St. Francis Brooklyn";
                 case "st. francis (pa)":
                 case "st francis (pa)":
+                case "st. francis pa red flash":
                     return "Saint Francis";
                 case "usc upstate":
                 case "sc upstate spartans":
