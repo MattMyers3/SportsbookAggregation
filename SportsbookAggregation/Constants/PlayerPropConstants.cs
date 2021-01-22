@@ -42,7 +42,11 @@ namespace SportsbookAggregation.Constants
             },
             {  "NBA", new List<PlayerPropDescriptions>()
                 {
-                    new PlayerPropDescriptions("Player to Score the First Field Goal of the Game", null, BasketScorer, First)
+                    new PlayerPropDescriptions("Player to Score the First Field Goal of the Game", null, BasketScorer, First),
+                    new PlayerPropDescriptions("Points scored by the player", null, TotalPoints, null),
+                    new PlayerPropDescriptions("Assists by the player", null, TotalAssists, null),
+                    new PlayerPropDescriptions("Rebounds by the player", null, TotalRebounds, null),
+                    new PlayerPropDescriptions("3-point field goals made by the player", null, TotalThreePointers, null)
                 }
             }
         };
@@ -71,11 +75,32 @@ namespace SportsbookAggregation.Constants
             }
         };
 
+        public static Dictionary<string, List<PlayerPropDescriptions>> FanDuelProps = new Dictionary<string, List<PlayerPropDescriptions>>()
+        {
+            { "NFL", new List<PlayerPropDescriptions>()
+                {
+                    new PlayerPropDescriptions("First Touchdown Scorer - Any (E-Venue)", null, TouchdownScorer, First),
+                    new PlayerPropDescriptions("Any Time Touchdown Scorer - Any (E-Venue)", null, TouchdownScorer, Anytime),
+                    new PlayerPropDescriptions("Last Touchdown Scorer - Any (E-Venue)", null, TouchdownScorer, Last),
+                    new PlayerPropDescriptions("Player X Total Passing Yards O/U (E-Venue)", null, PassingYards, null),
+                    new PlayerPropDescriptions("Player X Total Rushing Yards O/U (E-Venue)", null, RushingYards, null),
+                    new PlayerPropDescriptions("Player X Total Receiving Yards O/U (E-Venue)", null, ReceivingYards, null),
+                    new PlayerPropDescriptions("Player X Total Receptions O/U (E-Venue)", null, Receptions, null),
+                    new PlayerPropDescriptions("Player X Total Passing Touchdowns O/U (E-Venue)", null, TotalTDsThrown, null)
+                }
+            },
+            { "NBA", new List<PlayerPropDescriptions>()
+                {
+                    new PlayerPropDescriptions("First Basket - Any (E-Venue)", null, BasketScorer, First),
+                    new PlayerPropDescriptions("Player X Total Points O/U (E-Venue)", null, TotalPoints, null),
+                    new PlayerPropDescriptions("Player X Total Assists O/U (E-Venue)", null, TotalAssists, null),
+                    new PlayerPropDescriptions("Player X Total Rebounds O/U (E-Venue)", null, TotalRebounds, null),
+                    new PlayerPropDescriptions("Player X Total 3 Point Field Goals O/U (E-Venue)", null, TotalThreePointers, null),
+                }
+            }
+        };
         public const string FanduelFirstTouchdown = "First Touchdown Scorer";
         public const string FanduelFirstBasket = "First Basket";
-
-        public const string FoxBetFirstTouchdown = "1st Touchdown Scorer (Incl. OT)";
-        public const string FoxBetFirstBasket = "Nothing";
     }
 
     public class PlayerPropDescriptions

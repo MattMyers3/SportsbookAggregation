@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace SportsbookAggregation.SportsBooks.OddsProviders
 {
@@ -281,9 +282,15 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
 
         private string GetPlayerName(string name)
         {
-            var playerNameAsArray = name.Split(", ");
+            var playerNameAsArray = RemoveBetween(name, '(', ')').Split(", ");
             return name.ToLower().StartsWith("any other") ?
                  name : playerNameAsArray[playerNameAsArray.Length - 1] + " " + playerNameAsArray[playerNameAsArray.Length - 2];
+        }
+
+        private string RemoveBetween(string s, char begin, char end)
+        {
+            Regex regex = new Regex(string.Format("\\{0}.*?\\{1}", begin, end));
+            return regex.Replace(s, string.Empty);
         }
     }
 }
