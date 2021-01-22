@@ -321,6 +321,8 @@ namespace SportsbookAggregation.SportsBooks
                 var overAndUnderOutcomeList = ((IEnumerable)prop.selections).Cast<dynamic>(); ;
                 var overOutcome = overAndUnderOutcomeList.SingleOrDefault(o => o.hadvalue == "O");
                 var underOutcome = overAndUnderOutcomeList.SingleOrDefault(o => o.hadvalue == "U");
+                if (overOutcome == null || underOutcome == null)
+                    continue;
                 var overProp = new PlayerPropOffering
                 {
                     Site = GetSportsBookName(),
