@@ -17,9 +17,6 @@ namespace SportsbookAggregation.Constants
         public const string TotalRebounds = "Total Rebounds";
         public const string TotalThreePointers = "Total Three Pointers";
 
-
-
-
         public const string Over = "Over";
         public const string Under = "Under";
         public const string First = "First";
@@ -99,8 +96,6 @@ namespace SportsbookAggregation.Constants
                 }
             }
         };
-        public const string FanduelFirstTouchdown = "First Touchdown Scorer";
-        public const string FanduelFirstBasket = "First Basket";
     }
 
     public class PlayerPropDescriptions

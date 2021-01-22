@@ -319,8 +319,8 @@ namespace SportsbookAggregation.SportsBooks
             foreach (var prop in propJson)
             {
                 var overAndUnderOutcomeList = ((IEnumerable)prop.selections).Cast<dynamic>(); ;
-                var overOutcome = overAndUnderOutcomeList.Single(o => o.hadvalue == "O");
-                var underOutcome = overAndUnderOutcomeList.Single(o => o.hadvalue == "U");
+                var overOutcome = overAndUnderOutcomeList.SingleOrDefault(o => o.hadvalue == "O");
+                var underOutcome = overAndUnderOutcomeList.SingleOrDefault(o => o.hadvalue == "U");
                 var overProp = new PlayerPropOffering
                 {
                     Site = GetSportsBookName(),

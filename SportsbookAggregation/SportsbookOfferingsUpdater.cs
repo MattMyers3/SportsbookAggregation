@@ -222,7 +222,7 @@ namespace SportsbookAggregation
         private Guid CreateGame(DateTime gameOfferingDateTime, Guid homeTeamId, Guid awayTeamId, Guid sportId)
         {
             var game = new Game { AwayTeamId = awayTeamId, HomeTeamId = homeTeamId, TimeStamp = gameOfferingDateTime, SportId = sportId };
-            dbContext.GameRepository.CreateWithoutSaving(game);
+            dbContext.GameRepository.Create(game);
             return game.GameId;
         }
 

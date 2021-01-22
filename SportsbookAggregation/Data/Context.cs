@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
 using SportsbookAggregation.Alerts.Models;
-using SportsbookAggregation.Constants;
 using SportsbookAggregation.Data.Configuration;
 using SportsbookAggregation.Data.Models;
 using SportsbookAggregation.UserSettingsInfo.Configuration;
