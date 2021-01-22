@@ -254,14 +254,14 @@ namespace SportsbookAggregation.SportsBooks
         {
             var initialJson = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(InitialRequest).Result);
 
-            IEnumerable<PlayerPropOffering> nflOfferings = GetPlayerProps(initialJson, "Football", "NFL", "Season Coupon", PlayerPropConstants.FanduelFirstTouchdown);
-            IEnumerable<PlayerPropOffering> nbaOfferings = GetPlayerProps(initialJson, "Basketball", "NBA", "NBA Tab Coupon", PlayerPropConstants.FanduelFirstBasket);
+            IEnumerable<PlayerPropOffering> nflOfferings = GetPlayerProps(initialJson, "Football", "NFL", "Season Coupon", PlayerPropConstants.FanDuelProps["NFL"]);
+            IEnumerable<PlayerPropOffering> nbaOfferings = GetPlayerProps(initialJson, "Basketball", "NBA", "NBA Tab Coupon", PlayerPropConstants.FanDuelProps["NBA"]);
 
             return nflOfferings.Concat(nbaOfferings);
 
         }
 
-        private IEnumerable<PlayerPropOffering> GetPlayerProps(dynamic initialJson, string sport, string league, string coupon, string propName)
+        private IEnumerable<PlayerPropOffering> GetPlayerProps(dynamic initialJson, string sport, string league, string coupon, List<PlayerPropDescriptions> propsDescriptions)
         {
             var footballJson = ((IEnumerable)initialJson.bonavigationnodes).Cast<dynamic>()
                 .First(g => g.name == sport);
@@ -290,14 +290,14 @@ namespace SportsbookAggregation.SportsBooks
                 var gameUrl = $"https://sportsbook.fanduel.com/cache/psevent/UK/1/false/{gameNumber}.json";
                 var gameJson =
                     JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(gameUrl).Result);
-
-                playerProps.AddRange(ParsePlayerProps(gameJson, league, gameJson.participantname_home.ToString(), gameJson.participantname_away.ToString(), gameJson.tsstart, propName));
+                foreach(var propDesc in propsDescriptions)
+                    playerProps.AddRange(ParsePlayerProps(gameJson, league, gameJson.participantname_home.ToString(), gameJson.participantname_away.ToString(), gameJson.tsstart, propDesc));
             }
 
             return playerProps;
         }
 
-        private IEnumerable<PlayerPropOffering> ParsePlayerProps(dynamic gameJson, string sport, string homeTeam, string awayTeam, dynamic gameTime, string propName)
+        private IEnumerable<PlayerPropOffering> ParsePlayerProps(dynamic gameJson, string sport, string homeTeam, string awayTeam, dynamic gameTime, PlayerPropDescriptions propDescription)
         {
             if (gameJson.eventmarketgroups == null)
                 return Enumerable.Empty<PlayerPropOffering>();
@@ -306,12 +306,59 @@ namespace SportsbookAggregation.SportsBooks
             if (playerPropsJson == null)
                 return Enumerable.Empty<PlayerPropOffering>();
 
-            var firstTouchdownJson = ((IEnumerable)playerPropsJson.markets).Cast<dynamic>().FirstOrDefault(g => g.name.Value.ToString() == propName);
-            if (firstTouchdownJson == null)
+            var propJson = ((IEnumerable)playerPropsJson.markets).Cast<dynamic>().Where(g => g.markettypename.Value.ToString() == propDescription.SiteDescription);
+            if (propJson.Count() == 0)
                 return Enumerable.Empty<PlayerPropOffering>();
 
+            return propJson.First().idfohadtype == "OU" ? ParseOverUnder(propJson, sport, homeTeam, awayTeam, gameTime, propDescription) : ParseMultiOption(propJson, sport, homeTeam, awayTeam, gameTime, propDescription);
+        }
+
+        private IEnumerable<PlayerPropOffering> ParseOverUnder(IEnumerable<dynamic> propJson, string sport, string homeTeam, string awayTeam, dynamic gameTime, PlayerPropDescriptions propDescription)
+        {
             var playerProps = new List<PlayerPropOffering>();
-            var playerPropSelections = firstTouchdownJson.selections;
+            foreach (var prop in propJson)
+            {
+                var overAndUnderOutcomeList = ((IEnumerable)prop.selections).Cast<dynamic>(); ;
+                var overOutcome = overAndUnderOutcomeList.SingleOrDefault(o => o.hadvalue == "O");
+                var underOutcome = overAndUnderOutcomeList.SingleOrDefault(o => o.hadvalue == "U");
+                var overProp = new PlayerPropOffering
+                {
+                    Site = GetSportsBookName(),
+                    Sport = sport,
+                    AwayTeam = awayTeam,
+                    HomeTeam = homeTeam,
+                    DateTime = gameTime.Value.AddHours(5),
+                    Payout = CalculateOdds(overOutcome.currentpricedown.Value, overOutcome.currentpriceup.Value),
+                    PropValue = Convert.ToDouble(overOutcome.currenthandicap), 
+                    Description = propDescription.OurDescription,
+                    OutcomeDescription = PlayerPropConstants.Over,
+                    PlayerName = overOutcome.name.ToString().Replace(" Over", "")
+                };
+
+                var underProp = new PlayerPropOffering
+                {
+                    Site = GetSportsBookName(),
+                    Sport = sport,
+                    AwayTeam = awayTeam,
+                    HomeTeam = homeTeam,
+                    DateTime = gameTime.Value.AddHours(5),
+                    Payout = CalculateOdds(underOutcome.currentpricedown.Value, underOutcome.currentpriceup.Value),
+                    PropValue = Convert.ToDouble(underOutcome.currenthandicap),
+                    Description = propDescription.OurDescription,
+                    OutcomeDescription = PlayerPropConstants.Under,
+                    PlayerName = underOutcome.name.ToString().Replace(" Under", "")
+                };
+
+                playerProps.Add(overProp);
+                playerProps.Add(underProp);
+            }
+            return playerProps;
+        }
+
+        private IEnumerable<PlayerPropOffering> ParseMultiOption(IEnumerable<dynamic> propJson, string sport, string homeTeam, string awayTeam, dynamic gameTime, PlayerPropDescriptions propDescription)
+        {
+            var playerProps = new List<PlayerPropOffering>();
+            var playerPropSelections = propJson.First().selections;
 
             foreach (var selection in playerPropSelections)
             {
@@ -323,19 +370,11 @@ namespace SportsbookAggregation.SportsBooks
                     HomeTeam = homeTeam,
                     DateTime = gameTime.Value.AddHours(5),
                     Payout = CalculateOdds(selection.currentpricedown.Value, selection.currentpriceup.Value),
-                    PropValue = null //Need to discuss this again
+                    PropValue = null, //Need to discuss this again,
+                    Description = propDescription.OurDescription,
+                    OutcomeDescription = propDescription.OurOutcomeDescription
                 };
 
-                if (propName == PlayerPropConstants.FanduelFirstTouchdown)
-                {
-                    playerProp.Description = PlayerPropConstants.TouchdownScorer;
-                    playerProp.OutcomeDescription = PlayerPropConstants.First;
-                }
-                else if (propName == PlayerPropConstants.FanduelFirstBasket)
-                {
-                    playerProp.Description = PlayerPropConstants.BasketScorer;
-                    playerProp.OutcomeDescription = PlayerPropConstants.First;
-                }                
 
                 var playerName = selection.name.ToString();
                 if (playerName.ToLower().EndsWith("d/st"))
@@ -349,7 +388,7 @@ namespace SportsbookAggregation.SportsBooks
                 else
                 {
                     playerProp.PlayerName = playerName;
-                }            
+                }
 
                 playerProps.Add(playerProp);
             }

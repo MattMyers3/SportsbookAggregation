@@ -61,6 +61,8 @@
                     return "UCF";
                 case "college of charleston":
                     return "Charleston";
+                case "charlotte u":
+                    return "Charlotte";
                 case "tennessee chattanooga mocs":
                     return "Chattanooga";
                 case "cincinnati u":

@@ -23,6 +23,12 @@ namespace SportsbookAggregation.Data
             context.Add(entity);
         }
 
+        public void Create(T entity)
+        {
+            context.Add(entity);
+            context.SaveChanges();
+        }
+
         public void Delete(T entity)
         {
             context.Remove(entity);

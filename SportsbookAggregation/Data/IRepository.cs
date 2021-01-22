@@ -8,6 +8,7 @@ namespace SportsbookAggregation.Data
     {
         IQueryable<T> Read();
         void CreateWithoutSaving(T entity);
+        void Create(T entity);
         void Delete(T entity);
         void Update(T entity);
         void UpdateRange(IEnumerable<Object> entities);
