@@ -385,6 +385,8 @@ namespace SportsbookAggregation.SportsBooks
 
                 foreach(var propItem in propList)
                 {
+                    if (propItem.suspended != null && Convert.ToBoolean(propItem.suspended))
+                        continue;
                     var propSelections = propItem.selection;
                     foreach (var propSelection in propSelections)
                     {
