@@ -21,7 +21,7 @@ namespace SportsbookAggregation
         {
             Configuration.ReadConfig();
 
-           var sportsbooks = new List<ISportsBook> { new DraftKingsSportsBook(), new FanDuelSportsBook(), new FoxBetSportsBook(), new BarstoolSportsBook(), new BetAmericaSportsBook(), new CaesarsSportBook(), new BetRiversSportsBook(), new ParxSportsBook(), new UnibetSportsBook(), new SugarHouseSportsBook() };
+            List<ISportsBook> sportsbooks = new List<ISportsBook> { new DraftKingsSportsBook(), new FanDuelSportsBook(), new FoxBetSportsBook(), new BarstoolSportsBook(), new BetAmericaSportsBook(), new CaesarsSportBook(), new BetRiversSportsBook(), new ParxSportsBook(), new UnibetSportsBook(), new SugarHouseSportsBook() };
             
             var gameOfferings = new List<GameOffering>();
             var oddsBoosts = new List<OddsBoostOffering>();
@@ -33,7 +33,7 @@ namespace SportsbookAggregation
                     continue;
                 try
                 {
-                        gameOfferings.AddRange(sportsbook.AggregateFutureOfferings().ToList());
+                    gameOfferings.AddRange(sportsbook.AggregateFutureOfferings().ToList());
                 }
                 catch (Exception ex)
                 {
