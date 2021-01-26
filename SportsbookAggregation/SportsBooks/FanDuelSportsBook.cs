@@ -21,7 +21,6 @@ namespace SportsbookAggregation.SportsBooks
         public IEnumerable<GameOffering> AggregateFutureOfferings()
         {
             var initialJson = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(InitialRequest).Result);
-            var test = initialJson.ToString();
 
             IEnumerable<GameOffering> basketballOfferings = GetBasketballOfferings(initialJson);
             IEnumerable<GameOffering> nflOfferings = GetNFLOfferings(initialJson);
