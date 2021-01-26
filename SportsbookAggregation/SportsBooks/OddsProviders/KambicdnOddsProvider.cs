@@ -36,12 +36,19 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
 
         public IEnumerable<GameOffering> AggregateFutureOfferings()
         {
-            var basketballOfferings = GetBasketballOfferings();
-            var nflOfferings = GetNFLOfferings();
-            var baseballOfferings = GetBaseballOfferings();
-            var ncaafOfferings = GetNCAAFOfferings();
-            var ncaabOfferings = GetNCAABOfferings();
-            return ncaabOfferings.Concat(ncaafOfferings.Concat(baseballOfferings.Concat(basketballOfferings.Concat(nflOfferings))));
+            IEnumerable<GameOffering> offerings = new List<GameOffering>();
+            if (Program.Configuration.ShouldParseSport("NFL"))
+                offerings = offerings.Concat(GetNFLOfferings());
+            if (Program.Configuration.ShouldParseSport("NBA"))
+                offerings = offerings.Concat(GetBasketballOfferings());
+            if (Program.Configuration.ShouldParseSport("MLB"))
+                offerings = offerings.Concat(GetBaseballOfferings());
+            if (Program.Configuration.ShouldParseSport("NCAAB"))
+                offerings = offerings.Concat(GetNCAABOfferings());
+            if (Program.Configuration.ShouldParseSport("NCAAF"))
+                offerings = offerings.Concat(GetNCAAFOfferings());
+
+            return offerings;
         }
 
         public IEnumerable<OddsBoostOffering> AggregateOddsBoost()

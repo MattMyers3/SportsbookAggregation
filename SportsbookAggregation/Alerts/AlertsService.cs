@@ -164,7 +164,7 @@ namespace SportsbookAggregation.Alerts
 
         public static void SendAlerts(SmtpClient client, string content)
         {
-            if(Convert.ToBoolean(Program.Configuration["SendTexts"]))
+            if(Program.Configuration.ReadBooleanProperty("SendTexts"))
             {
                 List<string> contentList = new List<string>();
                 int maxLength = 130;

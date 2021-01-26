@@ -694,8 +694,8 @@ namespace SportsbookAggregation.Data
 
         private static DbConnection GetDbConnection()
         {
-            Program.ReadConfig();
-            return new MySqlConnection(Program.Configuration.GetConnectionString("SportsbookDatabase"));
+            Program.Configuration.ReadConfig();
+            return new MySqlConnection(Program.Configuration.GetConnectionString());
         }
     }
 }
