@@ -26,11 +26,17 @@ namespace SportsbookAggregation.SportsBooks
         public IEnumerable<GameOffering> AggregateFutureOfferings()
         {
             SetTokenAndBaseUrl();
-            var nbaOfferings = GetGameOfferings(basketballSportsId, "NBA", "NBA");
-            var nflOfferings = GetGameOfferings(nflSportsId, "NFL", "NFL");
-            var ncaafOfferings = GetGameOfferings(nflSportsId, "College Football ", "NCAAF"); //The space is not a typo.
-            var ncaabOfferings = GetGameOfferings(basketballSportsId, "NCAA ", "NCAAB"); // The space is not a typo.
-            return nbaOfferings.Concat(nflOfferings.Concat(ncaafOfferings.Concat(ncaabOfferings)));
+            IEnumerable<GameOffering> offerings = new List<GameOffering>();
+            if (Program.Configuration.ShouldParseSport("NFL"))
+                offerings = offerings.Concat(GetGameOfferings(nflSportsId, "NFL", "NFL"));
+            if (Program.Configuration.ShouldParseSport("NBA"))
+                offerings = offerings.Concat(GetGameOfferings(basketballSportsId, "NBA", "NBA"));
+            if (Program.Configuration.ShouldParseSport("NCAAB"))
+                offerings = offerings.Concat(GetGameOfferings(basketballSportsId, "NCAA ", "NCAAB"));
+            if (Program.Configuration.ShouldParseSport("NCAAF"))
+                offerings = offerings.Concat(GetGameOfferings(nflSportsId, "College Football ", "NCAAF"));
+
+            return offerings;
         }
 
         private void SetTokenAndBaseUrl()

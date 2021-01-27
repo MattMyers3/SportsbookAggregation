@@ -20,15 +20,21 @@ namespace SportsbookAggregation.SportsBooks
 
         public IEnumerable<GameOffering> AggregateFutureOfferings()
         {
-            var initialJson = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(InitialRequest).Result);
+            var initialJson = JsonConvert.DeserializeObject<object>(Program.HttpClient.GetStringAsync(InitialRequest).Result);
+            IEnumerable<GameOffering> offerings = new List<GameOffering>();
 
-            IEnumerable<GameOffering> basketballOfferings = GetBasketballOfferings(initialJson);
-            IEnumerable<GameOffering> nflOfferings = GetNFLOfferings(initialJson);
-            IEnumerable<GameOffering> baseballOfferings = GetBaseballOfferings(initialJson);
-            IEnumerable<GameOffering> ncaafOfferings = GetNCAAFOfferings(initialJson);
-            IEnumerable<GameOffering> ncaabOfferings = GetNCAABOfferings(initialJson);
+            if (Program.Configuration.ShouldParseSport("NFL"))
+                offerings = offerings.Concat(GetNFLOfferings(initialJson));
+            if (Program.Configuration.ShouldParseSport("NBA"))
+                offerings = offerings.Concat(GetBasketballOfferings(initialJson));
+            if (Program.Configuration.ShouldParseSport("MLB"))
+                offerings = offerings.Concat(GetBaseballOfferings(initialJson));
+            if (Program.Configuration.ShouldParseSport("NCAAB"))
+                offerings = offerings.Concat(GetNCAABOfferings(initialJson));
+            if (Program.Configuration.ShouldParseSport("NCAAF"))
+                offerings = offerings.Concat(GetNCAAFOfferings(initialJson));
 
-            return ncaabOfferings.Concat(ncaafOfferings.Concat(baseballOfferings.Concat(basketballOfferings.Concat(nflOfferings))));
+            return offerings;
         }
 
         private IEnumerable<GameOffering> GetBasketballOfferings(dynamic initialJson)

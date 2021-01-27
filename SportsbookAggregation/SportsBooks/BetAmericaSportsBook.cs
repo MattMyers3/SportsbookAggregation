@@ -29,13 +29,20 @@ namespace SportsbookAggregation.SportsBooks
             try
             {
                 var token = GetBearerToken();
-                var basketballOfferings = GetBasketballOfferings(token);
-                var nflOfferings = GetNFLOfferings(token);
-                var baseballOfferings = GetBaseballOfferings(token);
-                var ncaafOfferings = GetNCAAFOfferings(token);
-                var ncaabOfferings = GetNCAABOfferings(token);
+                IEnumerable<GameOffering> offerings = new List<GameOffering>();
+                if (Program.Configuration.ShouldParseSport("NFL"))
+                    offerings = offerings.Concat(GetNFLOfferings(token));
+                if (Program.Configuration.ShouldParseSport("NBA"))
+                    offerings = offerings.Concat(GetBasketballOfferings(token));
+                if (Program.Configuration.ShouldParseSport("MLB"))
+                    offerings = offerings.Concat(GetBaseballOfferings(token));
+                if (Program.Configuration.ShouldParseSport("NCAAB"))
+                    offerings = offerings.Concat(GetNCAABOfferings(token));
+                if (Program.Configuration.ShouldParseSport("NCAAF"))
+                    offerings = offerings.Concat(GetNCAAFOfferings(token));
+
                 Program.HttpClient = new HttpClient(); //Clear out state from parsing
-                return ncaabOfferings.Concat(ncaafOfferings.Concat(baseballOfferings.Concat(basketballOfferings.Concat(nflOfferings))));
+                return offerings;
             }
             catch (Exception e)
             {

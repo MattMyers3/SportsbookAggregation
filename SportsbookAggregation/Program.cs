@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
-using SportsbookAggregation.Alerts;
+﻿using SportsbookAggregation.Alerts;
 using SportsbookAggregation.Data;
 using SportsbookAggregation.SportsBooks;
 using SportsbookAggregation.SportsBooks.Models;
+using SportsbookAggregation.Config;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,11 +15,11 @@ namespace SportsbookAggregation
     internal static class Program
     {
         public static HttpClient HttpClient = new HttpClient();
-        public static IConfigurationRoot Configuration;
+        public static ConfigWrapper Configuration = new ConfigWrapper();
 
         private static void Main(string[] args)
         {
-            ReadConfig();
+            Configuration.ReadConfig();
 
             List<ISportsBook> sportsbooks = new List<ISportsBook> { new DraftKingsSportsBook(), new FanDuelSportsBook(), new FoxBetSportsBook(), new BarstoolSportsBook(), new BetAmericaSportsBook(), new CaesarsSportBook(), new BetRiversSportsBook(), new ParxSportsBook(), new UnibetSportsBook(), new SugarHouseSportsBook() };
             
@@ -29,6 +29,8 @@ namespace SportsbookAggregation
 
             foreach (var sportsbook in sportsbooks)
             {
+                if (!Configuration.ShouldParseBook(sportsbook.GetSportsBookName()))
+                    continue;
                 try
                 {
                     gameOfferings.AddRange(sportsbook.AggregateFutureOfferings().ToList());
@@ -85,18 +87,6 @@ namespace SportsbookAggregation
             }
         }
 
-        public static void ReadConfig()
-        {
-            if (Configuration == null)
-            {
-                string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
-                var builder = new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile($"appsettings.{environment}.json");
-                Configuration = builder.Build();
-            }
-        }
-
         public static void LogError(Exception ex)
         {
             string filePath = "ErrorLog.txt";
@@ -121,13 +111,13 @@ namespace SportsbookAggregation
 
         public static void WriteToConsole(string content)
         {
-            if (Convert.ToBoolean(Configuration["OutputToConsole"]))
+            if (Configuration.ReadBooleanProperty("OutputToConsole"))
                 Console.WriteLine(content);
         }
 
         public static void SendAlerts(string content)
         {
-            if (Convert.ToBoolean(Configuration["SendTexts"]))
+            if (Configuration.ReadBooleanProperty("SendTexts"))
             {
                 var client = new SmtpClient("smtp.gmail.com", 587);
                 client.EnableSsl = true;

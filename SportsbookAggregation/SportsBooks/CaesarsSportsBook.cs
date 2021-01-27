@@ -22,12 +22,17 @@ namespace SportsbookAggregation.SportsBooks
 
         public IEnumerable<GameOffering> AggregateFutureOfferings() //make sure you are on pa.caesarsonline.com
         {
-            var basketballOfferings = GetBasketballOfferings();
-            var footballOfferings = GetFootballOfferings();
-            var ncaafOfferings = GetNCAAFOfferings();
-            var ncaabOfferings = GetNCAABOfferings();
+            IEnumerable<GameOffering> offerings = new List<GameOffering>();
+            if (Program.Configuration.ShouldParseSport("NFL"))
+                offerings = offerings.Concat(GetFootballOfferings());
+            if (Program.Configuration.ShouldParseSport("NBA"))
+                offerings = offerings.Concat(GetBasketballOfferings());
+            if (Program.Configuration.ShouldParseSport("NCAAB"))
+                offerings = offerings.Concat(GetNCAABOfferings());
+            if (Program.Configuration.ShouldParseSport("NCAAF"))
+                offerings = offerings.Concat(GetNCAAFOfferings());
 
-            return ncaabOfferings.Concat(ncaafOfferings.Concat(basketballOfferings.Concat(footballOfferings)));
+            return offerings;
         }
 
         private IEnumerable<GameOffering> GetBasketballOfferings()
