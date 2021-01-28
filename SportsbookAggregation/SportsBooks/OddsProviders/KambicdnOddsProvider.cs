@@ -15,6 +15,7 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
         private readonly string NbaRequestUrl;
         private readonly string NflRequestUrl;
         private readonly string MlbRequestUrl;
+        private readonly string NhlRequestUrl;
         private readonly string NcaafRequestUrl;
         private readonly string NcaabRequestUrl;
         private readonly string OddsBoostUrl;
@@ -29,6 +30,7 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
             NbaRequestUrl = BaseUrl + $"/listView/basketball/nba.json?lang=en_US&market=US&useCombined=true";
             NflRequestUrl = BaseUrl + $"/listView/american_football/nfl.json?lang=en_US&market=US&useCombined=true";
             MlbRequestUrl = BaseUrl + $"/listView/baseball/mlb.json?lang=en_US&market=US&useCombined=true";
+            NhlRequestUrl = BaseUrl + $"/listView/ice_hockey/nhl.json?lang=en_US&market=US&useCombined=true";
             NcaafRequestUrl = BaseUrl + $"/listView/american_football/ncaaf.json?lang=en_US&market=US&useCombined=true";
             NcaabRequestUrl = BaseUrl + $"/listView/basketball/ncaab.json?lang=en_US&market=US&useCombined=true";
             OddsBoostUrl = BaseUrl + $"/listView/{siteSpecialsName}.json?lang=en_US&market=US&&useCombined=true";
@@ -43,6 +45,8 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
                 offerings = offerings.Concat(GetBasketballOfferings());
             if (Program.Configuration.ShouldParseSport("MLB"))
                 offerings = offerings.Concat(GetBaseballOfferings());
+            if (Program.Configuration.ShouldParseSport("NHL"))
+                offerings = offerings.Concat(GetHockeyOfferings());
             if (Program.Configuration.ShouldParseSport("NCAAB"))
                 offerings = offerings.Concat(GetNCAABOfferings());
             if (Program.Configuration.ShouldParseSport("NCAAF"))
@@ -90,6 +94,11 @@ namespace SportsbookAggregation.SportsBooks.OddsProviders
         private IEnumerable<GameOffering> GetBaseballOfferings()
         {
             return GetGameOfferings(MlbRequestUrl, "Run Line", "Moneyline", "Total Runs");
+        }
+
+        private IEnumerable<GameOffering> GetHockeyOfferings()
+        {
+            return GetGameOfferings(NhlRequestUrl, "Puck Line - Inc. OT and Shootout", "Moneyline - Inc. OT and Shootout", "Total Goals - Inc. OT and Shootout");
         }
 
         private IEnumerable<GameOffering> GetNCAAFOfferings()

@@ -16,6 +16,8 @@ namespace SportsbookAggregation.SportsBooks
             "https://sports.mtairycasino.foxbet.com/sportsbook/v1/api/getSportTree?sport=AMERICAN_FOOTBALL&includeOutrights=false&includeEvents=false&channelId=15";
         private const string InitialBaseballRequest =
             "https://sports.mtairycasino.foxbet.com/sportsbook/v1/api/getSportTree?sport=BASEBALL&includeOutrights=false&includeEvents=false&channelId=15";
+        private const string InitialHockeyRequest =
+            "https://sports.mtairycasino.foxbet.com/sportsbook/v1/api/getSportTree?sport=ICE_HOCKEY&includeOutrights=false&includeEvents=false&channelId=15";
 
 
         public string GetSportsBookName()
@@ -33,6 +35,8 @@ namespace SportsbookAggregation.SportsBooks
                 offerings = offerings.Concat(GetBasketballOfferings());
             if (Program.Configuration.ShouldParseSport("MLB"))
                 offerings = offerings.Concat(GetBaseballOfferings());
+            if (Program.Configuration.ShouldParseSport("NHL"))
+                offerings = offerings.Concat(GetHockeyOfferings());
             if (Program.Configuration.ShouldParseSport("NCAAB"))
                 offerings = offerings.Concat(GetNCAABOfferings());
             if (Program.Configuration.ShouldParseSport("NCAAF"))
@@ -81,6 +85,20 @@ namespace SportsbookAggregation.SportsBooks
                 return Enumerable.Empty<GameOffering>();
 
             return GetGameOfferings(usaCategoryJson, "MLB", "Money Line", "Run Line", "Total Runs");
+        }
+
+        private IEnumerable<GameOffering> GetHockeyOfferings()
+        {
+            var initialJson =
+                JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(InitialHockeyRequest).Result);
+
+            var usaCategoryJson = ((IEnumerable)initialJson.categories).Cast<dynamic>()
+                .FirstOrDefault(g => g.name == "USA");
+
+            if (usaCategoryJson == null)
+                return Enumerable.Empty<GameOffering>();
+
+            return GetGameOfferings(usaCategoryJson, "NHL", "Money Line", "Goal Spreads", "Total Goals");
         }
 
         private IEnumerable<GameOffering> GetNCAAFOfferings()

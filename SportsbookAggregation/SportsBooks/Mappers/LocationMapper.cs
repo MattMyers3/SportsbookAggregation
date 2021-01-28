@@ -324,6 +324,8 @@
         {
             switch (abbreviation.ToUpper())
             {
+                case "ANA":
+                    return "Anaheim";
                 case "ARI":
                     return "Arizona";
                 case "ATL":
@@ -338,6 +340,8 @@
                     return "Buffalo";
                 case "CAR":
                     return "Carolina";
+                case "CGY":
+                    return "Calgary";
                 case "CHA":
                     return "Charlotte";
                 case "CHI":
@@ -346,12 +350,18 @@
                     return "Cincinnati";
                 case "CLE":
                     return "Cleveland";
+                case "CBJ":
+                    return "Columbus";
                 case "DAL":
                     return "Dallas";
                 case "DEN":
                     return "Denver";
                 case "DET":
                     return "Detroit";
+                case "EDM":
+                    return "Edmonton";
+                case "FLA":
+                    return "Florida";
                 case "GB":
                     return "Green Bay";
                 case "GS":
@@ -376,8 +386,12 @@
                     return "Milwaukee";
                 case "MIN":
                     return "Minnesota";
+                case "MTL":
+                    return "Montreal";
                 case "NE":
                     return "New England";
+                case "NJ":
+                    return "New Jersey";
                 case "NO":
                     return "New Orleans";
                 case "NY":
@@ -386,6 +400,8 @@
                     return "Oklahoma City";
                 case "ORL":
                     return "Orlando";
+                case "OTT":
+                    return "Ottowa";
                 case "PHI":
                     return "Philadelphia";
                 case "PIT":
@@ -404,6 +420,8 @@
                     return "Seattle";
                 case "SF":
                     return "San Francisco";
+                case "SJ":
+                    return "San Jose";
                 case "TB":
                     return "Tampa Bay";
                 case "TEN":
@@ -412,7 +430,12 @@
                     return "Toronto";
                 case "UTA":
                     return "Utah";
+                case "VAN":
+                    return "Vancouver";
+                case "VGS":
+                    return "Vegas";
                 case "WAS":
+                case "WSH":
                     return "Washington";
                 case "SD":
                     return "San Diego";
