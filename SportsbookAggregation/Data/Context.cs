@@ -56,7 +56,7 @@ namespace SportsbookAggregation.Data
             var mlsGuid = new Guid("c50f0844-6549-47e7-9409-921ad9bf160b");
             var nhlGuid = new Guid("514a56cf-b503-413f-b2c6-8a58e99863fc");
 
-            modelBuilder.Entity<Sport>().HasData(new Sport { SportId = ncaabGuid, Name = "NCAAB" }, new Sport { SportId = ncaafGuid, Name = "NCAAF" }, new Sport { SportId = Constants.unknownGuid, Name = "Unknown" }, new Sport { SportId = mlbGuid, Name = "MLB" }, new Sport { SportId = nbaGuid, Name = "NBA" }, new Sport { Name = "NFL", SportId = nflGuid }, new Sport { Name = "MLS", SportId = mlsGuid });
+            modelBuilder.Entity<Sport>().HasData(new Sport { SportId = nhlGuid, Name = "NHL" }, new Sport { SportId = ncaabGuid, Name = "NCAAB" }, new Sport { SportId = ncaafGuid, Name = "NCAAF" }, new Sport { SportId = Constants.unknownGuid, Name = "Unknown" }, new Sport { SportId = mlbGuid, Name = "MLB" }, new Sport { SportId = nbaGuid, Name = "NBA" }, new Sport { Name = "NFL", SportId = nflGuid }, new Sport { Name = "MLS", SportId = mlsGuid });
             modelBuilder.Entity<Team>().HasData(
                 new Team { TeamId = new Guid("327fa1ce-ebd2-42b5-8ae3-af4e1f85c31b"), Location = "Atlanta", Mascot = "Hawks" },
                 new Team { TeamId = new Guid("f4646032-8ce2-4115-aa17-6a3f829c48c6"), Location = "Boston", Mascot = "Celtics" },
