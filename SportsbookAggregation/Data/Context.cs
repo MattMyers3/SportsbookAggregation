@@ -675,7 +675,7 @@ namespace SportsbookAggregation.Data
                 new Team { TeamId = new Guid("19d1cee4-36dc-4729-9c69-353e6bf5eab8"), Location = "Calgary", Mascot = "Flames" },
                 new Team { TeamId = new Guid("e7e4e96c-0f0f-4dd3-baaf-082a36942e47"), Location = "Edmonton", Mascot = "Oilers" },
                 new Team { TeamId = new Guid("f33752d2-dfae-4905-a63a-7d5f53ce63aa"), Location = "Montreal", Mascot = "Canadiens" },
-                new Team { TeamId = new Guid("113bfd18-9c4a-482c-b8b6-405742a2a0b1"), Location = "Ottowa", Mascot = "Senators" },
+                new Team { TeamId = new Guid("113bfd18-9c4a-482c-b8b6-405742a2a0b1"), Location = "Ottawa", Mascot = "Senators" },
                 new Team { TeamId = new Guid("057f4c1e-7bfa-4bd9-ad97-8cc135f796bf"), Location = "Toronto", Mascot = "Maple Leafs" },
                 new Team { TeamId = new Guid("b427c5a6-2679-4cb0-a73f-bb460c2b78d6"), Location = "Vancouver", Mascot = "Canucks" },
                 new Team { TeamId = new Guid("7e292728-06bd-4911-9c27-59b41be33369"), Location = "Winnipeg", Mascot = "Jets" },

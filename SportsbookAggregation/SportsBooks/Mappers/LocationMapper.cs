@@ -401,7 +401,8 @@
                 case "ORL":
                     return "Orlando";
                 case "OTT":
-                    return "Ottowa";
+                case "Ottowa":
+                    return "Ottawa";
                 case "PHI":
                     return "Philadelphia";
                 case "PIT":
