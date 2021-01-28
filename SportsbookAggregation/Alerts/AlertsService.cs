@@ -129,7 +129,7 @@ namespace SportsbookAggregation.Alerts
         }
         public static bool isSpreadOpportunity(BestAvailableGameLine gameLine)
         {
-            if (gameLine.CurrentAwaySpread == gameLine.CurrentHomeSpread)
+            if (Math.Abs(gameLine.CurrentAwaySpread.Value) == Math.Abs(gameLine.CurrentHomeSpread.Value))
             {
                 if (gameLine.CurrentAwaySpreadPayout + gameLine.CurrentHomeSpreadPayout > 0)
                     return true;
@@ -151,7 +151,7 @@ namespace SportsbookAggregation.Alerts
         {
             if (gameLine.CurrentOver == gameLine.CurrentUnder)
             {
-                if (gameLine.CurrentAwaySpreadPayout + gameLine.CurrentHomeSpreadPayout > 0)
+                if (gameLine.CurrentOverPayout + gameLine.CurrentUnderPayout > 0)
                     return true;
             }
             if (Math.Abs(gameLine.CurrentOver.Value) - Math.Abs(gameLine.CurrentUnder.Value) > 5)
