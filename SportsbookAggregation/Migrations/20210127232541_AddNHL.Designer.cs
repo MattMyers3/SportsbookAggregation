@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SportsbookAggregation.Data;
 
 namespace SportsbookAggregation.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20210127232541_AddNHL")]
+    partial class AddNHL
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -336,11 +338,6 @@ namespace SportsbookAggregation.Migrations
                     b.ToTable("Sport");
 
                     b.HasData(
-                        new
-                        {
-                            SportId = new Guid("514a56cf-b503-413f-b2c6-8a58e99863fc"),
-                            Name = "NHL"
-                        },
                         new
                         {
                             SportId = new Guid("d455e82d-31d6-48ad-b119-c4059d9f273a"),

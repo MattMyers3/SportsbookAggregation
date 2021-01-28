@@ -36,6 +36,8 @@ namespace SportsbookAggregation.SportsBooks
                     offerings = offerings.Concat(GetBasketballOfferings(token));
                 if (Program.Configuration.ShouldParseSport("MLB"))
                     offerings = offerings.Concat(GetBaseballOfferings(token));
+                if (Program.Configuration.ShouldParseSport("NHL"))
+                    offerings = offerings.Concat(GetHockeyOfferings(token));
                 if (Program.Configuration.ShouldParseSport("NCAAB"))
                     offerings = offerings.Concat(GetNCAABOfferings(token));
                 if (Program.Configuration.ShouldParseSport("NCAAF"))
@@ -84,6 +86,12 @@ namespace SportsbookAggregation.SportsBooks
         {
             var requestJson = new StringContent("{\"eventState\":\"Mixed\",\"eventTypes\":[\"Fixture\",\"AggregateFixture\"],\"ids\":[\"84240\"],\"regionIds\":[\"227\"],\"marketTypeRequests\":[{\"sportIds\":[\"7\"],\"marketTypeIds\":[\"2_39\",\"1_39\",\"3_39\",\"2_0\",\"1_0\",\"3_0\"],\"statement\":\"Include\"}]}", Encoding.UTF8, "application/json-patch+json");
             return GetGameOfferings(token, requestJson, "FT Run Line", "FT Money Line", "FT O/U Runs");
+        }
+
+        private IEnumerable<GameOffering> GetHockeyOfferings(string token)
+        {
+            var requestJson = new StringContent("{\"eventState\":\"Mixed\",\"eventTypes\":[\"Fixture\",\"AggregateFixture\"],\"ids\":[\"42133\"],\"regionIds\":[\"227\"],\"marketTypeRequests\":[{\"sportIds\":[\"8\"],\"marketTypeIds\":[\"2_39\",\"1_39\",\"3_39\",\"2_0\",\"1_0\",\"3_0\"],\"statement\":\"Include\"}]}", Encoding.UTF8, "application/json-patch+json");
+            return GetGameOfferings(token, requestJson, "Puck Line", "Winner", "O/U");
         }
 
         private dynamic GetGamesJson(string url, string token, StringContent requestJson)

@@ -11,6 +11,7 @@ namespace SportsbookAggregation.SportsBooks
     {
         private const string NbaCode = "77";
         private const string NflCode = "55";
+        private const string NhlCode = "87";
         private const string NcaafCode = "58";
         private const string NcaabCode = "76";
 
@@ -27,6 +28,8 @@ namespace SportsbookAggregation.SportsBooks
                 offerings = offerings.Concat(GetFootballOfferings());
             if (Program.Configuration.ShouldParseSport("NBA"))
                 offerings = offerings.Concat(GetBasketballOfferings());
+            if (Program.Configuration.ShouldParseSport("NHL"))
+                offerings = offerings.Concat(GetHockeyOfferings());
             if (Program.Configuration.ShouldParseSport("NCAAB"))
                 offerings = offerings.Concat(GetNCAABOfferings());
             if (Program.Configuration.ShouldParseSport("NCAAF"))
@@ -37,22 +40,27 @@ namespace SportsbookAggregation.SportsBooks
 
         private IEnumerable<GameOffering> GetBasketballOfferings()
         {
-            return GetGameOfferings(NbaCode, "NBA");
+            return GetGameOfferings(NbaCode, "NBA", "Spread", "Money Line", "Total Points Over/Under");
+        }
+
+        private IEnumerable<GameOffering> GetHockeyOfferings()
+        {
+            return GetGameOfferings(NhlCode, "NHL", "Puck Line", "Money Line", "Total Goals Over/Under");
         }
 
         private IEnumerable<GameOffering> GetFootballOfferings()
         {
-            return GetGameOfferings(NflCode, "NFL");
+            return GetGameOfferings(NflCode, "NFL", "Spread", "Money Line", "Total Points Over/Under");
         }
 
         private IEnumerable<GameOffering> GetNCAAFOfferings()
         {
-            return GetGameOfferings(NcaafCode, "NCAAF");
+            return GetGameOfferings(NcaafCode, "NCAAF", "Point Spread", "Money Line", "Total Points Over/Under");
         }
 
         private IEnumerable<GameOffering> GetNCAABOfferings()
         {
-            return GetGameOfferings(NcaabCode, "NCAAB");
+            return GetGameOfferings(NcaabCode, "NCAAB", "Point Spread", "Money Line", "Total Points Over/Under");
         }
 
         private string GetSportsUrl(string sportsCode)
@@ -60,7 +68,7 @@ namespace SportsbookAggregation.SportsBooks
             return $"https://sb-content.pa.caesarsonline.com/content-service/api/v1/q/event-list?started=false&active=true&marketSortsIncluded=HH%2CHL%2CMR%2CWH&eventSortsIncluded=MTCH&includeChildMarkets=true&drilldownTagIds={sportsCode}";
         }
 
-        private IEnumerable<GameOffering> GetGameOfferings(string sportsCode, string sportName)
+        private IEnumerable<GameOffering> GetGameOfferings(string sportsCode, string sportName, string spreadName, string moneyLineName, string overUnderName)
         {
             var responseString =
                 JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(GetSportsUrl(sportsCode)).Result);
@@ -69,13 +77,13 @@ namespace SportsbookAggregation.SportsBooks
             var gameOfferings = new List<GameOffering>();
             foreach (var game in games)
             {
-                gameOfferings.Add(ParseGameOffering(game, sportName));
+                gameOfferings.Add(ParseGameOffering(game, sportName, spreadName, moneyLineName, overUnderName));
             }
 
             return gameOfferings;
         }
 
-        private GameOffering ParseGameOffering(dynamic game, string sportName)
+        private GameOffering ParseGameOffering(dynamic game, string sportName, string spreadName, string moneyLineName, string overUnderName)
         {
             var gameOffering = new GameOffering
             {
@@ -94,9 +102,9 @@ namespace SportsbookAggregation.SportsBooks
             if (gameOffering.HomeTeam == "Washington Football Team" || gameOffering.AwayTeam == "Washington Football Team")
                 markets = ((IEnumerable)JsonConvert.DeserializeObject<dynamic>(markets.ToString().Replace("Washington Redskins", "Washington Football Team"))).Cast<dynamic>();
 
-            var pointSpreadJson = markets.FirstOrDefault(g => g.name == "Spread");
-            var totalPointsJson = markets.FirstOrDefault(g => g.name == "Total Points Over/Under");
-            var moneylineJson = markets.FirstOrDefault(g => g.name == "Money Line");
+            var pointSpreadJson = markets.FirstOrDefault(g => g.name == spreadName);
+            var totalPointsJson = markets.FirstOrDefault(g => g.name == overUnderName);
+            var moneylineJson = markets.FirstOrDefault(g => g.name == moneyLineName);
 
             if (pointSpreadJson != null && pointSpreadJson.status != "SUSPENDED")
             {

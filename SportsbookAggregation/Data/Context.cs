@@ -54,8 +54,9 @@ namespace SportsbookAggregation.Data
             var ncaabGuid = new Guid("d455e82d-31d6-48ad-b119-c4059d9f273a");
             var mlbGuid = new Guid("a90b8447-171a-4633-b191-fa4ca83270a8");
             var mlsGuid = new Guid("c50f0844-6549-47e7-9409-921ad9bf160b");
+            var nhlGuid = new Guid("514a56cf-b503-413f-b2c6-8a58e99863fc");
 
-            modelBuilder.Entity<Sport>().HasData(new Sport { SportId = ncaabGuid, Name = "NCAAB" }, new Sport { SportId = ncaafGuid, Name = "NCAAF" }, new Sport { SportId = Constants.unknownGuid, Name = "Unknown" }, new Sport { SportId = mlbGuid, Name = "MLB" }, new Sport { SportId = nbaGuid, Name = "NBA" }, new Sport { Name = "NFL", SportId = nflGuid }, new Sport { Name = "MLS", SportId = mlsGuid });
+            modelBuilder.Entity<Sport>().HasData(new Sport { SportId = nhlGuid, Name = "NHL" }, new Sport { SportId = ncaabGuid, Name = "NCAAB" }, new Sport { SportId = ncaafGuid, Name = "NCAAF" }, new Sport { SportId = Constants.unknownGuid, Name = "Unknown" }, new Sport { SportId = mlbGuid, Name = "MLB" }, new Sport { SportId = nbaGuid, Name = "NBA" }, new Sport { Name = "NFL", SportId = nflGuid }, new Sport { Name = "MLS", SportId = mlsGuid });
             modelBuilder.Entity<Team>().HasData(
                 new Team { TeamId = new Guid("327fa1ce-ebd2-42b5-8ae3-af4e1f85c31b"), Location = "Atlanta", Mascot = "Hawks" },
                 new Team { TeamId = new Guid("f4646032-8ce2-4115-aa17-6a3f829c48c6"), Location = "Boston", Mascot = "Celtics" },
@@ -670,7 +671,38 @@ namespace SportsbookAggregation.Data
                 new Team { TeamId = new Guid("e0c9bc0e-2b51-44dc-93e9-7fb1126927c1"), Location = "Coppin State", Mascot = "Eagles" },
                 new Team { TeamId = new Guid("a26364b1-c1a4-4cad-b2fe-3065f85966e3"), Location = "UMKC", Mascot = "Kangaroos" },
                 new Team { TeamId = new Guid("ec0dc24e-f546-442a-9b2a-ab0803a31170"), Location = "Dixie State", Mascot = "Trailblazers" },
-                new Team { TeamId = new Guid("6610ec82-fe56-423d-90cd-8a4868a5181e"), Location = "Tarleton State", Mascot = "Texans" }
+                new Team { TeamId = new Guid("6610ec82-fe56-423d-90cd-8a4868a5181e"), Location = "Tarleton State", Mascot = "Texans" },
+                new Team { TeamId = new Guid("19d1cee4-36dc-4729-9c69-353e6bf5eab8"), Location = "Calgary", Mascot = "Flames" },
+                new Team { TeamId = new Guid("e7e4e96c-0f0f-4dd3-baaf-082a36942e47"), Location = "Edmonton", Mascot = "Oilers" },
+                new Team { TeamId = new Guid("f33752d2-dfae-4905-a63a-7d5f53ce63aa"), Location = "Montreal", Mascot = "Canadiens" },
+                new Team { TeamId = new Guid("113bfd18-9c4a-482c-b8b6-405742a2a0b1"), Location = "Ottawa", Mascot = "Senators" },
+                new Team { TeamId = new Guid("057f4c1e-7bfa-4bd9-ad97-8cc135f796bf"), Location = "Toronto", Mascot = "Maple Leafs" },
+                new Team { TeamId = new Guid("b427c5a6-2679-4cb0-a73f-bb460c2b78d6"), Location = "Vancouver", Mascot = "Canucks" },
+                new Team { TeamId = new Guid("7e292728-06bd-4911-9c27-59b41be33369"), Location = "Winnipeg", Mascot = "Jets" },
+                new Team { TeamId = new Guid("8cfcab6d-51ce-4a5e-b82b-5e45cddfd183"), Location = "Boston", Mascot = "Bruins" },
+                new Team { TeamId = new Guid("6543a625-05af-4a7b-94b1-e77e4ee50aa0"), Location = "Buffalo", Mascot = "Sabres" },
+                new Team { TeamId = new Guid("0d21b9f3-8d5f-4468-b7df-3aac3435fa62"), Location = "New Jersey", Mascot = "Devils" },
+                new Team { TeamId = new Guid("4c783eb1-0d51-46aa-886d-e4a8411fdf42"), Location = "New York", Mascot = "Islanders" },
+                new Team { TeamId = new Guid("7776c949-48fc-4d56-bae2-a710b898bd25"), Location = "New York", Mascot = "Rangers" },
+                new Team { TeamId = new Guid("545cbed7-d055-4085-842d-4b1ca35dfa10"), Location = "Philadelphia", Mascot = "Flyers" },
+                new Team { TeamId = new Guid("02279907-4a1e-4e48-9bec-affb2bb194df"), Location = "Pittsburgh", Mascot = "Penguins" },
+                new Team { TeamId = new Guid("91ef093c-c176-409b-afaf-944e2826db6f"), Location = "Washington", Mascot = "Capitals" },
+                new Team { TeamId = new Guid("bc157451-999e-437e-b179-4a3f43972ac5"), Location = "Carolina", Mascot = "Hurricanes" },
+                new Team { TeamId = new Guid("1795a2c9-525f-4a07-84bb-9cd528f095a8"), Location = "Chicago", Mascot = "Blackhawks" },
+                new Team { TeamId = new Guid("21d326eb-acc4-492e-a89a-57111d2c8849"), Location = "Columbus", Mascot = "Blue Jackets" },
+                new Team { TeamId = new Guid("4569d99d-6342-4c4e-8ccd-6d4dbcb45b5a"), Location = "Dallas", Mascot = "Stars" },
+                new Team { TeamId = new Guid("af394a5b-d0c3-4420-88bb-f74d2804f913"), Location = "Detroit", Mascot = "Red Wings" },
+                new Team { TeamId = new Guid("d2884665-94d8-43ef-b96a-9a1014c9e140"), Location = "Florida", Mascot = "Panthers" },
+                new Team { TeamId = new Guid("c3bcfc79-ad0a-4a3c-b2ed-5e2d19906ec9"), Location = "Nashville", Mascot = "Predators" },
+                new Team { TeamId = new Guid("1e35d18d-2472-4c81-add1-d591de8b1ba2"), Location = "Tampa Bay", Mascot = "Lightning" },
+                new Team { TeamId = new Guid("bf495ab6-1028-4b99-b35b-cd0c43c50b38"), Location = "Anaheim", Mascot = "Ducks" },
+                new Team { TeamId = new Guid("01e23993-86d3-4f6c-9b3f-fc54fb552e31"), Location = "Arizona", Mascot = "Coyotes" },
+                new Team { TeamId = new Guid("dafb53fd-f235-48d0-9c80-6dc198d81280"), Location = "Colorado", Mascot = "Avalanche" },
+                new Team { TeamId = new Guid("3cf61e0d-4465-4c3c-ab70-3d72682fa7c0"), Location = "Los Angeles", Mascot = "Kings" },
+                new Team { TeamId = new Guid("6d58fd86-a283-4d2d-9687-6a6c0f7d417e"), Location = "Minnesota", Mascot = "Wild" },
+                new Team { TeamId = new Guid("0acfac22-e715-4e31-845e-40a5d0ee86a6"), Location = "St. Louis", Mascot = "Blues" },
+                new Team { TeamId = new Guid("ab281eac-c420-4699-be77-cd2f46b44726"), Location = "San Jose", Mascot = "Sharks" },
+                new Team { TeamId = new Guid("99b45ffd-dc2f-4b48-8ac2-bcbacfd4794f"), Location = "Vegas", Mascot = "Golden Knights" }
             );
             modelBuilder.Entity<GamblingSite>().HasData(
                 new GamblingSite { GamblingSiteId = new Guid("1fcec6f7-84b3-4033-af0f-e1f2bcb8528c"), Name = "Fanduel" },
