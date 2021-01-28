@@ -35,8 +35,8 @@ namespace SportsbookAggregation.SportsBooks
                 offerings = offerings.Concat(GetBasketballOfferings());
             if (Program.Configuration.ShouldParseSport("MLB"))
                 offerings = offerings.Concat(GetBaseballOfferings());
-            if (Program.Configuration.ShouldParseSport("NHL"))
-                offerings = offerings.Concat(GetHockeyOfferings());
+            //if (Program.Configuration.ShouldParseSport("NHL")) working on issues with showing the most balanced lines
+            //    offerings = offerings.Concat(GetHockeyOfferings());
             if (Program.Configuration.ShouldParseSport("NCAAB"))
                 offerings = offerings.Concat(GetNCAABOfferings());
             if (Program.Configuration.ShouldParseSport("NCAAF"))

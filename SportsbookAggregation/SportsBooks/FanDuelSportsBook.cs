@@ -91,7 +91,7 @@ namespace SportsbookAggregation.SportsBooks
         {
             var hockeyJson = ((IEnumerable)initialJson.bonavigationnodes).Cast<dynamic>()
                 .First(g => g.name == "Hockey");
-            return GetGameOfferings(hockeyJson, "NHL", "NHL Tab Coupon", "Spread", "Money Line", "Total Goals", "Games");
+            return GetGameOfferings(hockeyJson, "NHL", "NHL Tab Coupon", "Spread Betting", "Money Line", "Total Goals", "Games");
         }
 
         private IEnumerable<GameOffering> GetGameOfferings(dynamic json, string sport, string tabCouponName, string spreadLabel, string moneyLineLabel, string totalLabel, string gamesMarketGroupString)
@@ -148,7 +148,7 @@ namespace SportsbookAggregation.SportsBooks
             if (marketList == null)
                 return gameOffering;
 
-            var spreadInfo = ((IEnumerable) marketList).Cast<dynamic>().FirstOrDefault(g => g.name.Value.Contains(spreadLabel))
+            var spreadInfo = ((IEnumerable) marketList).Cast<dynamic>().FirstOrDefault(g => g.name.Value == spreadLabel)
                 ?.selections;
             if (spreadInfo != null)
             {
