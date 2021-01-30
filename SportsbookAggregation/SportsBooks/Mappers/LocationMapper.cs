@@ -396,6 +396,8 @@
                     return "New Orleans";
                 case "NY":
                     return "New York";
+                case "NSH":
+                    return "Nashville";
                 case "OKC":
                     return "Oklahoma City";
                 case "ORL":
@@ -438,6 +440,8 @@
                 case "WAS":
                 case "WSH":
                     return "Washington";
+                case "WPG":
+                    return "Winnipeg";
                 case "SD":
                     return "San Diego";
                 case "OAK":

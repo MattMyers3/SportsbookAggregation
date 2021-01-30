@@ -237,7 +237,7 @@ namespace SportsbookAggregation
         {
             teamName = LocationMapper.GetFullTeamName(teamName, sport);
             if (IsCollegeSport(sport))
-                teamName = MascotMapper.GetFullNameUsingCollege(teamName);
+                teamName = MascotMapper.GetFullNameUsingCollege(teamName.Trim());
 
             var team = dbContext.TeamRepository.Read().SingleOrDefault((t => (t.Location + " " + t.Mascot == teamName)));
             if (team == null)
