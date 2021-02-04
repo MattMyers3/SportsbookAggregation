@@ -25,6 +25,18 @@ namespace SportsbookAggregation.SportsBooks
         public IEnumerable<GameOffering> AggregateFutureOfferings() //make sure you are on pa.caesarsonline.com
         {
             Program.HttpClient.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.146 Safari/537.36");
+            Program.HttpClient.DefaultRequestHeaders.Add("authority", "sb-content.pa.caesarsonline.com");
+            Program.HttpClient.DefaultRequestHeaders.Add("scheme", "https");
+            Program.HttpClient.DefaultRequestHeaders.Add("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
+            Program.HttpClient.DefaultRequestHeaders.Add("accept-language", "en-US,en;q=0.9");
+            Program.HttpClient.DefaultRequestHeaders.Add("cache-control", "max-age=0");
+            Program.HttpClient.DefaultRequestHeaders.Add("sec-ch-ua", "\"Chromium\";v=\"88\", \"Google Chrome\";v=\"88\", \"; Not A Brand\";v=\"99\"");
+            Program.HttpClient.DefaultRequestHeaders.Add("sec-ch-ua-mobile", "?0");
+            Program.HttpClient.DefaultRequestHeaders.Add("sec-fetch-dest", "document");
+            Program.HttpClient.DefaultRequestHeaders.Add("sec-fetch-mode", "navigate");
+            Program.HttpClient.DefaultRequestHeaders.Add("sec-fetch-site", "none");
+            Program.HttpClient.DefaultRequestHeaders.Add("sec-fetch-user", "?1");
+            Program.HttpClient.DefaultRequestHeaders.Add("upgrade-insecure-requests", "1");
 
             IEnumerable<GameOffering> offerings = new List<GameOffering>();
             if (Program.Configuration.ShouldParseSport("NFL"))
@@ -39,6 +51,18 @@ namespace SportsbookAggregation.SportsBooks
                 offerings = offerings.Concat(GetNCAAFOfferings());
 
             Program.HttpClient.DefaultRequestHeaders.Remove("user-agent");
+            Program.HttpClient.DefaultRequestHeaders.Remove("authority");
+            Program.HttpClient.DefaultRequestHeaders.Remove("scheme");
+            Program.HttpClient.DefaultRequestHeaders.Remove("accept");
+            Program.HttpClient.DefaultRequestHeaders.Remove("accept-language");
+            Program.HttpClient.DefaultRequestHeaders.Remove("cache-control");
+            Program.HttpClient.DefaultRequestHeaders.Remove("sec-ch-ua");
+            Program.HttpClient.DefaultRequestHeaders.Remove("sec-ch-ua-mobile");
+            Program.HttpClient.DefaultRequestHeaders.Remove("sec-fetch-dest");
+            Program.HttpClient.DefaultRequestHeaders.Remove("sec-fetch-mode");
+            Program.HttpClient.DefaultRequestHeaders.Remove("sec-fetch-site");
+            Program.HttpClient.DefaultRequestHeaders.Remove("sec-fetch-user");
+            Program.HttpClient.DefaultRequestHeaders.Remove("upgrade-insecure-requests");
 
             return offerings;
         }
