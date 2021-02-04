@@ -51,7 +51,7 @@ namespace SportsbookAggregation
             int count = 0;
             foreach (var gameId in gameIds)
             {
-                var bestLine = AlertsService.GetBestAvailableGameLine(gameId, null, context);
+                var bestLine = GetBestGameLinesFromGameId(gameId, context);
                 if (bestLine.CurrentAwayMoneyLine == null || bestLine.CurrentHomeMoneyLine == null)
                     continue;
 
@@ -78,6 +78,93 @@ namespace SportsbookAggregation
             {
                 writer.WriteLine(message);
             }
+        }
+
+        public static BestAvailableGameLine GetBestGameLinesFromGameId(Guid id, Context context)
+        {
+            var bestAvailableGameLine = new BestAvailableGameLine();
+            var sportsbooksArray = context.GamblingSiteRepository.Read().Select(g => g.Name).ToArray();
+            var availableGameLines = context.GameLineRepository.Read().Where(r => r.GameId == id);
+
+            var gamblingSites = context.GamblingSiteRepository.Read().ToList();
+            foreach (var availableGameLine in availableGameLines)
+            {
+                var gamblingSiteName = gamblingSites.First(s => s.GamblingSiteId == availableGameLine.GamblingSiteId).Name;
+                if (sportsbooksArray != null && !sportsbooksArray.Contains(gamblingSiteName))
+                    continue;
+                if (bestAvailableGameLine.CurrentHomeSpread == availableGameLine.CurrentSpread &&
+                    bestAvailableGameLine.CurrentHomeSpreadPayout < availableGameLine.HomeSpreadPayout)
+                {
+                    bestAvailableGameLine.CurrentHomeSpreadPayout = availableGameLine.HomeSpreadPayout;
+                    bestAvailableGameLine.HomeSpreadSite = gamblingSiteName;
+                }
+                else if (bestAvailableGameLine.CurrentHomeSpread == null ||
+                    bestAvailableGameLine.CurrentHomeSpread < availableGameLine.CurrentSpread)
+                {
+                    bestAvailableGameLine.CurrentHomeSpreadPayout = availableGameLine.HomeSpreadPayout;
+                    bestAvailableGameLine.CurrentHomeSpread = availableGameLine.CurrentSpread;
+                    bestAvailableGameLine.HomeSpreadSite = gamblingSiteName;
+                }
+
+                var currentAwaySpread = availableGameLine.CurrentSpread * -1;
+                if (bestAvailableGameLine.CurrentAwaySpread == currentAwaySpread &&
+                    bestAvailableGameLine.CurrentAwaySpreadPayout < availableGameLine.AwaySpreadPayout)
+                {
+                    bestAvailableGameLine.CurrentAwaySpreadPayout = availableGameLine.AwaySpreadPayout;
+                    bestAvailableGameLine.AwaySpreadSite = gamblingSiteName;
+                }
+                else if (bestAvailableGameLine.CurrentAwaySpread == null ||
+                    bestAvailableGameLine.CurrentAwaySpread < currentAwaySpread)
+                {
+                    bestAvailableGameLine.CurrentAwaySpreadPayout = availableGameLine.AwaySpreadPayout;
+                    bestAvailableGameLine.CurrentAwaySpread = currentAwaySpread;
+                    bestAvailableGameLine.AwaySpreadSite = gamblingSiteName;
+                }
+
+                if (bestAvailableGameLine.CurrentOver == availableGameLine.CurrentOverUnder &&
+                    bestAvailableGameLine.CurrentOverPayout < availableGameLine.OverPayOut)
+                {
+                    bestAvailableGameLine.CurrentOverPayout = availableGameLine.OverPayOut;
+                    bestAvailableGameLine.OverSite = gamblingSiteName;
+                }
+                else if (bestAvailableGameLine.CurrentOver == null ||
+                    bestAvailableGameLine.CurrentOver > availableGameLine.CurrentOverUnder)
+                {
+                    bestAvailableGameLine.CurrentOver = availableGameLine.CurrentOverUnder;
+                    bestAvailableGameLine.CurrentOverPayout = availableGameLine.OverPayOut;
+                    bestAvailableGameLine.OverSite = gamblingSiteName;
+                }
+
+                if (bestAvailableGameLine.CurrentUnder == availableGameLine.CurrentOverUnder &&
+                    bestAvailableGameLine.CurrentUnderPayout < availableGameLine.UnderPayout)
+                {
+                    bestAvailableGameLine.CurrentUnderPayout = availableGameLine.UnderPayout;
+                    bestAvailableGameLine.UnderSite = gamblingSiteName;
+                }
+                else if (bestAvailableGameLine.CurrentUnder == null ||
+                    bestAvailableGameLine.CurrentUnder < availableGameLine.CurrentOverUnder)
+                {
+                    bestAvailableGameLine.CurrentUnder = availableGameLine.CurrentOverUnder;
+                    bestAvailableGameLine.CurrentUnderPayout = availableGameLine.UnderPayout;
+                    bestAvailableGameLine.UnderSite = gamblingSiteName;
+                }
+
+                if (bestAvailableGameLine.CurrentHomeMoneyLine == null || bestAvailableGameLine.CurrentHomeMoneyLine <
+                    availableGameLine.HomeMoneyLinePayout)
+                {
+                    bestAvailableGameLine.CurrentHomeMoneyLine = availableGameLine.HomeMoneyLinePayout;
+                    bestAvailableGameLine.HomeMoneyLineSite = gamblingSiteName;
+                }
+
+                if (bestAvailableGameLine.CurrentAwayMoneyLine == null || bestAvailableGameLine.CurrentAwayMoneyLine <
+                    availableGameLine.AwayMoneyLinePayout)
+                {
+                    bestAvailableGameLine.CurrentAwayMoneyLine = availableGameLine.AwayMoneyLinePayout;
+                    bestAvailableGameLine.AwayMoneyLineSite = gamblingSiteName;
+                }
+            }
+
+            return bestAvailableGameLine;
         }
     }
 }
