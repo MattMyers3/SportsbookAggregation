@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 
 namespace SportsbookAggregation.SportsBooks
 {
@@ -23,6 +24,8 @@ namespace SportsbookAggregation.SportsBooks
 
         public IEnumerable<GameOffering> AggregateFutureOfferings() //make sure you are on pa.caesarsonline.com
         {
+            Program.HttpClient.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.146 Safari/537.36");
+
             IEnumerable<GameOffering> offerings = new List<GameOffering>();
             if (Program.Configuration.ShouldParseSport("NFL"))
                 offerings = offerings.Concat(GetFootballOfferings());
@@ -34,6 +37,8 @@ namespace SportsbookAggregation.SportsBooks
                 offerings = offerings.Concat(GetNCAABOfferings());
             if (Program.Configuration.ShouldParseSport("NCAAF"))
                 offerings = offerings.Concat(GetNCAAFOfferings());
+
+            Program.HttpClient.DefaultRequestHeaders.Remove("user-agent");
 
             return offerings;
         }
