@@ -22,7 +22,7 @@ namespace SportsbookAggregation
             Configuration.ReadConfig();
 
             List<ISportsBook> sportsbooks = new List<ISportsBook> { new DraftKingsSportsBook(), new FanDuelSportsBook(), new FoxBetSportsBook(), new BarstoolSportsBook(), new BetAmericaSportsBook(), new CaesarsSportBook(), new BetRiversSportsBook(), new ParxSportsBook(), new UnibetSportsBook(), new SugarHouseSportsBook() };
-            
+
             var gameOfferings = new List<GameOffering>();
             var oddsBoosts = new List<OddsBoostOffering>();
             var playerProps = new List<PlayerPropOffering>();
@@ -75,6 +75,11 @@ namespace SportsbookAggregation
                     using (var dbContextTransaction = dbContext.Database.BeginTransaction())
                     {
                         AlertsService.Run(dbContext);
+                        dbContextTransaction.Commit();
+                    }
+                    using (var dbContextTransaction = dbContext.Database.BeginTransaction())
+                    {
+                        DataCollector.Run(dbContext);
                         dbContextTransaction.Commit();
                     }
                 }
