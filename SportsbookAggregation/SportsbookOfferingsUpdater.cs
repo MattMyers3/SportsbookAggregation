@@ -219,7 +219,7 @@ namespace SportsbookAggregation
             {
                 var games = dbContext.GameLineRepository.Read()
                     .SingleOrDefault(gl => gl.GameId == gameId && gl.GamblingSiteId == siteId);
-                return games;
+                return games; 
             }
             catch (Exception e)
             {
