@@ -387,6 +387,7 @@
                 case "MIN":
                     return "Minnesota";
                 case "MTL":
+                case "MON":
                     return "Montreal";
                 case "NE":
                     return "New England";

@@ -275,21 +275,16 @@ namespace SportsbookAggregation.SportsBooks
 
         public IEnumerable<PlayerPropOffering> AggregatePlayerProps()
         {
-            var initialJson = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(InitialRequest).Result);
-
-            IEnumerable<PlayerPropOffering> nflOfferings;
-            try
-            {
-                nflOfferings = GetPlayerProps(initialJson, "Football", "NFL", "Season Coupon", PlayerPropConstants.FanDuelProps["NFL"], "Games");
-            }
-            catch
-            {
-                nflOfferings = GetPlayerProps(initialJson, "Football", "Super Bowl LV", "NFL Coupon", PlayerPropConstants.FanDuelProps["NFL"], "Super Bowl LV");
-            }
+            var initialJson = JsonConvert.DeserializeObject<object>(Program.HttpClient.GetStringAsync(InitialRequest).Result);
             
-            IEnumerable<PlayerPropOffering> nbaOfferings = GetPlayerProps(initialJson, "Basketball", "NBA", "NBA Tab Coupon", PlayerPropConstants.FanDuelProps["NBA"], "Games");
+            IEnumerable<PlayerPropOffering> results = new List<PlayerPropOffering>();
 
-            return nflOfferings.Concat(nbaOfferings);
+            if (Program.Configuration.ShouldParseSport("NFL"))
+                results = results.Concat(GetPlayerProps(initialJson, "Football", "NFL", "Season Coupon", PlayerPropConstants.FanDuelProps["NFL"], "Games"));
+            if (Program.Configuration.ShouldParseSport("NBA"))
+                results = results.Concat(GetPlayerProps(initialJson, "Basketball", "NBA", "NBA Tab Coupon", PlayerPropConstants.FanDuelProps["NBA"], "Games"));
+
+            return results;
 
         }
 
