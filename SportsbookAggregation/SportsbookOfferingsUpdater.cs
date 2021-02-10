@@ -38,7 +38,7 @@ namespace SportsbookAggregation
                 }
                 catch(Exception e)
                 {
-                    var boosts = dbContext.OddsBoostRepository.Read().Where(o => o.Description == oddsBoostOffering.Description && o.GamblingSite.Name.Equals(oddsBoostOffering.Site, StringComparison.OrdinalIgnoreCase));
+                    var boosts = dbContext.OddsBoostRepository.Read().Where(o => o.Description == oddsBoostOffering.Description && o.GamblingSite.Name.Equals(oddsBoostOffering.Site, StringComparison.OrdinalIgnoreCase)).ToList();
                     foreach(var b in boosts)
                     {
                         dbContext.OddsBoostRepository.Delete(b);
