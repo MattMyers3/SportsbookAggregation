@@ -229,7 +229,7 @@ namespace SportsbookAggregation
                 {
                     dbContext.GameLineRepository.Delete(game);
                 }
-                throw e;
+                return null;
             }
         }
 
