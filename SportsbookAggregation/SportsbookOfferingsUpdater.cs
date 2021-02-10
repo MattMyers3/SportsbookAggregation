@@ -224,7 +224,7 @@ namespace SportsbookAggregation
             catch (Exception e)
             {
                 var games = dbContext.GameLineRepository.Read()
-                    .Where(gl => gl.GameId == gameId && gl.GamblingSiteId == siteId);
+                    .Where(gl => gl.GameId == gameId && gl.GamblingSiteId == siteId).ToList();
                 foreach(var game in games)
                 {
                     dbContext.GameLineRepository.Delete(game);
