@@ -215,8 +215,22 @@ namespace SportsbookAggregation
 
         private GameLine GetGameLine(Guid gameId, Guid siteId)
         {
-            return dbContext.GameLineRepository.Read()
-                .SingleOrDefault(gl => gl.GameId == gameId && gl.GamblingSiteId == siteId);
+            try
+            {
+                var games = dbContext.GameLineRepository.Read()
+                    .SingleOrDefault(gl => gl.GameId == gameId && gl.GamblingSiteId == siteId);
+                return games;
+            }
+            catch (Exception e)
+            {
+                var games = dbContext.GameLineRepository.Read()
+                    .Where(gl => gl.GameId == gameId && gl.GamblingSiteId == siteId);
+                foreach(var game in games)
+                {
+                    dbContext.GameLineRepository.Delete(game);
+                }
+                throw e;
+            }
         }
 
         private Guid CreateGame(DateTime gameOfferingDateTime, Guid homeTeamId, Guid awayTeamId, Guid sportId)
