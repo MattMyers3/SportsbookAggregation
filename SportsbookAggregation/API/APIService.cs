@@ -1,9 +1,9 @@
 ﻿using SportsbookAggregation.Alerts;
+using SportsbookAggregation.API.APIModels;
 using SportsbookAggregation.Data;
+using SportsbookAggregation.SportsBooks;
 using SportsbookAggregation.SportsBooks.Models;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -16,9 +16,11 @@ namespace SportsbookAggregation.API
     {
         private static OktaTokenService tokenService = new OktaTokenService(Program.Configuration.GetOktaSettings());
 
-        public async static Task UpdateGameLines(IEnumerable<GameOffering> gameOfferings)
+        public async static Task UpdateGameLines(IEnumerable<GameOffering> gameOfferings, IEnumerable<string> sportsbooks)
         {
-            await Update(gameOfferings, "GameLines");
+            var updateObject = new GameLineUpdateObject(gameOfferings, sportsbooks);
+            var content = new StringContent(JsonSerializer.Serialize(updateObject), Encoding.UTF8, "application/json");
+            await Update(content , "GameLines");
             if (Program.Configuration.ReadBooleanProperty("RunAlertsService"))
             {
                 using (var context = new Context())
@@ -32,21 +34,20 @@ namespace SportsbookAggregation.API
             }
         }
 
-        public async static Task UpdateOddsBoosts(IEnumerable<OddsBoostOffering> oddsBoostOfferings)
+        public async static Task UpdateOddsBoosts(IEnumerable<OddsBoostOffering> oddsBoostOfferings, IEnumerable<string> sportsbooks)
         {
-            await Update(oddsBoostOfferings, "OddsBoosts");
+            //await Update(new OddsBoostUpdateObject(oddsBoostOfferings, sportsbooks), "OddsBoosts");
         }
 
-        public async static Task UpdatePlayerProps(IEnumerable<PlayerPropOffering> playerPropOfferings)
+        public async static Task UpdatePlayerProps(IEnumerable<PlayerPropOffering> playerPropOfferings, IEnumerable<string> sportsbooks)
         {
-            await Update(playerPropOfferings, "PlayerProp");
+           // await Update(new PlayerPropUpdateObject(playerPropOfferings, sportsbooks), "PlayerProp");
         }
 
-        private async static Task Update<T>(IEnumerable<T> offerings, string endpoint)
+        private async static Task Update(StringContent content, string endpoint)
         {
             var token = tokenService.GetToken();
             Program.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Result);
-            var content = new StringContent(JsonSerializer.Serialize(offerings), Encoding.UTF8, "application/json");
             await Program.HttpClient.PutAsync(Program.Configuration.ReadProperty("APIUrl") + endpoint, content);
         }
     }

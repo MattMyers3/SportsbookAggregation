@@ -25,15 +25,13 @@ namespace SportsbookAggregation
             Configuration.ReadConfig();
 
             List<ISportsBook> sportsbooks = new List<ISportsBook> { new DraftKingsSportsBook(), new FanDuelSportsBook(), new FoxBetSportsBook(), new BarstoolSportsBook(), new BetAmericaSportsBook(), new CaesarsSportBook(), new BetRiversSportsBook(), new ParxSportsBook(), new UnibetSportsBook(), new SugarHouseSportsBook(), new BetMGMSportsBook() };
-
+            var sportsBooksToParse = sportsbooks.Where(s => Configuration.ShouldParseBook(s.GetSportsBookName()));
             var gameOfferings = new List<GameOffering>();
             var oddsBoosts = new List<OddsBoostOffering>();
             var playerProps = new List<PlayerPropOffering>();
 
-            foreach (var sportsbook in sportsbooks)
+            foreach (var sportsbook in sportsBooksToParse)
             {
-                if (!Configuration.ShouldParseBook(sportsbook.GetSportsBookName()))
-                    continue;
                 try
                 {
                     gameOfferings.AddRange(sportsbook.AggregateFutureOfferings().ToList());
@@ -67,9 +65,10 @@ namespace SportsbookAggregation
             }
             try
             {
-                var gTask = APIService.UpdateGameLines(gameOfferings);
-                var oTask = APIService.UpdateOddsBoosts(oddsBoosts);
-                var pTask = APIService.UpdatePlayerProps(playerProps);
+                var sportsbookNames = sportsBooksToParse.Select(s => s.GetSportsBookName());
+                var gTask = APIService.UpdateGameLines(gameOfferings, sportsbookNames);
+                var oTask = APIService.UpdateOddsBoosts(oddsBoosts, sportsbookNames);
+                var pTask = APIService.UpdatePlayerProps(playerProps, sportsbookNames);
 
                 await Task.WhenAll(gTask, oTask, pTask);
                 //using (var dbContext = new Context())
