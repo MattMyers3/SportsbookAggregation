@@ -79,11 +79,11 @@ namespace SportsbookAggregation
                         AlertsService.Run(dbContext);
                         dbContextTransaction.Commit();
                     }
-                    using (var dbContextTransaction = dbContext.Database.BeginTransaction())
-                    {
-                        DataCollector.Run(dbContext);
-                        dbContextTransaction.Commit();
-                    }
+                    //using (var dbContextTransaction = dbContext.Database.BeginTransaction())
+                    //{
+                    //    DataCollector.Run(dbContext);
+                    //    dbContextTransaction.Commit();
+                    //}
                 }
             }
             catch (Exception ex)
