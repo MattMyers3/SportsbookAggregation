@@ -1,9 +1,14 @@
-﻿using SportsbookAggregation.SportsBooks.Models;
+﻿using SportsbookAggregation.Alerts;
+using SportsbookAggregation.Data;
+using SportsbookAggregation.SportsBooks.Models;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace SportsbookAggregation.API
 {
@@ -11,27 +16,35 @@ namespace SportsbookAggregation.API
     {
         private static OktaTokenService tokenService = new OktaTokenService(Program.Configuration.GetOktaSettings());
 
-        public static void UpdateGameLines(IEnumerable<GameOffering> gameOfferings)
+        public async static Task UpdateGameLines(IEnumerable<GameOffering> gameOfferings)
         {
-            Update(gameOfferings, "GameLines");
+            await Update(gameOfferings, "GameLines");
+            using (var context = new Context())
+            {
+                using (var dbContextTransaction = context.Database.BeginTransaction())
+                {
+                    AlertsService.Run(context);
+                    dbContextTransaction.Commit();
+                }
+            }
         }
 
-        public static void UpdateOddsBoosts(IEnumerable<OddsBoostOffering> oddsBoostOfferings)
+        public async static Task UpdateOddsBoosts(IEnumerable<OddsBoostOffering> oddsBoostOfferings)
         {
-            Update(oddsBoostOfferings, "OddsBoosts");
+            await Update(oddsBoostOfferings, "OddsBoosts");
         }
 
-        public static void UpdatePlayerProps(IEnumerable<PlayerPropOffering> playerPropOfferings)
+        public async static Task UpdatePlayerProps(IEnumerable<PlayerPropOffering> playerPropOfferings)
         {
-            Update(playerPropOfferings, "PlayerProp");
+            await Update(playerPropOfferings, "PlayerProp");
         }
 
-        private static void Update<T>(IEnumerable<T> offerings, string endpoint)
+        private async static Task Update<T>(IEnumerable<T> offerings, string endpoint)
         {
             var token = tokenService.GetToken();
             Program.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Result);
             var content = new StringContent(JsonSerializer.Serialize(offerings), Encoding.UTF8, "application/json");
-            Program.HttpClient.PutAsync(Program.Configuration.ReadProperty("APIUrl") + endpoint, content);
+            await Program.HttpClient.PutAsync(Program.Configuration.ReadProperty("APIUrl") + endpoint, content);
         }
     }
 }
