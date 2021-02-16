@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 
-namespace SportsbookAggregation.APIService
+namespace SportsbookAggregation.API
 {
     public class OktaToken
     {

@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using SportsbookAggregation.APIService;
+using SportsbookAggregation.API;
 using System;
 using System.IO;
 
