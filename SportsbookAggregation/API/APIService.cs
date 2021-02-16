@@ -19,12 +19,15 @@ namespace SportsbookAggregation.API
         public async static Task UpdateGameLines(IEnumerable<GameOffering> gameOfferings)
         {
             await Update(gameOfferings, "GameLines");
-            using (var context = new Context())
+            if (Program.Configuration.ReadBooleanProperty("RunAlertsService"))
             {
-                using (var dbContextTransaction = context.Database.BeginTransaction())
+                using (var context = new Context())
                 {
-                    AlertsService.Run(context);
-                    dbContextTransaction.Commit();
+                    using (var dbContextTransaction = context.Database.BeginTransaction())
+                    {
+                        AlertsService.Run(context);
+                        dbContextTransaction.Commit();
+                    }
                 }
             }
         }
