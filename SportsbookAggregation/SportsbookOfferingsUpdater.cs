@@ -21,7 +21,7 @@ namespace SportsbookAggregation
         public void Update(IEnumerable<GameOffering> gameOfferings, IEnumerable<OddsBoostOffering> oddsBoostOfferings, IEnumerable<PlayerPropOffering> playerPropOfferings)
         {
             SetOfferingsToNotAvailable();
-            WriteGameOfferings(gameOfferings);
+            //WriteGameOfferings(gameOfferings);
             WriteOddsBoosts(oddsBoostOfferings);
             WritePlayerProps(playerPropOfferings);
             dbContext.SaveChanges();
@@ -122,8 +122,10 @@ namespace SportsbookAggregation
             var sportGuid = GetSportId(playerProp.Sport);
             var homeTeamId = GetTeamIdFromTeamName(playerProp.HomeTeam, playerProp.Sport);
             var awayTeamId = GetTeamIdFromTeamName(playerProp.AwayTeam, playerProp.Sport);
-            var gameId = GetGameId(playerProp.DateTime, homeTeamId, awayTeamId) ??
-                            CreateGame(playerProp.DateTime, homeTeamId, awayTeamId, sportGuid);
+            var gameId = GetGameId(playerProp.DateTime, homeTeamId, awayTeamId);
+
+            if (gameId == null) // if we dont have lines for the game yet don't create it for players props. We won't display it anyway
+                return;
 
             var gamblingSiteId = GetSiteId(playerProp.Site);
 
@@ -137,7 +139,7 @@ namespace SportsbookAggregation
                 PropValue = playerProp.PropValue,
                 PropBetType = playerProp.Description,
                 GamblingSiteId = gamblingSiteId,
-                GameId = gameId
+                GameId = gameId.Value
             });
         }
 

@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Mail;
+using SportsbookAggregation.APIService;
 
 namespace SportsbookAggregation
 {
@@ -64,6 +65,7 @@ namespace SportsbookAggregation
             }
             try
             {
+                APIService.APIService.UpdateGameLines(gameOfferings); // I can't for the life of me figure out how to fix this
                 using (var dbContext = new Context())
                 {
                     var databaseUpdater = new SportsbookOfferingsUpdater(dbContext);
@@ -77,11 +79,11 @@ namespace SportsbookAggregation
                         AlertsService.Run(dbContext);
                         dbContextTransaction.Commit();
                     }
-                    //using (var dbContextTransaction = dbContext.Database.BeginTransaction())
-                    //{
-                    //    DataCollector.Run(dbContext);
-                    //    dbContextTransaction.Commit();
-                    //}
+                    using (var dbContextTransaction = dbContext.Database.BeginTransaction())
+                    {
+                        DataCollector.Run(dbContext);
+                        dbContextTransaction.Commit();
+                    }
                 }
             }
             catch (Exception ex)
