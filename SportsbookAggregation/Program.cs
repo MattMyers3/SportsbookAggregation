@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Mail;
+using SportsbookAggregation.API;
 
 namespace SportsbookAggregation
 {
@@ -64,6 +65,7 @@ namespace SportsbookAggregation
             }
             try
             {
+                APIService.UpdateGameLines(gameOfferings);
                 using (var dbContext = new Context())
                 {
                     var databaseUpdater = new SportsbookOfferingsUpdater(dbContext);

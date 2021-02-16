@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using SportsbookAggregation.APIService;
 using System;
 using System.IO;
 
@@ -23,6 +24,17 @@ namespace SportsbookAggregation.Config
         public bool ReadBooleanProperty(string property)
         {
             return Convert.ToBoolean(Configuration[property]);
+        }
+
+        public string ReadProperty(string property)
+        {
+            return Configuration[property];
+        }
+
+        public OktaSettings GetOktaSettings()
+        {
+            var OktaSection = Configuration.GetSection("Okta");
+            return new OktaSettings(OktaSection["TokenUrl"], OktaSection["ClientId"], OktaSection["ClientSecret"]);
         }
 
         public bool ShouldParseBook(string book)

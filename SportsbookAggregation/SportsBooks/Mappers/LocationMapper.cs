@@ -76,6 +76,7 @@
                 case "detroit":
                     return "Detroit Mercy";
                 case "east tenn state":
+                case "etsu":
                     return "East Tennessee State";
                 case "florida intl":
                 case "florida international":
@@ -194,6 +195,7 @@
                 case "san josé state":
                     return "San Jose State";
                 case "siu-edwardsville cougars":
+                case "siue":
                     return "SIU Edwardsville";
                 case "se louisiana":
                     return "Southeastern Louisiana";
@@ -210,6 +212,7 @@
                 case "southern mississippi golden eagles":
                     return "Southern Miss";
                 case "stephen f austin":
+                case "sfa":
                     return "Stephen F. Austin";
                 case "seattle university":
                 case "seattle":
@@ -325,6 +328,7 @@
             switch (abbreviation.ToUpper())
             {
                 case "ANA":
+                case "ANH":
                     return "Anaheim";
                 case "ARI":
                     return "Arizona";
@@ -351,6 +355,7 @@
                 case "CLE":
                     return "Cleveland";
                 case "CBJ":
+                case "CLS":
                     return "Columbus";
                 case "DAL":
                     return "Dallas";
