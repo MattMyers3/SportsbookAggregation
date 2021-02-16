@@ -1,4 +1,4 @@
-﻿namespace SportsbookAggregation.APIService
+﻿namespace SportsbookAggregation.API
 {
     public class OktaSettings
     {

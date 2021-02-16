@@ -5,7 +5,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
-namespace SportsbookAggregation.APIService
+namespace SportsbookAggregation.API
 {
     public static class APIService
     {
