@@ -10,6 +10,8 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Mail;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SportsbookAggregation
 {
@@ -18,7 +20,7 @@ namespace SportsbookAggregation
         public static HttpClient HttpClient = new HttpClient();
         public static ConfigWrapper Configuration = new ConfigWrapper();
 
-        private static void Main(string[] args)
+        private async static Task Main(string[] args)
         {
             Configuration.ReadConfig();
 
@@ -65,26 +67,25 @@ namespace SportsbookAggregation
             }
             try
             {
-                APIService.UpdateGameLines(gameOfferings);
-                using (var dbContext = new Context())
-                {
-                    var databaseUpdater = new SportsbookOfferingsUpdater(dbContext);
-                    using (var dbContextTransaction = dbContext.Database.BeginTransaction())
-                    {
-                        databaseUpdater.Update(gameOfferings, oddsBoosts, playerProps);
-                        dbContextTransaction.Commit();
-                    }
-                    using (var dbContextTransaction = dbContext.Database.BeginTransaction())
-                    {
-                        AlertsService.Run(dbContext);
-                        dbContextTransaction.Commit();
-                    }
-                    //using (var dbContextTransaction = dbContext.Database.BeginTransaction())
-                    //{
-                    //    DataCollector.Run(dbContext);
-                    //    dbContextTransaction.Commit();
-                    //}
-                }
+                var gTask = APIService.UpdateGameLines(gameOfferings);
+                var oTask = APIService.UpdateOddsBoosts(oddsBoosts);
+                var pTask = APIService.UpdatePlayerProps(playerProps);
+
+                await Task.WhenAll(gTask, oTask, pTask);
+                //using (var dbContext = new Context())
+                //{
+                //    var databaseUpdater = new SportsbookOfferingsUpdater(dbContext);
+                //    using (var dbContextTransaction = dbContext.Database.BeginTransaction())
+                //    {
+                //        databaseUpdater.Update(gameOfferings, oddsBoosts, playerProps);
+                //        dbContextTransaction.Commit();
+                //    }
+                //using (var dbContextTransaction = dbContext.Database.BeginTransaction())
+                //{
+                //    DataCollector.Run(dbContext);
+                //    dbContextTransaction.Commit();
+                //}
+                //}
             }
             catch (Exception ex)
             {
