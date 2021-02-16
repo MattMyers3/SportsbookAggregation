@@ -31,7 +31,7 @@ namespace SportsbookAggregation.API
             var token = tokenService.GetToken();
             Program.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Result);
             var content = new StringContent(JsonSerializer.Serialize(offerings), Encoding.UTF8, "application/json");
-            var result = Program.HttpClient.PutAsync(Program.Configuration.ReadProperty("APIUrl") + endpoint, content).Result;
+            Program.HttpClient.PutAsync(Program.Configuration.ReadProperty("APIUrl") + endpoint, content);
         }
     }
 }

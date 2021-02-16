@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Mail;
+using System.Threading;
 
 namespace SportsbookAggregation
 {
@@ -68,25 +69,26 @@ namespace SportsbookAggregation
                 APIService.UpdateGameLines(gameOfferings);
                 APIService.UpdateOddsBoosts(oddsBoosts);
                 APIService.UpdatePlayerProps(playerProps);
-                //using (var dbContext = new Context())
-                //{
+                using (var dbContext = new Context())
+                {
                 //    var databaseUpdater = new SportsbookOfferingsUpdater(dbContext);
                 //    using (var dbContextTransaction = dbContext.Database.BeginTransaction())
                 //    {
                 //        databaseUpdater.Update(gameOfferings, oddsBoosts, playerProps);
                 //        dbContextTransaction.Commit();
                 //    }
-                //    using (var dbContextTransaction = dbContext.Database.BeginTransaction())
-                //    {
-                //        AlertsService.Run(dbContext);
-                //        dbContextTransaction.Commit();
-                //    }
-                    //using (var dbContextTransaction = dbContext.Database.BeginTransaction())
-                    //{
-                    //    DataCollector.Run(dbContext);
-                    //    dbContextTransaction.Commit();
-                    //}
+                    using (var dbContextTransaction = dbContext.Database.BeginTransaction())
+                    {
+                        Thread.Sleep(30000); // need a better solution for this. Thinking we should move it to use a message queue. 
+                        AlertsService.Run(dbContext);
+                        dbContextTransaction.Commit();
+                    }
+                //using (var dbContextTransaction = dbContext.Database.BeginTransaction())
+                //{
+                //    DataCollector.Run(dbContext);
+                //    dbContextTransaction.Commit();
                 //}
+                }
             }
             catch (Exception ex)
             {
