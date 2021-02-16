@@ -65,7 +65,7 @@ namespace SportsbookAggregation
             }
             try
             {
-                APIService.UpdateGameLines(gameOfferings); // I can't for the life of me figure out how to fix this
+                APIService.UpdateGameLines(gameOfferings);
                 using (var dbContext = new Context())
                 {
                     var databaseUpdater = new SportsbookOfferingsUpdater(dbContext);
