@@ -36,12 +36,16 @@ namespace SportsbookAggregation.API
 
         public async static Task UpdateOddsBoosts(IEnumerable<OddsBoostOffering> oddsBoostOfferings, IEnumerable<string> sportsbooks)
         {
-            //await Update(new OddsBoostUpdateObject(oddsBoostOfferings, sportsbooks), "OddsBoosts");
+            var updateObject = new OddsBoostUpdateObject(oddsBoostOfferings, sportsbooks);
+            var content = new StringContent(JsonSerializer.Serialize(updateObject), Encoding.UTF8, "application/json");
+            await Update(content, "OddsBoosts");
         }
 
         public async static Task UpdatePlayerProps(IEnumerable<PlayerPropOffering> playerPropOfferings, IEnumerable<string> sportsbooks)
         {
-           // await Update(new PlayerPropUpdateObject(playerPropOfferings, sportsbooks), "PlayerProp");
+            var updateObject = new PlayerPropUpdateObject(playerPropOfferings, sportsbooks);
+            var content = new StringContent(JsonSerializer.Serialize(updateObject), Encoding.UTF8, "application/json");
+            await Update(content, "PlayerProp");
         }
 
         private async static Task Update(StringContent content, string endpoint)
