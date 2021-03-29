@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using SportsbookAggregation.Constants;
 using SportsbookAggregation.SportsBooks.Models;
@@ -129,30 +130,34 @@ namespace SportsbookAggregation.SportsBooks
                 return Enumerable.Empty<GameOffering>();
 
             IEnumerable<GameOffering> gameOfferings = GetGameOfferings(usaCategoryJson, "NCAAB", "Money Line", "Spread", "Total Points");
+            if(!gameOfferings.Any())
+                gameOfferings = GetGameOfferings(usaCategoryJson, "NCAA Tournament", "Money Line", "Spread", "Total Points");
 
             return gameOfferings;
         }
 
         private IEnumerable<GameOffering> GetGameOfferings(dynamic usaCategoryJson, string sportName, string moneyLineLabel, string spreadLabel, string totalLabel)
         {
-            var nflCompetitionJson =
+            var competitionJson =
                 ((IEnumerable)usaCategoryJson.competition).Cast<dynamic>().FirstOrDefault(g => g.name.Value.Contains(sportName));
-            if (nflCompetitionJson == null)
+            if (competitionJson == null)
             {
                 return Enumerable.Empty<GameOffering>();
             }
-            var nflGamesUrl =
-                $"https://sports.mtairycasino.foxbet.com/sportsbook/v1/api/getCompetitionEvents?competitionId={nflCompetitionJson.id}&includeOutrights=false&channelId=15&locale=en-us&siteId=134217728";
-            var nflGamesJson =
-                JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(nflGamesUrl).Result).ToString()
+            var gamesUrl =
+                $"https://sports.mtairycasino.foxbet.com/sportsbook/v1/api/getCompetitionEvents?competitionId={competitionJson.id}&includeOutrights=false&channelId=15&locale=en-us&siteId=134217728";
+            var gamesJson =
+                JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(gamesUrl).Result).ToString()
                     .Replace("event", "events");
 
-            var games = JsonConvert.DeserializeObject<dynamic>(nflGamesJson).events;
+            var games = JsonConvert.DeserializeObject<dynamic>(gamesJson).events;
             var gameOfferings = new List<GameOffering>();
             foreach (var game in games)
             {
                 var gameOffering = ParseGameOffering(game, moneyLineLabel, spreadLabel, totalLabel, sportName);
                 gameOffering.Sport = sportName;
+                if (sportName == "NCAA Tournament")
+                    gameOffering.Sport = "NCAAB";
                 gameOfferings.Add(gameOffering);
             }
 
@@ -168,8 +173,8 @@ namespace SportsbookAggregation.SportsBooks
                     .AddMilliseconds(Convert.ToDouble(gameJson.eventsTime.Value))
             };
             var participantList = ((IEnumerable)gameJson.participants.participant).Cast<dynamic>().ToList();
-            gameOffering.HomeTeam = participantList.Single(p => p.type == "HOME").names.longName;
-            gameOffering.AwayTeam = participantList.Single(p => p.type == "AWAY").names.longName;
+            gameOffering.HomeTeam = Regex.Replace(participantList.Single(p => p.type == "HOME").names.longName.ToString(), @"[#\d]", string.Empty).Trim();
+            gameOffering.AwayTeam = Regex.Replace(participantList.Single(p => p.type == "AWAY").names.longName.ToString(), @"[#\d]", string.Empty).Trim();
 
             var moneyLineInfo = ((IEnumerable)gameJson.markets).Cast<dynamic>()
                 .FirstOrDefault(m => m.name.Value.Contains(moneyLineLabel));
@@ -177,9 +182,9 @@ namespace SportsbookAggregation.SportsBooks
             {
                 var moneyLineInfoSelections = ((IEnumerable)moneyLineInfo.selection).Cast<dynamic>().ToList();
                 gameOffering.HomeMoneyLinePayout = CalculateOdds(moneyLineInfoSelections
-                    .First(s => s.names.longName == gameOffering.HomeTeam).odds.frac.Value);
+                    .First(s => s.names.longName.Value.Contains(gameOffering.HomeTeam)).odds.frac.Value);
                 gameOffering.AwayMoneyLinePayout = CalculateOdds(moneyLineInfoSelections
-                    .First(s => s.names.longName == gameOffering.AwayTeam).odds.frac.Value);
+                    .First(s => s.names.longName.Value.Contains(gameOffering.AwayTeam)).odds.frac.Value);
             }
 
             var spreadJson = ((IEnumerable)gameJson.markets).Cast<dynamic>()

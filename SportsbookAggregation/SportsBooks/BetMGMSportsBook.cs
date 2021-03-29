@@ -4,9 +4,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace SportsbookAggregation.SportsBooks
 {
@@ -116,21 +113,27 @@ namespace SportsbookAggregation.SportsBooks
         {
             SetTokenAndBaseUrl();
             var marqueeTiles = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(urlToRetrieveAccessToken).Result).msMarqueeTiles.marqueeTiles;
-            var lionsBoostFixtureId = ((IEnumerable)marqueeTiles).Cast<dynamic>().Single(m => m.badgeTitleOverride == "Lion's Boost").fixtureId;
+            var lionsBoosts = ((IEnumerable)marqueeTiles).Cast<dynamic>().Where(m => m.badgeTitleOverride == "Lion's Boost");
+            var oddsBoosts = new List<OddsBoostOffering>();
+            foreach(var lionsBoost in lionsBoosts)
+            {
+                var lionsBoostFixtureId = lionsBoost.fixtureId;
 
-            var urlForLionsBoost = $"{baseUrl}/bettingoffer/fixture-view?x-bwin-accessid={token}&lang=en-us&country=US&userCountry=US&offerMapping=All&scoreboardMode=Full&fixtureIds={lionsBoostFixtureId}&state=Latest&includePrecreatedBetBuilder=true&supportVirtual=false";
-            var lionsBoostJson = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(urlForLionsBoost).Result).fixture;
+                var urlForLionsBoost = $"{baseUrl}/bettingoffer/fixture-view?x-bwin-accessid={token}&lang=en-us&country=US&userCountry=US&offerMapping=All&scoreboardMode=Full&fixtureIds={lionsBoostFixtureId}&state=Latest&includePrecreatedBetBuilder=true&supportVirtual=false";
+                var lionsBoostJson = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(urlForLionsBoost).Result).fixture;
 
-            if (lionsBoostJson == null)
-                return new List<OddsBoostOffering>();
+                if (lionsBoostJson == null)
+                    continue;
 
-            var lionsBoost = new OddsBoostOffering();
-            lionsBoost.BoostedOdds = lionsBoostJson.games[0].results[0].americanOdds;
-            lionsBoost.Date = lionsBoostJson.startDate;
-            lionsBoost.Description = lionsBoostJson.games[0].results[0].name.value;
-            lionsBoost.Site = GetSportsBookName();
-            
-            return new List<OddsBoostOffering>() { lionsBoost };
+                var lionsBoostOffering = new OddsBoostOffering();
+                lionsBoostOffering.BoostedOdds = lionsBoostJson.games[0].results[0].americanOdds;
+                lionsBoostOffering.Date = lionsBoostJson.startDate;
+                lionsBoostOffering.Description = lionsBoostJson.games[0].results[0].name.value;
+                lionsBoostOffering.Site = GetSportsBookName();
+
+                oddsBoosts.Add(lionsBoostOffering);
+            }
+            return oddsBoosts;
         }
 
         public IEnumerable<PlayerPropOffering> AggregatePlayerProps()

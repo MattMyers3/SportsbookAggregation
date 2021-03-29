@@ -161,8 +161,6 @@ namespace SportsbookAggregation
 
             var gamblingSiteId = GetSiteId(playerProp.Site);
 
-            var test = dbContext.PlayerPropRepository.Read().Where(p => p.GameId == gameId);
-
             return dbContext.PlayerPropRepository.Read().FirstOrDefault(p => p.GameId == gameId 
                     && p.PropBetType == playerProp.Description && p.Description == playerProp.OutcomeDescription 
                     && p.PlayerName == playerProp.PlayerName && p.GamblingSiteId == gamblingSiteId);

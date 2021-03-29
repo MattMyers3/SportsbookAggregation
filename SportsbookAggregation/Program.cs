@@ -1,7 +1,5 @@
-﻿using SportsbookAggregation.Alerts;
-using SportsbookAggregation.API;
+﻿using SportsbookAggregation.API;
 using SportsbookAggregation.Config;
-using SportsbookAggregation.Data;
 using SportsbookAggregation.SportsBooks;
 using SportsbookAggregation.SportsBooks.Models;
 using System;
@@ -10,7 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Mail;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace SportsbookAggregation

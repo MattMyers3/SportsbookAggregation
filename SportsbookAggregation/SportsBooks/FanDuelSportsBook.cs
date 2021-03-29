@@ -74,7 +74,7 @@ namespace SportsbookAggregation.SportsBooks
         {
             var basketballJson = ((IEnumerable)initialJson.bonavigationnodes).Cast<dynamic>()
                 .First(g => g.name == "College Basketball");
-            IEnumerable<GameOffering> games = GetGameOfferings(basketballJson, "College Basketball", "College Basketball Tab Coupon", "Spread Betting", "Moneyline", "Total Points Scored", "Games");
+            IEnumerable<GameOffering> games = GetGameOfferings(basketballJson, "College Basketball", "College Basketball Tab Coupon", "Point Spread", "Money Line", "Total Points", "Games");
             foreach (var g in games)
                 g.Sport = "NCAAB";
             return games;
@@ -329,7 +329,7 @@ namespace SportsbookAggregation.SportsBooks
             if (gameJson.eventmarketgroups == null)
                 return Enumerable.Empty<PlayerPropOffering>();
 
-            var playerPropsJson = ((IEnumerable)gameJson.eventmarketgroups).Cast<dynamic>().FirstOrDefault(g => g.name.Value.ToString() == "Player Props");
+            var playerPropsJson = ((IEnumerable)gameJson.eventmarketgroups).Cast<dynamic>().FirstOrDefault(g => g.name.Value.ToString() == "All Player Props");
             if (playerPropsJson == null)
                 return Enumerable.Empty<PlayerPropOffering>();
 

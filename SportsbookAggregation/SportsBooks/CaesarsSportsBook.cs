@@ -10,7 +10,7 @@ namespace SportsbookAggregation.SportsBooks
 {
     public class CaesarsSportBook : ISportsBook
     {
-        private const string NbaCode = "77";
+        private const string NbaCode = "72";
         private const string NflCode = "55";
         private const string NhlCode = "87";
         private const string NcaafCode = "58";
@@ -69,7 +69,7 @@ namespace SportsbookAggregation.SportsBooks
 
         private IEnumerable<GameOffering> GetBasketballOfferings()
         {
-            return GetGameOfferings(NbaCode, "NBA", "Spread", "Money Line", "Total Points Over/Under");
+            return GetGameOfferings(NbaCode, "NBA", "Point Spread", "Money Line", "Total Points Over/Under");
         }
 
         private IEnumerable<GameOffering> GetHockeyOfferings()
