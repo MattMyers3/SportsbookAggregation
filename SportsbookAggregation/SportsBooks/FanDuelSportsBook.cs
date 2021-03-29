@@ -139,7 +139,7 @@ namespace SportsbookAggregation.SportsBooks
                 DateTime = gameJson.tsstart
             };
 
-            gameOffering.DateTime = gameOffering.DateTime.AddHours(5);
+            gameOffering.DateTime = gameOffering.DateTime.AddHours(4);
             if (gameJson.eventmarketgroups == null)
                 return gameOffering;
 
@@ -356,7 +356,7 @@ namespace SportsbookAggregation.SportsBooks
                     Sport = sport,
                     AwayTeam = awayTeam,
                     HomeTeam = homeTeam,
-                    DateTime = gameTime.Value.AddHours(5),
+                    DateTime = gameTime.Value.AddHours(4),
                     Payout = CalculateOdds(overOutcome.currentpricedown.Value, overOutcome.currentpriceup.Value),
                     PropValue = Convert.ToDouble(overOutcome.currenthandicap), 
                     Description = propDescription.OurDescription,
@@ -370,7 +370,7 @@ namespace SportsbookAggregation.SportsBooks
                     Sport = sport,
                     AwayTeam = awayTeam,
                     HomeTeam = homeTeam,
-                    DateTime = gameTime.Value.AddHours(5),
+                    DateTime = gameTime.Value.AddHours(4),
                     Payout = CalculateOdds(underOutcome.currentpricedown.Value, underOutcome.currentpriceup.Value),
                     PropValue = Convert.ToDouble(underOutcome.currenthandicap),
                     Description = propDescription.OurDescription,
@@ -397,7 +397,7 @@ namespace SportsbookAggregation.SportsBooks
                     Sport = sport,
                     AwayTeam = awayTeam,
                     HomeTeam = homeTeam,
-                    DateTime = gameTime.Value.AddHours(5),
+                    DateTime = gameTime.Value.AddHours(4),
                     Payout = CalculateOdds(selection.currentpricedown.Value, selection.currentpriceup.Value),
                     PropValue = null, //Need to discuss this again,
                     Description = propDescription.OurDescription,
