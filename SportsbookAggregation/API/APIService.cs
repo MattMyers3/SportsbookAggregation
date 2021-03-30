@@ -21,7 +21,7 @@ namespace SportsbookAggregation.API
             var updateObject = new GameLineUpdateObject(gameOfferings, sportsbooks);
             var content = new StringContent(JsonSerializer.Serialize(updateObject), Encoding.UTF8, "application/json");
             await Update(content , "GameLines");
-            if (Program.Configuration.ReadBooleanProperty("RunAlertsService"))
+            if (Program.Configuration.ReadBooleanProperty("RunAlertService"))
             {
                 using (var context = new Context())
                 {
