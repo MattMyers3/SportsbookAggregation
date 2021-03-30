@@ -1,7 +1,6 @@
 ﻿using SportsbookAggregation.Alerts;
 using SportsbookAggregation.API.APIModels;
 using SportsbookAggregation.Data;
-using SportsbookAggregation.SportsBooks;
 using SportsbookAggregation.SportsBooks.Models;
 using System.Collections.Generic;
 using System.Net.Http;

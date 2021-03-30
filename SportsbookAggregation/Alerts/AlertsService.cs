@@ -184,7 +184,6 @@ namespace SportsbookAggregation.Alerts
                     message.To.Add(new MailAddress("4102927305@vtext.com")); //Nick
                     message.To.Add(new MailAddress("3015025056@vtext.com")); //Myers
                     message.To.Add(new MailAddress("4842134124@messaging.sprintpcs.com")); //Murph
-                    message.To.Add(new MailAddress("8456531433@vtext.com")); //Chris
                     message.Body = messageBody;
 
                     try

@@ -173,8 +173,14 @@ namespace SportsbookAggregation.SportsBooks
                     .AddMilliseconds(Convert.ToDouble(gameJson.eventsTime.Value))
             };
             var participantList = ((IEnumerable)gameJson.participants.participant).Cast<dynamic>().ToList();
-            gameOffering.HomeTeam = Regex.Replace(participantList.Single(p => p.type == "HOME").names.longName.ToString(), @"[#\d]", string.Empty).Trim();
-            gameOffering.AwayTeam = Regex.Replace(participantList.Single(p => p.type == "AWAY").names.longName.ToString(), @"[#\d]", string.Empty).Trim();
+            gameOffering.HomeTeam = participantList.Single(p => p.type == "HOME").names.longName.ToString();
+            gameOffering.AwayTeam = participantList.Single(p => p.type == "AWAY").names.longName.ToString();
+
+            if(gameOffering.HomeTeam.StartsWith('#') && gameOffering.AwayTeam.StartsWith('#'))
+            {
+                gameOffering.HomeTeam = Regex.Replace(participantList.Single(p => p.type == "HOME").names.longName.ToString(), @"[#\d]", string.Empty).Trim();
+                gameOffering.AwayTeam = Regex.Replace(participantList.Single(p => p.type == "AWAY").names.longName.ToString(), @"[#\d]", string.Empty).Trim();
+            }
 
             var moneyLineInfo = ((IEnumerable)gameJson.markets).Cast<dynamic>()
                 .FirstOrDefault(m => m.name.Value.Contains(moneyLineLabel));

@@ -168,8 +168,10 @@ namespace SportsbookAggregation.SportsBooks
             {
                 var homeSelection = ((IEnumerable)moneylineJson.selections).Cast<dynamic>().FirstOrDefault(g => g.outcomeType == "Home");
                 var awaySelection = ((IEnumerable)moneylineJson.selections).Cast<dynamic>().FirstOrDefault(g => g.outcomeType == "Away");
-                gameOffering.HomeMoneyLinePayout = Convert.ToInt32(homeSelection.displayOdds.american.Value);
-                gameOffering.AwayMoneyLinePayout = Convert.ToInt32(awaySelection.displayOdds.american.Value);
+                if(homeSelection != null)
+                    gameOffering.HomeMoneyLinePayout = Convert.ToInt32(homeSelection.displayOdds.american.Value);
+                if(awaySelection != null)
+                    gameOffering.AwayMoneyLinePayout = Convert.ToInt32(awaySelection.displayOdds.american.Value);
             }
 
             if (totalPointsJson != null)
