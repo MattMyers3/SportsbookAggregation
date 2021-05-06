@@ -167,7 +167,7 @@ namespace SportsbookAggregation.SportsBooks
                     spreadInfo[0].currentpriceup.Value);
             }
 
-            var moneyLineInfo = ((IEnumerable) marketList).Cast<dynamic>().FirstOrDefault(g => g.name.Value.Contains(moneyLineLabel))
+            var moneyLineInfo = ((IEnumerable) marketList).Cast<dynamic>().FirstOrDefault(g => g.name.Value.Contains(moneyLineLabel) && !g.name.Value.Contains("Total Runs Double"))
                 ?.selections;
             if (moneyLineInfo != null)
             {
