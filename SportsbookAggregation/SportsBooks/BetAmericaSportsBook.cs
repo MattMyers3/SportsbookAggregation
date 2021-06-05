@@ -1,12 +1,10 @@
 ﻿using SportsbookAggregation.SportsBooks.Models;
 using SportsbookAggregation.SportsBooks.OddsProviders;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SportsbookAggregation.SportsBooks
 {
-    class BetAmericaSportsBook : ISportsBook
+    public class BetAmericaSportsBook : ISportsBook
     {
         public string GetSportsBookName()
         {
