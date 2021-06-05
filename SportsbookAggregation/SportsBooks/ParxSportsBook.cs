@@ -1,5 +1,4 @@
-﻿using SportsbookAggregation.Data.Models;
-using SportsbookAggregation.SportsBooks.Models;
+﻿using SportsbookAggregation.SportsBooks.Models;
 using SportsbookAggregation.SportsBooks.OddsProviders;
 using System.Collections.Generic;
 
