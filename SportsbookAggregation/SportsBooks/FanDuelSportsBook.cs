@@ -337,7 +337,7 @@ namespace SportsbookAggregation.SportsBooks
             if (gameJson.eventmarketgroups == null)
                 return Enumerable.Empty<PlayerPropOffering>();
 
-            var playerPropsJson = ((IEnumerable)gameJson.eventmarketgroups).Cast<dynamic>().FirstOrDefault(g => g.name.Value.ToString() == "All Player Props");
+            var playerPropsJson = ((IEnumerable)gameJson.eventmarketgroups).Cast<dynamic>().FirstOrDefault(g => g.name.Value.ToString() == "All");
             if (playerPropsJson == null)
                 return Enumerable.Empty<PlayerPropOffering>();
 
