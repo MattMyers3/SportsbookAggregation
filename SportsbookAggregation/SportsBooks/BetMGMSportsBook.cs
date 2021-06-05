@@ -22,6 +22,8 @@ namespace SportsbookAggregation.SportsBooks
 
         public IEnumerable<GameOffering> AggregateFutureOfferings()
         {
+            SetRequestHeaders();
+
             SetTokenAndBaseUrl();
             IEnumerable<GameOffering> offerings = new List<GameOffering>();
             if (Program.Configuration.ShouldParseSport("NFL"))
@@ -32,6 +34,8 @@ namespace SportsbookAggregation.SportsBooks
                 offerings = offerings.Concat(GetGameOfferings(basketballSportsId, "NCAA ", "NCAAB"));
             if (Program.Configuration.ShouldParseSport("NCAAF"))
                 offerings = offerings.Concat(GetGameOfferings(nflSportsId, "College Football ", "NCAAF"));
+
+            RemoveRequestHeaders();
 
             return offerings;
         }
@@ -111,8 +115,9 @@ namespace SportsbookAggregation.SportsBooks
 
         public IEnumerable<OddsBoostOffering> AggregateOddsBoost()
         {
+            SetRequestHeaders();
             SetTokenAndBaseUrl();
-            var marqueeTiles = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(urlToRetrieveAccessToken).Result).msMarqueeTiles.marqueeTiles;
+            var marqueeTiles = JsonConvert.DeserializeObject<dynamic>(Program.HttpClient.GetStringAsync(urlToRetrieveAccessToken).Result).msMarquee.tiles;
             var lionsBoosts = ((IEnumerable)marqueeTiles).Cast<dynamic>().Where(m => m.badgeTitleOverride == "Lion's Boost");
             var oddsBoosts = new List<OddsBoostOffering>();
             foreach(var lionsBoost in lionsBoosts)
@@ -133,12 +138,42 @@ namespace SportsbookAggregation.SportsBooks
 
                 oddsBoosts.Add(lionsBoostOffering);
             }
+            RemoveRequestHeaders();
+
             return oddsBoosts;
         }
 
         public IEnumerable<PlayerPropOffering> AggregatePlayerProps()
         {
             return Enumerable.Empty<PlayerPropOffering>();
+        }
+
+        private void SetRequestHeaders()
+        {
+            Program.HttpClient.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.146 Safari/537.36");
+            Program.HttpClient.DefaultRequestHeaders.Add("authority", "cds-api.pa.betmgm.com");
+            Program.HttpClient.DefaultRequestHeaders.Add("scheme", "https");
+            Program.HttpClient.DefaultRequestHeaders.Add("accept", "application/json, text/plain, */*");
+            Program.HttpClient.DefaultRequestHeaders.Add("accept-language", "en-US,en;q=0.9");
+            Program.HttpClient.DefaultRequestHeaders.Add("sec-ch-ua", "\"Chromium\";v=\"88\", \"Google Chrome\";v=\"88\", \"; Not A Brand\";v=\"99\"");
+            Program.HttpClient.DefaultRequestHeaders.Add("sec-ch-ua-mobile", "?0");
+            Program.HttpClient.DefaultRequestHeaders.Add("sec-fetch-dest", "empty");
+            Program.HttpClient.DefaultRequestHeaders.Add("sec-fetch-mode", "cors");
+            Program.HttpClient.DefaultRequestHeaders.Add("sec-fetch-site", "same-site");
+        }
+
+        private void RemoveRequestHeaders()
+        {
+            Program.HttpClient.DefaultRequestHeaders.Remove("user-agent");
+            Program.HttpClient.DefaultRequestHeaders.Remove("authority");
+            Program.HttpClient.DefaultRequestHeaders.Remove("scheme");
+            Program.HttpClient.DefaultRequestHeaders.Remove("accept");
+            Program.HttpClient.DefaultRequestHeaders.Remove("accept-language");
+            Program.HttpClient.DefaultRequestHeaders.Remove("sec-ch-ua");
+            Program.HttpClient.DefaultRequestHeaders.Remove("sec-ch-ua-mobile");
+            Program.HttpClient.DefaultRequestHeaders.Remove("sec-fetch-dest");
+            Program.HttpClient.DefaultRequestHeaders.Remove("sec-fetch-mode");
+            Program.HttpClient.DefaultRequestHeaders.Remove("sec-fetch-site");
         }
     }
 }
